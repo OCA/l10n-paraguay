@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Inherit mrp.bom form to add Maquila fields -->
+    <record id="mrp_bom_form_view_inherit_maquila" model="ir.ui.view">
+        <field name="name">mrp.bom.form.inherit.maquila</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//group[1]" position="after">
+                <group string="Maquila" name="maquila">
+                    <group>
+                        <field name="l10n_py_maquila_program_id" />
+                        <field name="l10n_py_intn_certified" />
+                    </group>
+                    <group>
+                        <field
+                            name="l10n_py_intn_certificate"
+                            attrs="{'invisible': [('l10n_py_intn_certified', '=', False)]}"
+                        />
+                        <field
+                            name="l10n_py_intn_date"
+                            attrs="{'invisible': [('l10n_py_intn_certified', '=', False)]}"
+                        />
+                    </group>
+                </group>
+            </xpath>
+            <!-- Add origin columns to BOM line tree -->
+            <xpath
+                expr="//field[@name='bom_line_ids']/tree/field[@name='product_qty']"
+                position="after"
+            >
+                <field name="l10n_py_origin_type" optional="hide" />
+                <field name="l10n_py_origin_country" optional="hide" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Inherit maquila program product tree to add bom_id -->
+    <record id="view_maquila_program_form_inherit_mrp" model="ir.ui.view">
+        <field name="name">l10n_py.maquila.program.form.inherit.mrp</field>
+        <field name="model">l10n_py.maquila.program</field>
+        <field name="inherit_id" ref="l10n_py_maquila_base.view_maquila_program_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//field[@name='product_line_ids']/tree/field[@name='product_id']"
+                position="after"
+            >
+                <field name="bom_id" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
