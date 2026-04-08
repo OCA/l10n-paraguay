@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--
+        Fiscal demo data for Maquila Operations.
+        The actual fiscal positions are created in data/ with noupdate=1.
+        This file provides additional demo configuration.
+    -->
+
+    <!-- Ensure demo company has the fiscal positions available -->
+    <record id="fiscal_position_maquila_admission_demo" model="account.fiscal.position">
+        <field name="name">Maquila - Admision Temporaria (Demo)</field>
+        <field name="auto_apply" eval="False" />
+        <field name="company_id" ref="base.main_company" />
+        <field name="note">
+            Demo fiscal position for temporary admission of goods under the
+            Maquila regime (Law 1064/97).
+        </field>
+    </record>
+
+    <record id="fiscal_position_maquila_export_demo" model="account.fiscal.position">
+        <field name="name">Maquila - Exportacion Exenta (Demo)</field>
+        <field name="auto_apply" eval="False" />
+        <field name="company_id" ref="base.main_company" />
+        <field name="note">
+            Demo fiscal position for export of finished goods under the
+            Maquila regime (Law 1064/97).
+        </field>
+    </record>
+</odoo>
