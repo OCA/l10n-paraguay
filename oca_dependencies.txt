@@ -1,0 +1,2 @@
+agreement https://github.com/OCA/agreement.git
+contract https://github.com/OCA/contract.git
