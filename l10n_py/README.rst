@@ -1,7 +1,3 @@
-.. image:: https://odoo-community.org/readme-banner-image
-   :target: https://odoo-community.org/get-involved?utm_source=readme
-   :alt: Odoo Community Association
-
 =====================
 Paraguay - Accounting
 =====================
@@ -17,17 +13,17 @@ Paraguay - Accounting
 .. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
     :target: https://odoo-community.org/page/development-status
     :alt: Beta
-.. |badge2| image:: https://img.shields.io/badge/license-LGPL--3-blue.png
+.. |badge2| image:: https://img.shields.io/badge/licence-LGPL--3-blue.png
     :target: http://www.gnu.org/licenses/lgpl-3.0-standalone.html
     :alt: License: LGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Fl10n--paraguay-lightgray.png?logo=github
-    :target: https://github.com/OCA/l10n-paraguay/tree/16.0/l10n_py
+    :target: https://github.com/OCA/l10n-paraguay/tree/18.0/l10n_py
     :alt: OCA/l10n-paraguay
 .. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/l10n-paraguay-16-0/l10n-paraguay-16-0-l10n_py
+    :target: https://translation.odoo-community.org/projects/l10n-paraguay-18-0/l10n-paraguay-18-0-l10n_py
     :alt: Translate me on Weblate
 .. |badge5| image:: https://img.shields.io/badge/runboat-Try%20me-875A7B.png
-    :target: https://runboat.odoo-community.org/builds?repo=OCA/l10n-paraguay&target_branch=16.0
+    :target: https://runboat.odoo-community.org/builds?repo=OCA/l10n-paraguay&target_branch=18.0
     :alt: Try me on Runboat
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
@@ -41,32 +37,32 @@ configuration for Odoo.
 Features
 --------
 
-- **Standard Chart of Accounts**: Complete Paraguayan accounting
-  structure
-- **Tax Configuration**: Pre-configured tax rates including:
+-  **Standard Chart of Accounts**: Complete Paraguayan accounting
+   structure
+-  **Tax Configuration**: Pre-configured tax rates including:
 
-  - IVA 10% (standard VAT rate)
-  - IVA 5% (reduced VAT rate)
-  - Exempt (tax-exempt transactions)
+   -  IVA 10% (standard VAT rate)
+   -  IVA 5% (reduced VAT rate)
+   -  Exempt (tax-exempt transactions)
 
-- **Tax Groups**: Organized tax groups for better categorization
-- **Fiscal Positions**: Ready-to-use fiscal position configurations
+-  **Tax Groups**: Organized tax groups for better categorization
+-  **Fiscal Positions**: Ready-to-use fiscal position configurations
 
 Dependencies
 ------------
 
 This module requires:
 
-- ``l10n_py_base``: Base Paraguayan localization
+-  ``l10n_py_base``: Base Paraguayan localization
 
 Related Modules
 ---------------
 
 For additional features, consider installing:
 
-- ``l10n_py_account``: Accounting extensions with journals and
-  authorization management
-- ``l10n_py_edi_base``: Electronic invoicing base functionality
+-  ``l10n_py_account``: Accounting extensions with journals and
+   authorization management
+-  ``l10n_py_edi_base``: Electronic invoicing base functionality
 
 **Table of contents**
 
@@ -82,9 +78,9 @@ Installation
 Prerequisites
 -------------
 
-- Odoo 16.0
-- ``l10n_py_base`` module installed
-- ``account`` module (core Odoo)
+-  Odoo 16.0
+-  ``l10n_py_base`` module installed
+-  ``account`` module (core Odoo)
 
 Installation Steps
 ------------------
@@ -93,13 +89,13 @@ Installation Steps
 
 2. **Update Apps List**:
 
-   - Go to **Apps**
-   - Click **Update Apps List**
+   -  Go to **Apps**
+   -  Click **Update Apps List**
 
 3. **Install Module**:
 
-   - Search for "Paraguay - Accounting"
-   - Click **Install**
+   -  Search for "Paraguay - Accounting"
+   -  Click **Install**
 
 Post-Installation
 -----------------
@@ -117,16 +113,16 @@ Dependencies
 
 The module will automatically install required dependencies:
 
-- ``account``
-- ``l10n_py_base``
+-  ``account``
+-  ``l10n_py_base``
 
 Recommended Modules
 -------------------
 
 For a complete Paraguayan localization, also install:
 
-- ``l10n_py_account``: Journal and authorization management
-- ``l10n_py_edi_base``: Electronic invoicing support
+-  ``l10n_py_account``: Journal and authorization management
+-  ``l10n_py_edi_base``: Electronic invoicing support
 
 Configuration
 =============
@@ -148,20 +144,20 @@ The following taxes are pre-configured:
 IVA 10% (Standard Rate)
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-- Default VAT rate for most goods and services
-- Automatically applied unless otherwise specified
+-  Default VAT rate for most goods and services
+-  Automatically applied unless otherwise specified
 
 IVA 5% (Reduced Rate)
 ~~~~~~~~~~~~~~~~~~~~~
 
-- Applied to specific products and services as defined by SET
-- Must be configured manually on products when applicable
+-  Applied to specific products and services as defined by SET
+-  Must be configured manually on products when applicable
 
 Exempt
 ~~~~~~
 
-- For tax-exempt transactions
-- Use for products/services not subject to VAT
+-  For tax-exempt transactions
+-  Use for products/services not subject to VAT
 
 Chart of Accounts
 -----------------
@@ -203,14 +199,14 @@ Using Taxes
 On Sales
 ~~~~~~~~
 
-- Taxes are automatically calculated based on product configuration
-- Default tax is IVA 10% unless otherwise specified
+-  Taxes are automatically calculated based on product configuration
+-  Default tax is IVA 10% unless otherwise specified
 
 On Purchases
 ~~~~~~~~~~~~
 
-- Set appropriate input taxes on vendor bills
-- System supports tax credit calculation
+-  Set appropriate input taxes on vendor bills
+-  System supports tax credit calculation
 
 Chart of Accounts
 -----------------
@@ -233,9 +229,9 @@ Reports
 
 Standard Paraguayan accounting reports are available:
 
-- Balance Sheet
-- Profit & Loss
-- Tax Reports (IVA declarations)
+-  Balance Sheet
+-  Profit & Loss
+-  Tax Reports (IVA declarations)
 
 Access via **Accounting > Reporting**
 
@@ -245,7 +241,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/OCA/l10n-paraguay/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/OCA/l10n-paraguay/issues/new?body=module:%20l10n_py%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/OCA/l10n-paraguay/issues/new?body=module:%20l10n_py%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -270,6 +266,6 @@ OCA, or the Odoo Community Association, is a nonprofit organization whose
 mission is to support the collaborative development of Odoo features and
 promote its widespread use.
 
-This module is part of the `OCA/l10n-paraguay <https://github.com/OCA/l10n-paraguay/tree/16.0/l10n_py>`_ project on GitHub.
+This module is part of the `OCA/l10n-paraguay <https://github.com/OCA/l10n-paraguay/tree/18.0/l10n_py>`_ project on GitHub.
 
 You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.

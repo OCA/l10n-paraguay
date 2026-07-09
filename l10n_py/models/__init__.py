@@ -1,1 +1,1 @@
-# No models in this module - only chart of accounts data
+from . import template_py
