@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -288,6 +288,7 @@ msgstr ""
 
 #. module: l10n_py_base
 #: model:ir.model.fields.selection,name:l10n_py_base.selection__res_partner__l10n_py_doc_type__3
+#: model:l10n_latam.identification.type,description:l10n_py_base.it_carnet_residencia
 #: model:l10n_latam.identification.type,name:l10n_py_base.it_carnet_residencia
 msgid "Carnet de Residencia"
 msgstr ""
@@ -366,6 +367,7 @@ msgstr ""
 
 #. module: l10n_py_base
 #: model:ir.model.fields.selection,name:l10n_py_base.selection__res_partner__l10n_py_doc_type__1
+#: model:l10n_latam.identification.type,description:l10n_py_base.it_ci
 msgid "Cédula de Identidad"
 msgstr ""
 
@@ -859,11 +861,6 @@ msgid "LUQUE"
 msgstr ""
 
 #. module: l10n_py_base
-#: model:ir.model.fields,field_description:l10n_py_base.field_l10n_py_neighborhood____last_update
-msgid "Last Modified on"
-msgstr ""
-
-#. module: l10n_py_base
 #: model:ir.model.fields,field_description:l10n_py_base.field_l10n_py_neighborhood__write_uid
 msgid "Last Updated by"
 msgstr ""
@@ -1129,6 +1126,7 @@ msgstr ""
 
 #. module: l10n_py_base
 #: model:ir.model.fields.selection,name:l10n_py_base.selection__res_partner__l10n_py_doc_type__2
+#: model:l10n_latam.identification.type,description:l10n_py_base.it_pasaporte
 #: model:l10n_latam.identification.type,name:l10n_py_base.it_pasaporte
 msgid "Pasaporte"
 msgstr ""
@@ -1188,6 +1186,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_py_base.field_res_users__l10n_py_ruc
 #: model:l10n_latam.identification.type,name:l10n_py_base.it_ruc
 msgid "RUC"
+msgstr ""
+
+#. module: l10n_py_base
+#: model:l10n_latam.identification.type,description:l10n_py_base.it_ruc
+msgid "Registro Único del Contribuyente"
 msgstr ""
 
 #. module: l10n_py_base
