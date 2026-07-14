@@ -114,3 +114,25 @@ class TestExportValidation(TransactionCase):
         inv = self._export_invoice(currency="USD", exchange_rate=7300.0)
         errors = inv._validate_edi_document_type()
         self.assertFalse(errors, errors)
+
+    def test_alpha3_for_uncovered_country(self):
+        """Task 10: país fora da tabela hardcoded original (Vietnã) deve resolver
+        corretamente, não cair no fallback (que devolveria o próprio code alpha-2)."""
+        code = self.env["account.move"]._get_country_alpha3(self.env.ref("base.vn"))
+        self.assertEqual(code, "VNM")
+
+    def test_alpha3_for_uncovered_country_china(self):
+        code = self.env["account.move"]._get_country_alpha3(self.env.ref("base.cn"))
+        self.assertEqual(code, "CHN")
+
+    def test_alpha3_for_uncovered_country_germany(self):
+        code = self.env["account.move"]._get_country_alpha3(self.env.ref("base.de"))
+        self.assertEqual(code, "DEU")
+
+    def test_alpha3_for_already_covered_country_brazil(self):
+        code = self.env["account.move"]._get_country_alpha3(self.env.ref("base.br"))
+        self.assertEqual(code, "BRA")
+
+    def test_alpha3_fallback_no_country(self):
+        code = self.env["account.move"]._get_country_alpha3(self.env["res.country"])
+        self.assertEqual(code, "PRY")
