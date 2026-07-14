@@ -147,6 +147,20 @@ class TestRDeBuilder(TransactionCase):
         self.assertEqual(cond.iCondOpe, 2)
         self.assertIsNotNone(cond.gPagCred)
 
+    def test_build_gtotsub_separates_exento_and_exonerado(self):
+        """Task 7: dSubExe (exento) y dSubExo (exonerado) van separados."""
+        data = self._get_sample_invoice_data()
+        data["totales"]["totalExento"] = 30000
+        data["totales"]["totalExonerado"] = 70000
+        gtotsub = self._build(invoice=data).DE.gTotSub
+        self.assertEqual(gtotsub.dSubExe, Decimal("30000"))
+        self.assertEqual(gtotsub.dSubExo, Decimal("70000"))
+
+    def test_build_gtotsub_defaults_exonerado_to_zero(self):
+        """Sin totalExonerado en los datos, dSubExo debe ser 0."""
+        gtotsub = self._build().DE.gTotSub
+        self.assertEqual(gtotsub.dSubExo, Decimal("0"))
+
     def test_build_item_exonerado_carries_base_exenta(self):
         """Item con ivaTipo=2 (Exonerado) también carga dBasExe (export)."""
         data = self._get_sample_invoice_data()
