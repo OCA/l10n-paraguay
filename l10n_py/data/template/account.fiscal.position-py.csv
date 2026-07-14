@@ -10,3 +10,5 @@
 "py_fiscal_position_compras_supermercado","Compras - Supermercado","base.py","",""
 "py_fiscal_position_ventas_exentas","Ventas - Exentas","base.py","py_tax_vat_10_ventas","py_tax_vat_exento_ventas"
 "","","","py_tax_vat_5_ventas","py_tax_vat_exento_ventas"
+"py_fiscal_position_ventas_exportacion","Ventas - Exportación","base.py","py_tax_vat_10_ventas","py_tax_vat_exonerado_ventas"
+"","","","py_tax_vat_5_ventas","py_tax_vat_exonerado_ventas"
