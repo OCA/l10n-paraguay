@@ -24,3 +24,12 @@ class TestFiscalPositionExport(TransactionCase):
         fp = self.env["account.fiscal.position"].with_company(company)._get_fiscal_position(foreign)
         self.assertEqual(fp.name, "Ventas - Exportación",
                          "Parceiro do exterior deve resolver a FP de exportación")
+
+    def test_domestic_partner_does_not_get_export_fp(self):
+        company = self.env["res.company"].create({"name": "PY Co Dom"})
+        self.env["account.chart.template"].try_loading("py", company=company, install_demo=False)
+        domestic = self.env["res.partner"].create({
+            "name": "Cliente PY", "country_id": self.env.ref("base.py").id})
+        fp = self.env["account.fiscal.position"].with_company(company)._get_fiscal_position(domestic)
+        self.assertNotEqual(fp.name, "Ventas - Exportación",
+                            "Venda doméstica NÃO pode resolver a FP de exportación (IVA exonerado indevido)")
