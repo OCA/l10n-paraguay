@@ -22,6 +22,7 @@
         "views/account_journal_views.xml",
         "views/account_move_views.xml",
         "security/ir.access.csv",
+        "views/account_tax_views.xml",
     ],
     # Order matters: the demo company (and its chart of accounts) first
     "demo": [
