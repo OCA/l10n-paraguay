@@ -202,6 +202,11 @@ class AccountMove(models.Model):
         compute="_compute_l10n_py_doc_type_code",
     )
 
+    # Campo auxiliar para visibilidad en la vista (Factura de Exportación)
+    l10n_py_is_export = fields.Boolean(
+        compute="_compute_l10n_py_is_export",
+    )
+
     # Campos NRE (Nota de Remisión Electrónica — tipo 7)
     l10n_py_nre_motive = fields.Selection(
         [
@@ -265,6 +270,22 @@ class AccountMove(models.Model):
                 if move.l10n_latam_document_type_id
                 else ""
             )
+
+    @api.depends("fiscal_position_id", "partner_id.country_id")
+    def _compute_l10n_py_is_export(self):
+        for move in self:
+            move.l10n_py_is_export = move._l10n_py_is_export()
+
+    def _l10n_py_is_export(self):
+        """Factura de Exportación: fiscal position dedicada o parceiro do exterior."""
+        self.ensure_one()
+        if (
+            self.fiscal_position_id
+            and self.fiscal_position_id.name == "Ventas - Exportación"
+        ):
+            return True
+        partner = self.partner_id
+        return bool(partner.country_id) and partner.country_id.code != "PY"
 
     # ============== ONCHANGE METHODS ==============
 
@@ -425,8 +446,10 @@ class AccountMove(models.Model):
         if doc_type_code == "4":
             document_data["autofactura"] = self._prepare_autofactura_data()
 
-        # Transporte (tipo=7 — NRE)
-        if doc_type_code == "7" and self.l10n_py_transport_id:
+        # Transporte (tipo=7 — NRE; también Factura de Exportación, tipo=1)
+        if (
+            doc_type_code == "7" or self._l10n_py_is_export()
+        ) and self.l10n_py_transport_id:
             document_data["transporte"] = self._prepare_transport_data()
 
         # Totales SIFEN
