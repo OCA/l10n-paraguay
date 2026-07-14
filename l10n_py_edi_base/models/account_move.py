@@ -597,6 +597,12 @@ class AccountMove(models.Model):
 
         return payment_condition
 
+    def _l10n_py_infer_affectation(self, tax):
+        """Fallback p/ impostos sem l10n_py_iva_affectation (retrocompat)."""
+        if tax.amount == 0:
+            return "3"
+        return "1"
+
     def _prepare_invoice_lines(self):
         """Preparar líneas de la factura"""
         items = []
@@ -604,16 +610,20 @@ class AccountMove(models.Model):
         for line in self.invoice_line_ids.filtered(
             lambda line: line.display_type not in ("line_section", "line_note")
         ):
-            # Determinar tasa de IVA
+            # Determinar tasa de IVA e afetação (iAfecIVA)
             iva_rate = 10  # Por defecto 10%
             iva_type = 1  # Gravado IVA
 
             for tax in line.tax_ids:
-                if tax.amount == 5:
-                    iva_rate = 5
-                elif tax.amount == 0:
-                    iva_type = 3  # Exenta
-                    iva_rate = 0
+                affectation = (
+                    tax.l10n_py_iva_affectation
+                    or self._l10n_py_infer_affectation(tax)
+                )
+                iva_type = int(affectation)
+                if tax.amount in (0, 5, 10):
+                    iva_rate = int(tax.amount)
+
+            prop_iva = 0 if iva_type in (2, 3) else 100
 
             # Calcular base gravable e liquidação IVA por linha (SIFEN)
             base_gravada = 0.0
@@ -650,7 +660,7 @@ class AccountMove(models.Model):
                 "precioUnitario": line.price_unit,
                 "cambio": 0,
                 "ivaTipo": iva_type,
-                "ivaBase": 100,
+                "ivaBase": prop_iva,
                 "iva": iva_rate,
                 "baseGravada": round(base_gravada, 2),
                 "liquidacionIva": round(liquidacion_iva, 2),
