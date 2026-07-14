@@ -510,6 +510,7 @@ class RDeBuilder:
         totales = self.data.get("totales", {})
         return TgTotSub(
             dSubExe=Decimal(str(totales.get("totalExento", 0))),
+            dSubExo=Decimal(str(totales.get("totalExonerado", 0))),
             dSub5=Decimal(str(totales.get("totalGravado5", 0))),
             dSub10=Decimal(str(totales.get("totalGravado10", 0))),
             dTotOpe=Decimal(str(totales.get("totalOperacion", 0))),
