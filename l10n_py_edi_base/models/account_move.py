@@ -896,6 +896,29 @@ class AccountMove(models.Model):
                         )
                     )
 
+        # Exportación (Factura de Exportación): validaciones adicionales
+        # exigidas en la práctica por la SET aunque el XSD los marque
+        # como opcionales.
+        if self._l10n_py_is_export():
+            if (
+                self.currency_id
+                and self.currency_id.name != "PYG"
+                and not (self.l10n_py_exchange_rate or 0) > 0
+            ):
+                errors.append(
+                    _(
+                        "Exportación en moneda extranjera requiere tipo de "
+                        "cambio (l10n_py_exchange_rate) mayor a cero."
+                    )
+                )
+            if not self.partner_id.street:
+                errors.append(
+                    _(
+                        "Exportación: la dirección del receptor del "
+                        "exterior (dDirRec) es obligatoria."
+                    )
+                )
+
         return errors
 
     def _validate_edi_data(self):
