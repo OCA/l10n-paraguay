@@ -475,7 +475,7 @@ class RDeBuilder:
             precio = Decimal(str(item_data.get("precioUnitario", 0)))
             cantidad = Decimal(str(item_data.get("cantidad", 1)))
             total_item = precio * cantidad
-            base_exenta = total_item if iva_tipo == 3 else Decimal("0")
+            base_exenta = total_item if iva_tipo in (2, 3) else Decimal("0")
 
             item = TgCamItem(
                 dCodInt=item_data.get("codigo", ""),
