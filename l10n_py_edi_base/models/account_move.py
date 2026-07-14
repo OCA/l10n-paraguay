@@ -432,6 +432,7 @@ class AccountMove(models.Model):
         # Totales SIFEN
         document_data["totales"] = {
             "totalExento": self.l10n_py_amount_exempt,  # F003
+            "totalExonerado": self.l10n_py_amount_exonerado,  # dSubExo
             "totalGravado5": self.l10n_py_amount_subtotal_5,  # F004
             "totalGravado10": self.l10n_py_amount_subtotal_10,  # F005
             "totalOperacion": self.l10n_py_total_operation,  # F008
