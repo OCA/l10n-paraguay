@@ -43,10 +43,24 @@ class TestExportInvoiceLines(TransactionCase):
         self.assertEqual(items[0]["ivaTipo"], 3)
 
     def test_fallback_no_field(self):
+        # Retrocompat: força o campo vazio (False) p/ exercitar de verdade o
+        # helper _l10n_py_infer_affectation — impostos legados sem afetação.
         tax5 = self.env["account.tax"].create({
             "name": "IVA 5 legacy", "amount": 5, "amount_type": "percent",
-            "type_tax_use": "sale"})  # default affectation '1'
+            "type_tax_use": "sale"})
+        tax5.l10n_py_iva_affectation = False  # simula legado sem o campo
         inv = self._invoice_with_tax(tax5)
         items = inv._prepare_invoice_lines()
-        self.assertEqual(items[0]["ivaTipo"], 1)
+        self.assertEqual(items[0]["ivaTipo"], 1)  # fallback: amount 5 -> '1'
         self.assertEqual(items[0]["iva"], 5)
+
+    def test_fallback_no_field_amount_zero(self):
+        # Retrocompat: campo vazio + amount 0 cai no fallback -> Exento '3'.
+        tax0 = self.env["account.tax"].create({
+            "name": "IVA 0 legacy", "amount": 0, "amount_type": "percent",
+            "type_tax_use": "sale"})
+        tax0.l10n_py_iva_affectation = False  # simula legado sem o campo
+        inv = self._invoice_with_tax(tax0)
+        items = inv._prepare_invoice_lines()
+        self.assertEqual(items[0]["ivaTipo"], 3)  # fallback: amount 0 -> '3'
+        self.assertEqual(items[0]["iva"], 0)
