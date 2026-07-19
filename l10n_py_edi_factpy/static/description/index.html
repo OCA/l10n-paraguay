@@ -1,0 +1,1449 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils: https://docutils.sourceforge.io/" />
+<title>README.rst</title>
+<style type="text/css">
+
+/*
+:Author: David Goodger (goodger@python.org)
+:Id: $Id: html4css1.css 9511 2024-01-13 09:50:07Z milde $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+Despite the name, some widely supported CSS2 features are used.
+
+See https://docutils.sourceforge.io/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+.subscript {
+  vertical-align: sub;
+  font-size: smaller }
+
+.superscript {
+  vertical-align: super;
+  font-size: smaller }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+object[type="image/svg+xml"], object[type="application/x-shockwave-flash"] {
+  overflow: hidden;
+}
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title, .code .error {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin: 0 0 0.5em 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left, .figure.align-left, object.align-left, table.align-left {
+  clear: left ;
+  float: left ;
+  margin-right: 1em }
+
+img.align-right, .figure.align-right, object.align-right, table.align-right {
+  clear: right ;
+  float: right ;
+  margin-left: 1em }
+
+img.align-center, .figure.align-center, object.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+table.align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.align-left {
+  text-align: left }
+
+.align-center {
+  clear: both ;
+  text-align: center }
+
+.align-right {
+  text-align: right }
+
+/* reset inner alignment in figures */
+div.align-right {
+  text-align: inherit }
+
+/* div.align-center * { */
+/*   text-align: left } */
+
+.align-top    {
+  vertical-align: top }
+
+.align-middle {
+  vertical-align: middle }
+
+.align-bottom {
+  vertical-align: bottom }
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font: inherit }
+
+pre.literal-block, pre.doctest-block, pre.math, pre.code {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+pre.code .ln { color: gray; } /* line numbers */
+pre.code, code { background-color: #eeeeee }
+pre.code .comment, code .comment { color: #5C6576 }
+pre.code .keyword, code .keyword { color: #3B0D06; font-weight: bold }
+pre.code .literal.string, code .literal.string { color: #0C5404 }
+pre.code .name.builtin, code .name.builtin { color: #352B84 }
+pre.code .deleted, code .deleted { background-color: #DEB0A1}
+pre.code .inserted, code .inserted { background-color: #A3D289}
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic, pre.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+/* "booktabs" style (no vertical lines) */
+table.docutils.booktabs {
+  border: 0px;
+  border-top: 2px solid;
+  border-bottom: 2px solid;
+  border-collapse: collapse;
+}
+table.docutils.booktabs * {
+  border: 0px;
+}
+table.docutils.booktabs th {
+  border-bottom: thin solid;
+  text-align: left;
+}
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document">
+
+
+<a class="reference external image-reference" href="https://odoo-community.org/get-involved?utm_source=readme">
+<img alt="Odoo Community Association" src="https://odoo-community.org/readme-banner-image" />
+</a>
+<div class="section" id="paraguay-factpy-edi-connector">
+<h1>Paraguay - FactPy EDI Connector</h1>
+<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! This file is generated by oca-gen-addon-readme !!
+!! changes will be overwritten.                   !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! source digest: sha256:65315b22a39e9f7e813a2fbb507c091a435e988f8ba6784764ed89cda3f32e98
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/lgpl-3.0-standalone.html"><img alt="License: LGPL-3" src="https://img.shields.io/badge/license-LGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/OCA/l10n-paraguay/tree/16.0/l10n_py_edi_factpy"><img alt="OCA/l10n-paraguay" src="https://img.shields.io/badge/github-OCA%2Fl10n--paraguay-lightgray.png?logo=github" /></a> <a class="reference external image-reference" href="https://translation.odoo-community.org/projects/l10n-paraguay-16-0/l10n-paraguay-16-0-l10n_py_edi_factpy"><img alt="Translate me on Weblate" src="https://img.shields.io/badge/weblate-Translate%20me-F47D42.png" /></a> <a class="reference external image-reference" href="https://runboat.odoo-community.org/builds?repo=OCA/l10n-paraguay&amp;target_branch=16.0"><img alt="Try me on Runboat" src="https://img.shields.io/badge/runboat-Try%20me-875A7B.png" /></a></p>
+<div class="section" id="paraguay-factpy-edi-connector-1">
+<h2>Paraguay - FactPy EDI Connector</h2>
+<p>This module provides integration with FactPy service for electronic
+invoicing in Paraguay, enabling seamless communication between Odoo and
+SET (Subsecretaría de Estado de Tributación) through the FactPy
+platform.</p>
+<div class="section" id="features">
+<h3>Features</h3>
+<div class="section" id="factpy-api-integration">
+<h4>FactPy API Integration</h4>
+<ul class="simple">
+<li><strong>Document Sending</strong>: Automatic transmission of invoices to FactPy</li>
+<li><strong>Status Checking</strong>: Real-time status updates from FactPy</li>
+<li><strong>Document Cancellation</strong>: Cancel documents through FactPy</li>
+<li><strong>PDF Download</strong>: Retrieve official PDF from FactPy</li>
+<li><strong>XML Download</strong>: Get SET-compliant XML files</li>
+</ul>
+</div>
+<div class="section" id="automatic-operations">
+<h4>Automatic Operations</h4>
+<ul class="simple">
+<li><strong>Error Handling</strong>: Intelligent retry mechanism for failed
+transmissions</li>
+<li><strong>Logging</strong>: Complete audit trail of all FactPy operations</li>
+<li><strong>Status Sync</strong>: Automatic synchronization with FactPy status</li>
+<li><strong>Batch Processing</strong>: Efficient handling of multiple documents</li>
+</ul>
+</div>
+<div class="section" id="configuration-management">
+<h4>Configuration Management</h4>
+<ul class="simple">
+<li><strong>Credential Storage</strong>: Secure storage of API credentials</li>
+<li><strong>Environment Support</strong>: Separate test and production environments</li>
+<li><strong>Multi-company</strong>: Support for multiple companies with different
+credentials</li>
+</ul>
+</div>
+</div>
+<div class="section" id="factpy-service">
+<h3>FactPy Service</h3>
+<p>FactPy is a certified EDI provider for Paraguay that:</p>
+<ul class="simple">
+<li>Connects directly to SET’s SIFEN system</li>
+<li>Validates documents before submission</li>
+<li>Provides reliable document transmission</li>
+<li>Offers technical support</li>
+<li>Maintains compliance with SET regulations</li>
+</ul>
+</div>
+<div class="section" id="dependencies">
+<h3>Dependencies</h3>
+<ul class="simple">
+<li><tt class="docutils literal">l10n_py_edi_base</tt>: Electronic invoicing base module</li>
+<li>All dependencies from base module</li>
+</ul>
+</div>
+<div class="section" id="related-modules">
+<h3>Related Modules</h3>
+<p>Alternative EDI connector:</p>
+<ul class="simple">
+<li><tt class="docutils literal">l10n_py_edi_facturasend</tt>: FacturaSend connector</li>
+</ul>
+<p><strong>Table of contents</strong></p>
+</div>
+</div>
+<div class="section" id="installation">
+<h2>Installation</h2>
+</div>
+<div class="section" id="installation-1">
+<h2>Installation</h2>
+<div class="section" id="prerequisites">
+<h3>Prerequisites</h3>
+<div class="section" id="required-modules">
+<h4>Required Modules</h4>
+<ul class="simple">
+<li><tt class="docutils literal">l10n_py_edi_base</tt>: Electronic invoicing base module (must be
+installed first)</li>
+<li>All dependencies from base module</li>
+</ul>
+</div>
+<div class="section" id="factpy-account">
+<h4>FactPy Account</h4>
+<ul class="simple">
+<li>Active FactPy account</li>
+<li>API credentials (Key and Secret)</li>
+<li>Test and/or production access</li>
+</ul>
+</div>
+<div class="section" id="network-requirements">
+<h4>Network Requirements</h4>
+<ul class="simple">
+<li>Outbound HTTPS access (port 443)</li>
+<li>Access to FactPy API endpoints:<ul>
+<li>Test: <tt class="docutils literal"><span class="pre">https://api.test.factpy.com</span></tt></li>
+<li>Production: <tt class="docutils literal"><span class="pre">https://api.factpy.com</span></tt></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="installation-steps">
+<h3>Installation Steps</h3>
+<div class="section" id="step-1-install-base-module">
+<h4>Step 1: Install Base Module</h4>
+<p>If not already installed:</p>
+<ol class="arabic simple">
+<li>Install <tt class="docutils literal">l10n_py_edi_base</tt></li>
+<li>Configure base EDI settings</li>
+<li>Verify base module works</li>
+</ol>
+</div>
+<div class="section" id="step-2-install-factpy-connector">
+<h4>Step 2: Install FactPy Connector</h4>
+<ol class="arabic simple">
+<li>Go to <strong>Apps</strong></li>
+<li>Click <strong>Update Apps List</strong></li>
+<li>Search for “Paraguay - FactPy EDI Connector”</li>
+<li>Click <strong>Install</strong></li>
+</ol>
+</div>
+<div class="section" id="step-3-verify-installation">
+<h4>Step 3: Verify Installation</h4>
+<p>Check that:</p>
+<ul class="simple">
+<li>FactPy connector menu appears</li>
+<li>No installation errors in logs</li>
+<li>Module status is “Installed”</li>
+</ul>
+</div>
+</div>
+<div class="section" id="post-installation-configuration">
+<h3>Post-Installation Configuration</h3>
+<div class="section" id="step-1-create-factpy-account">
+<h4>Step 1: Create FactPy Account</h4>
+<p>If you don’t have a FactPy account:</p>
+<ol class="arabic simple">
+<li>Visit FactPy website</li>
+<li>Sign up for account</li>
+<li>Complete verification</li>
+<li>Request API credentials</li>
+</ol>
+</div>
+<div class="section" id="step-2-obtain-api-credentials">
+<h4>Step 2: Obtain API Credentials</h4>
+<p>From FactPy:</p>
+<ol class="arabic simple">
+<li>Login to FactPy portal</li>
+<li>Go to API settings</li>
+<li>Generate or retrieve:<ul>
+<li>API Key</li>
+<li>API Secret</li>
+</ul>
+</li>
+<li>Save credentials securely</li>
+</ol>
+</div>
+<div class="section" id="step-3-configure-connector">
+<h4>Step 3: Configure Connector</h4>
+<ol class="arabic simple">
+<li>Go to <strong>Facturación Electrónica &gt; Configuration &gt; FactPy Connector</strong></li>
+<li>Create connector record</li>
+<li>Enter API credentials</li>
+<li>Set environment (Test/Production)</li>
+<li>Click <strong>Test Connection</strong></li>
+<li>Save if successful</li>
+</ol>
+</div>
+<div class="section" id="step-4-set-as-active-provider">
+<h4>Step 4: Set as Active Provider</h4>
+<ol class="arabic simple">
+<li>Go to <strong>Settings &gt; Companies</strong></li>
+<li>Edit company</li>
+<li>Set <strong>EDI Provider</strong> = “FactPy”</li>
+<li>Save</li>
+</ol>
+</div>
+</div>
+<div class="section" id="testing-installation">
+<h3>Testing Installation</h3>
+<div class="section" id="test-1-connection-test">
+<h4>Test 1: Connection Test</h4>
+<ol class="arabic simple">
+<li>In FactPy connector</li>
+<li>Click <strong>Test Connection</strong></li>
+<li>Expected result: “Connection successful”</li>
+</ol>
+</div>
+<div class="section" id="test-2-send-test-invoice">
+<h4>Test 2: Send Test Invoice</h4>
+<ol class="arabic simple">
+<li>Create test invoice</li>
+<li>Confirm it</li>
+<li>Click <strong>Send EDI</strong></li>
+<li>Check logs for FactPy response</li>
+<li>Verify in FactPy portal</li>
+</ol>
+</div>
+<div class="section" id="test-3-status-update">
+<h4>Test 3: Status Update</h4>
+<ol class="arabic simple">
+<li>Wait a few seconds</li>
+<li>Click <strong>Update EDI Status</strong></li>
+<li>Verify status changes to “Approved” (in test)</li>
+</ol>
+</div>
+<div class="section" id="test-4-download-documents">
+<h4>Test 4: Download Documents</h4>
+<ol class="arabic simple">
+<li>Click <strong>Download EDI PDF</strong></li>
+<li>Verify PDF downloads</li>
+<li>Click <strong>Download EDI XML</strong></li>
+<li>Verify XML downloads</li>
+</ol>
+</div>
+</div>
+<div class="section" id="production-setup">
+<h3>Production Setup</h3>
+<div class="section" id="before-going-live">
+<h4>Before Going Live</h4>
+<ol class="arabic simple">
+<li>✅ Complete all testing</li>
+<li>✅ Verify all data is accurate</li>
+<li>✅ Train users</li>
+<li>✅ Backup database</li>
+<li>✅ Get production credentials from FactPy</li>
+<li>✅ Verify FactPy has activated your production RUC</li>
+</ol>
+</div>
+<div class="section" id="switch-to-production">
+<h4>Switch to Production</h4>
+<ol class="arabic simple">
+<li>Update connector configuration:<ul>
+<li>Change environment to “Production”</li>
+<li>Enter production API credentials</li>
+<li>Update base URL (automatic)</li>
+</ul>
+</li>
+<li>Test connection</li>
+<li>Send first production invoice</li>
+<li>Monitor closely</li>
+</ol>
+</div>
+</div>
+<div class="section" id="security-configuration">
+<h3>Security Configuration</h3>
+<div class="section" id="user-permissions">
+<h4>User Permissions</h4>
+<p>Configure who can access FactPy settings:</p>
+<ol class="arabic simple">
+<li>Go to <strong>Settings &gt; Users &amp; Companies &gt; Users</strong></li>
+<li>Edit user</li>
+<li>Assign groups:<ul>
+<li><strong>Electronic Invoicing / User</strong>: Can send documents</li>
+<li><strong>Electronic Invoicing / Manager</strong>: Can configure FactPy</li>
+</ul>
+</li>
+</ol>
+</div>
+<div class="section" id="credential-security">
+<h4>Credential Security</h4>
+<p>Best practices:</p>
+<ul class="simple">
+<li>Limit who can view connector settings</li>
+<li>Don’t share API credentials</li>
+<li>Use strong passwords for Odoo users</li>
+<li>Regular credential rotation</li>
+<li>Audit access logs</li>
+</ul>
+</div>
+</div>
+<div class="section" id="firewall-configuration">
+<h3>Firewall Configuration</h3>
+<div class="section" id="required-outbound-access">
+<h4>Required Outbound Access</h4>
+<p>Allow outbound HTTPS to:</p>
+<ul class="simple">
+<li><tt class="docutils literal">api.factpy.com</tt> (production)</li>
+<li><tt class="docutils literal">api.test.factpy.com</tt> (test)</li>
+<li>Port 443 (HTTPS)</li>
+</ul>
+</div>
+<div class="section" id="testing-connectivity">
+<h4>Testing Connectivity</h4>
+<p>From server command line:</p>
+<pre class="code bash literal-block">
+curl<span class="w"> </span>https://api.test.factpy.com/health
+</pre>
+<p>Expected: Status 200 or similar health check response</p>
+</div>
+</div>
+<div class="section" id="multi-server-setup">
+<h3>Multi-Server Setup</h3>
+<div class="section" id="load-balanced-environment">
+<h4>Load Balanced Environment</h4>
+<p>If using multiple Odoo servers:</p>
+<ol class="arabic simple">
+<li>Install module on all servers</li>
+<li>Configure connector on each</li>
+<li>Use same FactPy credentials</li>
+<li>Ensure scheduled jobs run on only one server</li>
+</ol>
+</div>
+<div class="section" id="database-replication">
+<h4>Database Replication</h4>
+<p>For replicated databases:</p>
+<ul class="simple">
+<li>Master: Full configuration</li>
+<li>Replicas: Read-only, no sending</li>
+</ul>
+</div>
+</div>
+<div class="section" id="scheduled-jobs-configuration">
+<h3>Scheduled Jobs Configuration</h3>
+<div class="section" id="enable-automatic-jobs">
+<h4>Enable Automatic Jobs</h4>
+<ol class="arabic simple">
+<li>Go to <strong>Settings &gt; Technical &gt; Automation &gt; Scheduled Actions</strong></li>
+<li>Find FactPy-related jobs:<ul>
+<li>“FactPy: Check Document Status”</li>
+<li>“FactPy: Retry Failed Documents”</li>
+</ul>
+</li>
+<li>Enable and configure frequency</li>
+</ol>
+</div>
+<div class="section" id="recommended-frequency">
+<h4>Recommended Frequency</h4>
+<ul class="simple">
+<li>Status check: Every 5-10 minutes</li>
+<li>Retry failed: Every 30 minutes</li>
+</ul>
+</div>
+</div>
+<div class="section" id="troubleshooting-installation">
+<h3>Troubleshooting Installation</h3>
+<div class="section" id="module-won-t-install">
+<h4>Module Won’t Install</h4>
+<p><strong>Check dependencies</strong>:</p>
+<pre class="code bash literal-block">
+<span class="c1"># Verify l10n_py_edi_base is installed</span>
+</pre>
+<p><strong>Check logs</strong>:</p>
+<ol class="arabic simple">
+<li>Odoo server logs</li>
+<li>Look for Python errors</li>
+<li>Check database connection</li>
+</ol>
+</div>
+<div class="section" id="connection-test-fails">
+<h4>Connection Test Fails</h4>
+<p><strong>Verify network</strong>:</p>
+<pre class="code bash literal-block">
+ping<span class="w"> </span>api.factpy.com<span class="w">
+</span>curl<span class="w"> </span>https://api.factpy.com
+</pre>
+<p><strong>Check credentials</strong>:</p>
+<ol class="arabic simple">
+<li>Verify API Key is correct</li>
+<li>Verify API Secret is correct</li>
+<li>No extra spaces</li>
+<li>Correct environment</li>
+</ol>
+<p><strong>Firewall issues</strong>:</p>
+<ol class="arabic simple">
+<li>Check outbound HTTPS allowed</li>
+<li>Verify no proxy blocking</li>
+<li>Check SSL certificate validation</li>
+</ol>
+</div>
+<div class="section" id="factpy-menu-not-appearing">
+<h4>FactPy Menu Not Appearing</h4>
+<p><strong>Refresh browser</strong>:</p>
+<ol class="arabic simple">
+<li>Hard refresh (Ctrl+Shift+R)</li>
+<li>Clear cache</li>
+<li>Logout and login</li>
+</ol>
+<p><strong>Check permissions</strong>:</p>
+<ol class="arabic simple">
+<li>User must have EDI permissions</li>
+<li>Module must be fully installed</li>
+<li>Restart Odoo if needed</li>
+</ol>
+</div>
+</div>
+<div class="section" id="upgrade-instructions">
+<h3>Upgrade Instructions</h3>
+<div class="section" id="upgrading-from-previous-version">
+<h4>Upgrading from Previous Version</h4>
+<ol class="arabic simple">
+<li>Backup database</li>
+<li>Update module files</li>
+<li>Go to <strong>Apps</strong></li>
+<li>Find module</li>
+<li>Click <strong>Upgrade</strong></li>
+<li>Test functionality</li>
+</ol>
+</div>
+<div class="section" id="breaking-changes">
+<h4>Breaking Changes</h4>
+<p>Check changelog for:</p>
+<ul class="simple">
+<li>API changes</li>
+<li>Configuration migrations</li>
+<li>Data migrations</li>
+</ul>
+</div>
+</div>
+<div class="section" id="uninstallation">
+<h3>Uninstallation</h3>
+<p><strong>Warning</strong>: Uninstalling will:</p>
+<ul class="simple">
+<li>Disable FactPy integration</li>
+<li>Remove connector configurations</li>
+<li>Keep historical data but make it inaccessible</li>
+</ul>
+<p>To uninstall:</p>
+<ol class="arabic simple">
+<li>Switch to different EDI provider first</li>
+<li>Or disable EDI entirely</li>
+<li>Then uninstall module</li>
+</ol>
+</div>
+<div class="section" id="support">
+<h3>Support</h3>
+<div class="section" id="installation-issues">
+<h4>Installation Issues</h4>
+<p>Contact:</p>
+<ul class="simple">
+<li>FactPy support: <a class="reference external" href="mailto:support&#64;factpy.com">support&#64;factpy.com</a></li>
+<li>Odoo community forums</li>
+<li>Module maintainers</li>
+</ul>
+</div>
+<div class="section" id="documentation">
+<h4>Documentation</h4>
+<ul class="simple">
+<li>This guide</li>
+<li>FactPy API documentation</li>
+<li>Base module documentation</li>
+</ul>
+</div>
+</div>
+<div class="section" id="checklist">
+<h3>Checklist</h3>
+<p>Installation complete when:</p>
+<ul class="simple">
+<li>☐ Module installed successfully</li>
+<li>☐ FactPy connector configured</li>
+<li>☐ Connection test successful</li>
+<li>☐ Test invoice sent and approved</li>
+<li>☐ PDF/XML download working</li>
+<li>☐ Scheduled jobs enabled</li>
+<li>☐ Users trained</li>
+<li>☐ Production credentials ready (for go-live)</li>
+</ul>
+</div>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration</h2>
+</div>
+<div class="section" id="configuration-1">
+<h2>Configuration</h2>
+<div class="section" id="prerequisites-1">
+<h3>Prerequisites</h3>
+<p>Before configuring the module:</p>
+<ol class="arabic simple">
+<li>Create an account with FactPy</li>
+<li>Obtain API credentials (API Key and Secret)</li>
+<li>Have test and/or production credentials ready</li>
+</ol>
+</div>
+<div class="section" id="initial-configuration">
+<h3>Initial Configuration</h3>
+<div class="section" id="step-1-set-edi-provider">
+<h4>Step 1: Set EDI Provider</h4>
+<ol class="arabic simple">
+<li>Go to <strong>Settings &gt; General Settings &gt; Companies</strong></li>
+<li>Edit your company</li>
+<li>In <strong>Electronic Invoicing</strong> tab:<ul>
+<li>Set <strong>EDI Provider</strong> = “FactPy”</li>
+<li>Set <strong>Environment</strong> (Test or Production)</li>
+</ul>
+</li>
+<li>Save</li>
+</ol>
+</div>
+<div class="section" id="step-2-configure-factpy-connector">
+<h4>Step 2: Configure FactPy Connector</h4>
+<ol class="arabic simple">
+<li>Go to <strong>Facturación Electrónica &gt; Configuration &gt; FactPy Connector</strong></li>
+<li>Click <strong>Create</strong> or edit existing connector</li>
+<li>Fill in configuration:</li>
+</ol>
+<div class="section" id="basic-information">
+<h5>Basic Information</h5>
+<ul class="simple">
+<li><strong>Name</strong>: “FactPy - [Company Name]”</li>
+<li><strong>Company</strong>: Select your company</li>
+<li><strong>Environment</strong>: Test or Production</li>
+</ul>
+</div>
+<div class="section" id="api-credentials">
+<h5>API Credentials</h5>
+<ul class="simple">
+<li><strong>API Key</strong>: Your FactPy API key</li>
+<li><strong>API Secret</strong>: Your FactPy API secret</li>
+<li><strong>Base URL</strong>: Automatically set based on environment<ul>
+<li>Test: <tt class="docutils literal"><span class="pre">https://api.test.factpy.com</span></tt></li>
+<li>Production: <tt class="docutils literal"><span class="pre">https://api.factpy.com</span></tt></li>
+</ul>
+</li>
+</ul>
+<ol class="arabic simple" start="4">
+<li>Click <strong>Test Connection</strong> to verify credentials</li>
+<li>Save</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="section" id="environment-configuration">
+<h3>Environment Configuration</h3>
+<div class="section" id="test-environment">
+<h4>Test Environment</h4>
+<p>For testing:</p>
+<ol class="arabic simple">
+<li>Set <strong>Environment</strong> = “Test”</li>
+<li>Use test credentials from FactPy</li>
+<li>Test URL: <tt class="docutils literal"><span class="pre">https://api.test.factpy.com</span></tt></li>
+<li>Documents will be sent to SET’s test environment</li>
+<li>No legal validity</li>
+</ol>
+</div>
+<div class="section" id="production-environment">
+<h4>Production Environment</h4>
+<p>For production:</p>
+<ol class="arabic simple">
+<li>Set <strong>Environment</strong> = “Production”</li>
+<li>Use production credentials from FactPy</li>
+<li>Production URL: <tt class="docutils literal"><span class="pre">https://api.factpy.com</span></tt></li>
+<li>Documents sent to SET’s production system</li>
+<li>Legally valid documents</li>
+</ol>
+<p><strong>Important</strong>: Test thoroughly in test environment before switching to
+production!</p>
+</div>
+</div>
+<div class="section" id="advanced-settings">
+<h3>Advanced Settings</h3>
+<div class="section" id="timeout-configuration">
+<h4>Timeout Configuration</h4>
+<p>Set API timeout (optional):</p>
+<ul class="simple">
+<li><strong>Connection Timeout</strong>: Default 30 seconds</li>
+<li><strong>Read Timeout</strong>: Default 60 seconds</li>
+</ul>
+<p>Adjust if you have connection issues.</p>
+</div>
+<div class="section" id="retry-configuration">
+<h4>Retry Configuration</h4>
+<p>Configure automatic retries:</p>
+<ul class="simple">
+<li><strong>Max Retries</strong>: Number of retry attempts (default: 3)</li>
+<li><strong>Retry Delay</strong>: Seconds between retries (default: 60)</li>
+</ul>
+</div>
+<div class="section" id="logging">
+<h4>Logging</h4>
+<p>Enable detailed logging:</p>
+<ol class="arabic simple">
+<li><strong>Debug Mode</strong>: Enable for detailed API logs</li>
+<li><strong>Log Requests</strong>: Log all API requests</li>
+<li><strong>Log Responses</strong>: Log all API responses</li>
+</ol>
+<p><strong>Warning</strong>: Debug mode generates large logs. Use only for
+troubleshooting.</p>
+</div>
+</div>
+<div class="section" id="multi-company-setup">
+<h3>Multi-Company Setup</h3>
+<p>For multiple companies:</p>
+<ol class="arabic simple">
+<li>Create separate connector for each company</li>
+<li>Each with its own credentials</li>
+<li>System automatically uses correct connector per company</li>
+</ol>
+</div>
+<div class="section" id="credential-security-1">
+<h3>Credential Security</h3>
+<div class="section" id="best-practices">
+<h4>Best Practices</h4>
+<ul class="simple">
+<li>Never share API credentials</li>
+<li>Use different credentials for test/production</li>
+<li>Rotate credentials periodically</li>
+<li>Limit access to connector configuration</li>
+</ul>
+</div>
+<div class="section" id="storing-credentials">
+<h4>Storing Credentials</h4>
+<ul class="simple">
+<li>Credentials are encrypted in database</li>
+<li>Only users with “Electronic Invoicing / Manager” can view</li>
+<li>Use Odoo’s security groups</li>
+</ul>
+</div>
+</div>
+<div class="section" id="testing-configuration">
+<h3>Testing Configuration</h3>
+<div class="section" id="test-connection">
+<h4>Test Connection</h4>
+<p>After configuration:</p>
+<ol class="arabic simple">
+<li>Click <strong>Test Connection</strong> button</li>
+<li>System verifies:<ul>
+<li>API credentials are valid</li>
+<li>Connection to FactPy is successful</li>
+<li>API version compatibility</li>
+</ul>
+</li>
+<li>Success message confirms configuration</li>
+</ol>
+</div>
+<div class="section" id="send-test-document">
+<h4>Send Test Document</h4>
+<ol class="arabic simple">
+<li>Create a test invoice</li>
+<li>Confirm it</li>
+<li>Send to EDI</li>
+<li>Check <strong>EDI Logs</strong> for FactPy API responses</li>
+<li>Verify document appears in FactPy dashboard</li>
+</ol>
+</div>
+</div>
+<div class="section" id="factpy-dashboard">
+<h3>FactPy Dashboard</h3>
+<p>Access FactPy web dashboard:</p>
+<ol class="arabic simple">
+<li>Login to FactPy portal</li>
+<li>View all documents sent from Odoo</li>
+<li>Check status, download documents</li>
+<li>Useful for troubleshooting</li>
+</ol>
+</div>
+<div class="section" id="troubleshooting-configuration">
+<h3>Troubleshooting Configuration</h3>
+<div class="section" id="invalid-credentials-error">
+<h4>“Invalid Credentials” Error</h4>
+<p>Solutions:</p>
+<ol class="arabic simple">
+<li>Verify API Key and Secret are correct</li>
+<li>Check for extra spaces in credentials</li>
+<li>Ensure environment matches credentials (test vs production)</li>
+<li>Verify FactPy account is active</li>
+</ol>
+</div>
+<div class="section" id="connection-timeout-error">
+<h4>“Connection Timeout” Error</h4>
+<p>Solutions:</p>
+<ol class="arabic simple">
+<li>Check internet connection</li>
+<li>Verify firewall allows outbound HTTPS</li>
+<li>Increase timeout values</li>
+<li>Check FactPy service status</li>
+</ol>
+</div>
+<div class="section" id="api-version-mismatch-error">
+<h4>“API Version Mismatch” Error</h4>
+<p>Solutions:</p>
+<ol class="arabic simple">
+<li>Update module to latest version</li>
+<li>Check FactPy API version</li>
+<li>Contact FactPy support if persistent</li>
+</ol>
+</div>
+</div>
+<div class="section" id="support-1">
+<h3>Support</h3>
+<p>For configuration issues:</p>
+<ul class="simple">
+<li>Check FactPy documentation</li>
+<li>Contact FactPy support</li>
+<li>Check module documentation</li>
+<li>Review Odoo logs</li>
+</ul>
+</div>
+</div>
+<div class="section" id="usage">
+<h2>Usage</h2>
+</div>
+<div class="section" id="usage-1">
+<h2>Usage</h2>
+<div class="section" id="sending-documents-via-factpy">
+<h3>Sending Documents via FactPy</h3>
+<div class="section" id="automatic-sending">
+<h4>Automatic Sending</h4>
+<p>If auto-send is configured:</p>
+<ol class="arabic simple">
+<li>Create invoice</li>
+<li>Confirm invoice</li>
+<li>System automatically sends to FactPy</li>
+<li>FactPy processes and sends to SET</li>
+<li>Status updates automatically</li>
+</ol>
+</div>
+<div class="section" id="manual-sending">
+<h4>Manual Sending</h4>
+<ol class="arabic simple">
+<li>Confirm invoice</li>
+<li>Click <strong>Send EDI</strong> button</li>
+<li>System sends to FactPy</li>
+<li>Wait for processing</li>
+<li>Check status</li>
+</ol>
+</div>
+</div>
+<div class="section" id="document-flow">
+<h3>Document Flow</h3>
+<pre class="literal-block">
+Odoo Invoice → FactPy API → FactPy Platform → SET SIFEN → Approval
+</pre>
+<p>Typical timeline:</p>
+<ul class="simple">
+<li>Odoo to FactPy: Immediate</li>
+<li>FactPy processing: 1-5 seconds</li>
+<li>SET processing: 5-30 seconds</li>
+<li>Total: Usually under 1 minute</li>
+</ul>
+</div>
+<div class="section" id="monitoring-factpy-operations">
+<h3>Monitoring FactPy Operations</h3>
+<div class="section" id="check-edi-status">
+<h4>Check EDI Status</h4>
+<ol class="arabic simple">
+<li>Open invoice</li>
+<li>View <strong>EDI Status</strong> field</li>
+<li>Possible statuses:<ul>
+<li><strong>To Send</strong>: Ready to send</li>
+<li><strong>Sending</strong>: Being sent to FactPy</li>
+<li><strong>Sent</strong>: Received by FactPy</li>
+<li><strong>Processing</strong>: FactPy processing</li>
+<li><strong>Approved</strong>: Approved by SET</li>
+<li><strong>Rejected</strong>: Rejected by SET</li>
+<li><strong>Error</strong>: Error occurred</li>
+</ul>
+</li>
+</ol>
+</div>
+<div class="section" id="view-factpy-logs">
+<h4>View FactPy Logs</h4>
+<ol class="arabic simple">
+<li>Go to <strong>Facturación Electrónica &gt; EDI Logs</strong></li>
+<li>Filter by document</li>
+<li>View:<ul>
+<li>Request sent to FactPy</li>
+<li>Response from FactPy</li>
+<li>SET response (via FactPy)</li>
+<li>Error messages if any</li>
+</ul>
+</li>
+</ol>
+</div>
+</div>
+<div class="section" id="status-synchronization">
+<h3>Status Synchronization</h3>
+<div class="section" id="automatic-updates">
+<h4>Automatic Updates</h4>
+<p>Scheduled job runs every X minutes:</p>
+<ul class="simple">
+<li>Checks pending documents</li>
+<li>Queries FactPy for status</li>
+<li>Updates Odoo records</li>
+<li>Downloads PDF/XML when approved</li>
+</ul>
+</div>
+<div class="section" id="manual-update">
+<h4>Manual Update</h4>
+<p>To manually check status:</p>
+<ol class="arabic simple">
+<li>Open invoice</li>
+<li>Click <strong>Update EDI Status</strong></li>
+<li>System queries FactPy immediately</li>
+<li>Status updates</li>
+</ol>
+</div>
+</div>
+<div class="section" id="downloading-documents">
+<h3>Downloading Documents</h3>
+<div class="section" id="download-from-factpy">
+<h4>Download from FactPy</h4>
+<p>Once approved by SET:</p>
+<p><strong>Download PDF</strong>:</p>
+<ol class="arabic simple">
+<li>Click <strong>Download EDI PDF</strong></li>
+<li>System fetches from FactPy</li>
+<li>PDF includes official KUDE and QR code</li>
+</ol>
+<p><strong>Download XML</strong>:</p>
+<ol class="arabic simple">
+<li>Click <strong>Download EDI XML</strong></li>
+<li>System fetches from FactPy</li>
+<li>Official SET-signed XML</li>
+</ol>
+</div>
+<div class="section" id="automatic-download">
+<h4>Automatic Download</h4>
+<p>Configure automatic download:</p>
+<ol class="arabic simple">
+<li>Enable in company settings</li>
+<li>PDF/XML download automatically on approval</li>
+<li>Stored in Odoo attachments</li>
+</ol>
+</div>
+</div>
+<div class="section" id="cancelling-documents">
+<h3>Cancelling Documents</h3>
+<div class="section" id="via-factpy">
+<h4>Via FactPy</h4>
+<ol class="arabic simple">
+<li>Open approved invoice</li>
+<li>Click <strong>Cancel EDI</strong></li>
+<li>Select cancellation reason</li>
+<li>Click <strong>Confirm</strong></li>
+<li>System sends cancellation to FactPy</li>
+<li>FactPy forwards to SET</li>
+<li>Status updates to “Cancelled”</li>
+</ol>
+</div>
+<div class="section" id="cancellation-limitations">
+<h4>Cancellation Limitations</h4>
+<ul class="simple">
+<li>Only approved documents can be cancelled</li>
+<li>Must be within SET’s allowed timeframe</li>
+<li>Valid reason required</li>
+<li>Cannot undo cancellation</li>
+</ul>
+</div>
+</div>
+<div class="section" id="error-handling">
+<h3>Error Handling</h3>
+<div class="section" id="common-factpy-errors">
+<h4>Common FactPy Errors</h4>
+<p><strong>“Document validation failed”</strong></p>
+<ul class="simple">
+<li>Issue: Document data doesn’t meet SET requirements</li>
+<li>Solution: Check FactPy error details, fix data, resend</li>
+</ul>
+<p><strong>“RUC not authorized”</strong></p>
+<ul class="simple">
+<li>Issue: Company RUC not registered with FactPy</li>
+<li>Solution: Contact FactPy to activate RUC</li>
+</ul>
+<p><strong>“Timbrado invalid”</strong></p>
+<ul class="simple">
+<li>Issue: Timbrado not recognized by SET</li>
+<li>Solution: Verify timbrado number, update if needed</li>
+</ul>
+<p><strong>“Rate limit exceeded”</strong></p>
+<ul class="simple">
+<li>Issue: Too many requests to FactPy API</li>
+<li>Solution: Wait and retry, contact FactPy for limit increase</li>
+</ul>
+</div>
+<div class="section" id="automatic-retry">
+<h4>Automatic Retry</h4>
+<p>For transient errors:</p>
+<ul class="simple">
+<li>System automatically retries</li>
+<li>Exponential backoff between retries</li>
+<li>Maximum retry attempts configured</li>
+<li>Manual retry always available</li>
+</ul>
+</div>
+<div class="section" id="manual-retry">
+<h4>Manual Retry</h4>
+<p>For failed documents:</p>
+<ol class="arabic simple">
+<li>Fix underlying issue</li>
+<li>Click <strong>Retry EDI</strong></li>
+<li>System resends to FactPy</li>
+</ol>
+</div>
+</div>
+<div class="section" id="factpy-dashboard-integration">
+<h3>FactPy Dashboard Integration</h3>
+<div class="section" id="accessing-factpy-portal">
+<h4>Accessing FactPy Portal</h4>
+<ol class="arabic simple">
+<li>Login to FactPy web portal</li>
+<li>View all documents from your company</li>
+<li>See real-time status</li>
+<li>Download documents directly</li>
+<li>View statistics and reports</li>
+</ol>
+</div>
+<div class="section" id="cross-reference">
+<h4>Cross-Reference</h4>
+<p>Documents in Odoo link to FactPy:</p>
+<ul class="simple">
+<li>FactPy Document ID stored in Odoo</li>
+<li>Use ID to find document in FactPy portal</li>
+<li>Useful for troubleshooting</li>
+</ul>
+</div>
+</div>
+<div class="section" id="best-practices-1">
+<h3>Best Practices</h3>
+<div class="section" id="before-sending">
+<h4>Before Sending</h4>
+<ol class="arabic simple">
+<li><strong>Verify Data</strong>: Check all fiscal data is complete</li>
+<li><strong>Test First</strong>: Always test in test environment</li>
+<li><strong>Check Timbrado</strong>: Ensure timbrado is valid</li>
+<li><strong>Verify Customer</strong>: Customer RUC must be correct</li>
+</ol>
+</div>
+<div class="section" id="during-operation">
+<h4>During Operation</h4>
+<ol class="arabic simple">
+<li><strong>Monitor Logs</strong>: Regularly check EDI logs</li>
+<li><strong>Update Status</strong>: Keep status current</li>
+<li><strong>Handle Errors</strong>: Address errors promptly</li>
+<li><strong>Backup Documents</strong>: Download and store PDF/XML</li>
+</ol>
+</div>
+<div class="section" id="performance-optimization">
+<h4>Performance Optimization</h4>
+<ol class="arabic simple">
+<li><strong>Batch Operations</strong>: Send multiple documents together</li>
+<li><strong>Off-Peak</strong>: Send during off-peak hours for better performance</li>
+<li><strong>Status Updates</strong>: Don’t update too frequently (respect rate limits)</li>
+</ol>
+</div>
+</div>
+<div class="section" id="bulk-operations">
+<h3>Bulk Operations</h3>
+<div class="section" id="sending-multiple-invoices">
+<h4>Sending Multiple Invoices</h4>
+<ol class="arabic simple">
+<li>Go to invoice list</li>
+<li>Select multiple invoices</li>
+<li>Action &gt; <strong>Send EDI</strong></li>
+<li>System sends all via FactPy</li>
+<li>Monitor progress in logs</li>
+</ol>
+</div>
+<div class="section" id="updating-multiple-statuses">
+<h4>Updating Multiple Statuses</h4>
+<ol class="arabic simple">
+<li>Select invoices</li>
+<li>Action &gt; <strong>Update EDI Status</strong></li>
+<li>System queries FactPy for all</li>
+</ol>
+<p><strong>Note</strong>: Be mindful of rate limits</p>
+</div>
+</div>
+<div class="section" id="reporting">
+<h3>Reporting</h3>
+<div class="section" id="factpy-reports">
+<h4>FactPy Reports</h4>
+<p>Available in FactPy portal:</p>
+<ul class="simple">
+<li>Documents sent per period</li>
+<li>Success/failure rates</li>
+<li>Processing times</li>
+<li>Error summaries</li>
+</ul>
+</div>
+<div class="section" id="odoo-reports">
+<h4>Odoo Reports</h4>
+<p>Filter invoices by:</p>
+<ul class="simple">
+<li>EDI Status</li>
+<li>FactPy responses</li>
+<li>Date ranges</li>
+<li>Errors</li>
+</ul>
+</div>
+</div>
+<div class="section" id="troubleshooting">
+<h3>Troubleshooting</h3>
+<div class="section" id="document-not-appearing-in-factpy">
+<h4>Document Not Appearing in FactPy</h4>
+<ol class="arabic simple">
+<li>Check EDI logs for send confirmation</li>
+<li>Verify FactPy credentials</li>
+<li>Check internet connection</li>
+<li>Review error messages</li>
+<li>Try manual retry</li>
+</ol>
+</div>
+<div class="section" id="status-not-updating">
+<h4>Status Not Updating</h4>
+<ol class="arabic simple">
+<li>Check scheduled job is running</li>
+<li>Manually trigger status update</li>
+<li>Verify FactPy connection</li>
+<li>Check FactPy portal directly</li>
+</ol>
+</div>
+<div class="section" id="pdf-xml-download-fails">
+<h4>PDF/XML Download Fails</h4>
+<ol class="arabic simple">
+<li>Verify document is approved</li>
+<li>Check FactPy has document</li>
+<li>Retry download</li>
+<li>Download from FactPy portal as fallback</li>
+</ol>
+</div>
+</div>
+<div class="section" id="support-and-resources">
+<h3>Support and Resources</h3>
+<div class="section" id="factpy-support">
+<h4>FactPy Support</h4>
+<ul class="simple">
+<li>Portal: support.factpy.com</li>
+<li>Email: <a class="reference external" href="mailto:support&#64;factpy.com">support&#64;factpy.com</a></li>
+<li>Phone: [FactPy support number]</li>
+<li>Hours: [Support hours]</li>
+</ul>
+</div>
+<div class="section" id="documentation-1">
+<h4>Documentation</h4>
+<ul class="simple">
+<li>FactPy API docs: docs.factpy.com</li>
+<li>Module documentation: This guide</li>
+<li>SET documentation: <a class="reference external" href="http://www.set.gov.py">www.set.gov.py</a></li>
+</ul>
+</div>
+<div class="section" id="community">
+<h4>Community</h4>
+<ul class="simple">
+<li>Odoo community forums</li>
+<li>GitHub issues</li>
+<li>User groups</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="bug-tracker">
+<h2>Bug Tracker</h2>
+<p>Bugs are tracked on <a class="reference external" href="https://github.com/OCA/l10n-paraguay/issues">GitHub Issues</a>.
+In case of trouble, please check there if your issue has already been reported.
+If you spotted it first, help us to smash it by providing a detailed and welcomed
+<a class="reference external" href="https://github.com/OCA/l10n-paraguay/issues/new?body=module:%20l10n_py_edi_factpy%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
+<p>Do not contact contributors directly about support or help with technical issues.</p>
+</div>
+<div class="section" id="credits">
+<h2>Credits</h2>
+<div class="section" id="authors">
+<h3>Authors</h3>
+<ul class="simple">
+<li>KMEE</li>
+</ul>
+</div>
+<div class="section" id="maintainers">
+<h3>Maintainers</h3>
+<p>This module is maintained by the OCA.</p>
+<a class="reference external image-reference" href="https://odoo-community.org">
+<img alt="Odoo Community Association" src="https://odoo-community.org/logo.png" />
+</a>
+<p>OCA, or the Odoo Community Association, is a nonprofit organization whose
+mission is to support the collaborative development of Odoo features and
+promote its widespread use.</p>
+<p>This module is part of the <a class="reference external" href="https://github.com/OCA/l10n-paraguay/tree/16.0/l10n_py_edi_factpy">OCA/l10n-paraguay</a> project on GitHub.</p>
+<p>You are welcome to contribute. To learn how please visit <a class="reference external" href="https://odoo-community.org/page/Contribute">https://odoo-community.org/page/Contribute</a>.</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
