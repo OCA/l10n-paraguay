@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -118,21 +118,18 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid "Autofactura: %s es obligatorio."
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid "Autofactura: debe tener exactamente 1 documento asociado."
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid ""
 "Autofactura: el documento asociado debe ser una constancia electrónica."
 msgstr ""
@@ -156,10 +153,15 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_cdc
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_cdc
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_cdc
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_associated_document__cdc
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_edi_log__cdc
 msgid "CDC"
+msgstr ""
+
+#. module: l10n_py_edi_base
+#. odoo-python
+#: code:addons/l10n_py_edi_base/models/account_move.py:0
+msgid "CDC y código QR de previsualización generados."
 msgstr ""
 
 #. module: l10n_py_edi_base
@@ -195,7 +197,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/wizard/l10n_py_edi_cancel_wizard.py:0
-#, python-format
 msgid "Cancelación Exitosa"
 msgstr ""
 
@@ -257,7 +258,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_afe_provision_city
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_afe_provision_city
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_afe_provision_city
 msgid "Ciudad Provisión (EA023)"
 msgstr ""
 
@@ -269,7 +269,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_afe_vendor_city
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_afe_vendor_city
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_afe_vendor_city
 msgid "Ciudad Vendedor (EA016)"
 msgstr ""
 
@@ -322,7 +321,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_exchange_rate_condition
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_exchange_rate_condition
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_exchange_rate_condition
 msgid "Condición Tipo de Cambio"
 msgstr ""
 
@@ -334,7 +332,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,help:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_exchange_rate_condition
 #: model:ir.model.fields,help:l10n_py_edi_base.field_account_move__l10n_py_exchange_rate_condition
-#: model:ir.model.fields,help:l10n_py_edi_base.field_account_payment__l10n_py_exchange_rate_condition
 msgid "Condición del tipo de cambio (D015)"
 msgstr ""
 
@@ -362,14 +359,12 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid "Configure el RUC de la empresa"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid "Configure el timbrado en el diario"
 msgstr ""
 
@@ -396,7 +391,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/l10n_py_associated_document.py:0
-#, python-format
 msgid "Constancia electrónica: tipo y número son obligatorios."
 msgstr ""
 
@@ -517,7 +511,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_qr_code
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_qr_code
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_qr_code
 msgid "Código QR"
 msgstr ""
 
@@ -545,7 +538,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,help:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_cdc
 #: model:ir.model.fields,help:l10n_py_edi_base.field_account_move__l10n_py_cdc
-#: model:ir.model.fields,help:l10n_py_edi_base.field_account_payment__l10n_py_cdc
 msgid "Código de Control del documento electrónico"
 msgstr ""
 
@@ -557,7 +549,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_security_code
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_security_code
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_security_code
 msgid "Código de Seguridad"
 msgstr ""
 
@@ -650,7 +641,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/l10n_py_edi_log.py:0
-#, python-format
 msgid "Dados da %s"
 msgstr ""
 
@@ -677,7 +667,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_transport_id
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_transport_id
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_transport_id
 #: model_terms:ir.ui.view,arch_db:l10n_py_edi_base.view_l10n_py_transport_form
 msgid "Datos de Transporte"
 msgstr ""
@@ -685,7 +674,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,help:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_transport_id
 #: model:ir.model.fields,help:l10n_py_edi_base.field_account_move__l10n_py_transport_id
-#: model:ir.model.fields,help:l10n_py_edi_base.field_account_payment__l10n_py_transport_id
 msgid "Datos de transporte para Nota de Remisión (Grupo G SIFEN)"
 msgstr ""
 
@@ -702,7 +690,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_afe_provision_department
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_afe_provision_department
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_afe_provision_department
 msgid "Departamento Provisión (EA019)"
 msgstr ""
 
@@ -714,7 +701,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_afe_vendor_department
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_afe_vendor_department
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_afe_vendor_department
 msgid "Departamento Vendedor (EA012)"
 msgstr ""
 
@@ -752,14 +738,12 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_afe_provision_address
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_afe_provision_address
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_afe_provision_address
 msgid "Dirección Provisión (EA018)"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_afe_vendor_address
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_afe_vendor_address
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_afe_vendor_address
 msgid "Dirección Vendedor (EA010)"
 msgstr ""
 
@@ -795,7 +779,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_afe_provision_district
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_afe_provision_district
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_afe_provision_district
 msgid "Distrito Provisión (EA021)"
 msgstr ""
 
@@ -807,7 +790,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_afe_vendor_district
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_afe_vendor_district
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_afe_vendor_district
 msgid "Distrito Vendedor (EA014)"
 msgstr ""
 
@@ -835,7 +817,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/l10n_py_associated_document.py:0
-#, python-format
 msgid "Documento electrónico: el CDC es obligatorio."
 msgstr ""
 
@@ -852,7 +833,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/l10n_py_associated_document.py:0
-#, python-format
 msgid "Documento impreso: campos obligatorios faltantes: %(fields)s"
 msgstr ""
 
@@ -874,7 +854,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_associated_document_ids
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_associated_document_ids
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_associated_document_ids
 msgid "Documentos Asociados"
 msgstr ""
 
@@ -886,14 +865,12 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,help:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_associated_document_ids
 #: model:ir.model.fields,help:l10n_py_edi_base.field_account_move__l10n_py_associated_document_ids
-#: model:ir.model.fields,help:l10n_py_edi_base.field_account_payment__l10n_py_associated_document_ids
 msgid "Documentos asociados al DTE (Grupo H del SIFEN)"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/l10n_py_associated_document.py:0
-#, python-format
 msgid ""
 "Documentos electrónicos o constancias no pueden tener campos de documento "
 "impreso."
@@ -957,21 +934,18 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/l10n_py_associated_document.py:0
-#, python-format
 msgid "El CDC debe contener exactamente 44 dígitos numéricos."
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid "El cliente contribuyente debe tener RUC"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid ""
 "El cliente no contribuyente debe tener número de documento de identidad"
 msgstr ""
@@ -979,7 +953,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid "El código de seguridad debe tener exactamente 9 caracteres"
 msgstr ""
 
@@ -991,35 +964,30 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/wizard/l10n_py_edi_cancel_wizard.py:0
-#, python-format
 msgid "El documento ha sido cancelado"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/l10n_py_number_inutilization.py:0
-#, python-format
 msgid "El número final debe ser mayor o igual al inicial."
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/l10n_py_number_inutilization.py:0
-#, python-format
 msgid "El número final está fuera del rango del timbrado (máximo: %(max)s)."
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/l10n_py_number_inutilization.py:0
-#, python-format
 msgid "El número inicial está fuera del rango del timbrado (mínimo: %(min)s)."
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid ""
 "El plazo de cancelación ha expirado. Límite: %(deadline)s (%(hours)s horas "
 "desde emisión)."
@@ -1028,7 +996,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/wizard/l10n_py_edi_cancel_wizard.py:0
-#, python-format
 msgid ""
 "El plazo de cancelación ha expirado. Tipo %(doc_type)s permite cancelación "
 "hasta %(limit)s horas después de la aceptación (han transcurrido "
@@ -1038,56 +1005,54 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid "El producto %s no tiene código NCM"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/edi_connector.py:0
-#, python-format
 msgid "El proveedor '%s' no implementa el envío de documentos"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/edi_connector.py:0
-#, python-format
 msgid "El proveedor '%s' no implementa la cancelación"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/edi_connector.py:0
-#, python-format
 msgid "El proveedor '%s' no implementa la consulta de estado"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/edi_connector.py:0
-#, python-format
 msgid "El proveedor '%s' no implementa la inutilización"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/edi_connector.py:0
-#, python-format
 msgid "El proveedor '%s' no implementa la previsualización"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/edi_connector.py:0
-#, python-format
+msgid "El proveedor '%s' no implementa la previsualización del QR"
+msgstr ""
+
+#. module: l10n_py_edi_base
+#. odoo-python
+#: code:addons/l10n_py_edi_base/models/edi_connector.py:0
 msgid "El proveedor '%s' no implementa la prueba de conexión"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/l10n_py_number_inutilization.py:0
-#, python-format
 msgid ""
 "El rango máximo de inutilización es %(max)s números (solicitados: %(qty)s)."
 msgstr ""
@@ -1095,7 +1060,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid "El timbrado está vencido"
 msgstr ""
 
@@ -1153,7 +1117,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/wizard/account_move_send_edi.py:0
-#, python-format
 msgid "Envío Exitoso"
 msgstr ""
 
@@ -1165,28 +1128,24 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid "Error cancelando documento: %s"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/l10n_py_number_inutilization.py:0
-#, python-format
 msgid "Error de inutilización: %s"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid "Error enviando documento: %s"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/l10n_py_number_inutilization.py:0
-#, python-format
 msgid "Error enviando inutilización: %s"
 msgstr ""
 
@@ -1203,7 +1162,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_edi_status
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_edi_status
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_edi_status
 #: model_terms:ir.ui.view,arch_db:l10n_py_edi_base.view_move_form_edi
 msgid "Estado EDI"
 msgstr ""
@@ -1282,7 +1240,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid ""
 "Facturas superiores a Gs. 7.000.000 no pueden ser innominadas. Debe "
 "identificar al receptor."
@@ -1291,7 +1248,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_nre_estimated_invoice_date
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_nre_estimated_invoice_date
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_nre_estimated_invoice_date
 msgid "Fecha Estimada de Facturación (E506)"
 msgstr ""
 
@@ -1313,7 +1269,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,help:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_nre_estimated_invoice_date
 #: model:ir.model.fields,help:l10n_py_edi_base.field_account_move__l10n_py_nre_estimated_invoice_date
-#: model:ir.model.fields,help:l10n_py_edi_base.field_account_payment__l10n_py_nre_estimated_invoice_date
 msgid "Fecha estimada de facturación para NRE sin factura asociada"
 msgstr ""
 
@@ -1340,7 +1295,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/l10n_py_number_inutilization.py:0
-#, python-format
 msgid ""
 "Hay %(count)s número(s) en el rango que ya fueron usados en facturas "
 "confirmadas."
@@ -1383,7 +1337,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_edi_batch_id
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_edi_batch_id
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_edi_batch_id
 msgid "ID de Lote"
 msgstr ""
 
@@ -1395,7 +1348,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,help:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_receipt_id
 #: model:ir.model.fields,help:l10n_py_edi_base.field_account_move__l10n_py_receipt_id
-#: model:ir.model.fields,help:l10n_py_edi_base.field_account_payment__l10n_py_receipt_id
 msgid "ID único del sistema cliente"
 msgstr ""
 
@@ -1453,7 +1405,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_kude_pdf
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_kude_pdf
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_kude_pdf
 msgid "KUDE (PDF)"
 msgstr ""
 
@@ -1465,42 +1416,36 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_kude_filename
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_kude_filename
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_kude_filename
 msgid "KUDE Filename"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_doc_type_code
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_doc_type_code
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_doc_type_code
 msgid "L10N Py Doc Type Code"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid "La dirección del cliente es obligatoria"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/wizard/account_move_send_edi.py:0
-#, python-format
 msgid "La factura ha sido enviada al sistema EDI"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/wizard/l10n_py_edi_cancel_wizard.py:0
-#, python-format
 msgid "La factura no tiene CDC, no se puede cancelar"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid ""
 "La fecha estimada de facturación no puede exceder el mes siguiente al de "
 "emisión."
@@ -1511,20 +1456,6 @@ msgstr ""
 msgid ""
 "La inutilización permite informar al SIFEN que ciertos números\n"
 "                de la faja autorizada no serán utilizados."
-msgstr ""
-
-#. module: l10n_py_edi_base
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move_send_edi_wizard____last_update
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_associated_document____last_update
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_edi_cancel_wizard____last_update
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_edi_connector____last_update
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_edi_document_type____last_update
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_edi_log____last_update
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_number_inutilization____last_update
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_transport____last_update
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_transport_delivery____last_update
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_transport_vehicle____last_update
-msgid "Last Modified on"
 msgstr ""
 
 #. module: l10n_py_edi_base
@@ -1579,7 +1510,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/l10n_py_number_inutilization.py:0
-#, python-format
 msgid "Los números deben ser mayores a cero."
 msgstr ""
 
@@ -1601,7 +1531,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_edi_message
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_edi_message
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_edi_message
 msgid "Mensaje EDI"
 msgstr ""
 
@@ -1643,14 +1572,12 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_contingency_motive
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_contingency_motive
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_contingency_motive
 msgid "Motivo de Contingencia"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_nre_motive
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_nre_motive
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_nre_motive
 msgid "Motivo de Remisión (E501)"
 msgstr ""
 
@@ -1682,7 +1609,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid ""
 "NRE traslado por venta sin documento asociado: debe indicar fecha estimada "
 "de facturación."
@@ -1707,42 +1633,44 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid "No hay KUDE disponible para este documento"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid "No hay XML disponible para este documento"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid "No hay XML disponible para generar el KuDE"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid "No hay un conector EDI configurado para esta empresa"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/l10n_py_number_inutilization.py:0
-#, python-format
 msgid "No hay un conector EDI configurado para esta empresa."
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
+msgid ""
+"No se pudo generar el QR. Verifique el certificado y el CSC/IdCSC "
+"configurados en el conector EDI."
+msgstr ""
+
+#. module: l10n_py_edi_base
+#. odoo-python
+#: code:addons/l10n_py_edi_base/models/account_move.py:0
 msgid "No se puede cancelar un documento sin CDC"
 msgstr ""
 
@@ -1750,7 +1678,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/l10n_py_edi_base/wizard/account_move_send_edi.py:0
 #: code:addons/l10n_py_edi_base/wizard/l10n_py_edi_cancel_wizard.py:0
-#, python-format
 msgid "No se seleccionó una factura"
 msgstr ""
 
@@ -1767,7 +1694,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_afe_vendor_name
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_afe_vendor_name
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_afe_vendor_name
 msgid "Nombre Vendedor (EA009)"
 msgstr ""
 
@@ -1810,7 +1736,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid ""
 "Nota de Crédito Electrónica: debe tener exactamente 1 documento asociado."
 msgstr ""
@@ -1823,7 +1748,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid ""
 "Nota de Débito Electrónica: debe tener exactamente 1 documento asociado."
 msgstr ""
@@ -1841,7 +1765,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid "Nota de Remisión: el motivo es obligatorio."
 msgstr ""
 
@@ -1863,14 +1786,12 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_afe_vendor_house
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_afe_vendor_house
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_afe_vendor_house
 msgid "Nro. Casa Vendedor (EA011)"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_afe_vendor_doc_number
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_afe_vendor_doc_number
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_afe_vendor_doc_number
 msgid "Nro. Doc. Vendedor (EA008)"
 msgstr ""
 
@@ -1897,7 +1818,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_afe_constancia_number
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_afe_constancia_number
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_afe_constancia_number
 msgid "Número de Constancia (EA004)"
 msgstr ""
 
@@ -1909,7 +1829,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_afe_constancia_control
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_afe_constancia_control
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_afe_constancia_control
 msgid "Número de Control (EA005)"
 msgstr ""
 
@@ -2026,14 +1945,12 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_transmission_deadline
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_transmission_deadline
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_transmission_deadline
 msgid "Plazo de Transmisión"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,help:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_transmission_deadline
 #: model:ir.model.fields,help:l10n_py_edi_base.field_account_move__l10n_py_transmission_deadline
-#: model:ir.model.fields,help:l10n_py_edi_base.field_account_payment__l10n_py_transmission_deadline
 msgid "Plazo máximo para transmitir el DTE (72 horas desde emisión)"
 msgstr ""
 
@@ -2055,6 +1972,11 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model_terms:ir.ui.view,arch_db:l10n_py_edi_base.view_move_form_edi
 msgid "Preview XML"
+msgstr ""
+
+#. module: l10n_py_edi_base
+#: model_terms:ir.ui.view,arch_db:l10n_py_edi_base.view_move_form_edi
+msgid "Previsualizar QR"
 msgstr ""
 
 #. module: l10n_py_edi_base
@@ -2138,6 +2060,12 @@ msgid "QR"
 msgstr ""
 
 #. module: l10n_py_edi_base
+#. odoo-python
+#: code:addons/l10n_py_edi_base/models/account_move.py:0
+msgid "QR generado"
+msgstr ""
+
+#. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_res_company__l10n_py_ruc
 msgid "RUC"
 msgstr ""
@@ -2165,7 +2093,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_receipt_id
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_receipt_id
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_receipt_id
 msgid "Receipt ID"
 msgstr ""
 
@@ -2218,7 +2145,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/l10n_py_edi_log.py:0
-#, python-format
 msgid "Sem dados"
 msgstr ""
 
@@ -2230,7 +2156,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/l10n_py_associated_document.py:0
-#, python-format
 msgid ""
 "Solo constancias electrónicas pueden tener tipo y número de constancia."
 msgstr ""
@@ -2238,21 +2163,18 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/l10n_py_associated_document.py:0
-#, python-format
 msgid "Solo documentos electrónicos pueden tener CDC."
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/l10n_py_number_inutilization.py:0
-#, python-format
 msgid "Solo se pueden enviar inutilizaciones en estado borrador."
 msgstr ""
 
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid "Solo se pueden reintentar documentos con error o rechazados"
 msgstr ""
 
@@ -2264,7 +2186,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_qr_string
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_qr_string
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_qr_string
 msgid "String QR"
 msgstr ""
 
@@ -2348,7 +2269,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_afe_vendor_doc_type
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_afe_vendor_doc_type
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_afe_vendor_doc_type
 msgid "Tipo Doc. Vendedor (EA006)"
 msgstr ""
 
@@ -2360,7 +2280,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_afe_constancia_type
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_afe_constancia_type
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_afe_constancia_type
 msgid "Tipo de Constancia (EA002)"
 msgstr ""
 
@@ -2382,7 +2301,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_emission_type
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_emission_type
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_emission_type
 msgid "Tipo de Emisión"
 msgstr ""
 
@@ -2394,21 +2312,18 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_payment_type
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_payment_type
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_payment_type
 msgid "Tipo de Pago"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_presence_type
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_presence_type
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_presence_type
 msgid "Tipo de Presencia"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_transaction_type
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_transaction_type
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_transaction_type
 msgid "Tipo de Transacción"
 msgstr ""
 
@@ -2425,7 +2340,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,help:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_payment_type
 #: model:ir.model.fields,help:l10n_py_edi_base.field_account_move__l10n_py_payment_type
-#: model:ir.model.fields,help:l10n_py_edi_base.field_account_payment__l10n_py_payment_type
 msgid "Tipo de pago para condición contado (E606)"
 msgstr ""
 
@@ -2473,7 +2387,6 @@ msgstr ""
 #. module: l10n_py_edi_base
 #. odoo-python
 #: code:addons/l10n_py_edi_base/models/account_move.py:0
-#, python-format
 msgid ""
 "Traslado entre locales: el RUC del receptor debe coincidir con el del "
 "emisor."
@@ -2572,7 +2485,6 @@ msgstr ""
 
 #. module: l10n_py_edi_base
 #: model:ir.actions.server,name:l10n_py_edi_base.ir_cron_check_edi_status_ir_actions_server
-#: model:ir.cron,cron_name:l10n_py_edi_base.ir_cron_check_edi_status
 msgid "Verificar Estado EDI"
 msgstr ""
 
@@ -2589,14 +2501,12 @@ msgstr ""
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_edi_xml_filename
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_edi_xml_filename
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_edi_xml_filename
 msgid "XML Filename"
 msgstr ""
 
 #. module: l10n_py_edi_base
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_bank_statement_line__l10n_py_edi_xml
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__l10n_py_edi_xml
-#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_payment__l10n_py_edi_xml
 msgid "XML Firmado"
 msgstr ""
 
