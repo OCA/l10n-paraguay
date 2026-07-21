@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -12,6 +12,16 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
+#. module: l10n_py_edi_sifen
+#: model:ir.model.fields,field_description:l10n_py_edi_sifen.field_l10n_py_edi_connector__l10n_py_csc
+msgid "CSC"
+msgstr ""
+
+#. module: l10n_py_edi_sifen
+#: model_terms:ir.ui.view,arch_db:l10n_py_edi_sifen.view_edi_connector_form_sifen
+msgid "CSC entregado por la SET (por ambiente)"
+msgstr ""
 
 #. module: l10n_py_edi_sifen
 #: model_terms:ir.ui.view,arch_db:l10n_py_edi_sifen.view_company_form_sifen
@@ -36,14 +46,12 @@ msgstr ""
 #. module: l10n_py_edi_sifen
 #. odoo-python
 #: code:addons/l10n_py_edi_sifen/models/edi_connector.py:0
-#, python-format
 msgid "Conexión Exitosa"
 msgstr ""
 
 #. module: l10n_py_edi_sifen
 #. odoo-python
 #: code:addons/l10n_py_edi_sifen/models/res_company.py:0
-#, python-format
 msgid "Configure el certificado PKCS12 en la empresa %s"
 msgstr ""
 
@@ -53,20 +61,39 @@ msgid "Contraseña del Certificado"
 msgstr ""
 
 #. module: l10n_py_edi_sifen
+#: model:ir.model.fields,help:l10n_py_edi_sifen.field_l10n_py_edi_connector__l10n_py_csc
+msgid ""
+"Código de Seguridad del Contribuyente entregado por la SET. Distinto por "
+"ambiente (homologación vs producción)."
+msgstr ""
+
+#. module: l10n_py_edi_sifen
 #: model_terms:ir.ui.view,arch_db:l10n_py_edi_sifen.view_edi_connector_form_sifen
-msgid "El certificado digital PKCS12 se configura en la ficha de la empresa."
+msgid ""
+"El certificado digital PKCS12 se configura en la ficha de la empresa.\n"
+"                        El CSC/IdCSC son necesarios para generar el código QR y son\n"
+"                        distintos en homologación y producción."
 msgstr ""
 
 #. module: l10n_py_edi_sifen
 #. odoo-python
 #: code:addons/l10n_py_edi_sifen/models/edi_connector.py:0
-#, python-format
 msgid "Error de conexión con SIFEN: %s"
 msgstr ""
 
 #. module: l10n_py_edi_sifen
 #: model:ir.model.fields,field_description:l10n_py_edi_sifen.field_res_company__l10n_py_certificate_expiry
 msgid "Expiración"
+msgstr ""
+
+#. module: l10n_py_edi_sifen
+#: model:ir.model.fields,field_description:l10n_py_edi_sifen.field_l10n_py_edi_connector__l10n_py_idcsc
+msgid "ID CSC"
+msgstr ""
+
+#. module: l10n_py_edi_sifen
+#: model:ir.model.fields,help:l10n_py_edi_sifen.field_l10n_py_edi_connector__l10n_py_idcsc
+msgid "Identificador del CSC (ej. 0001)."
 msgstr ""
 
 #. module: l10n_py_edi_sifen
@@ -77,7 +104,6 @@ msgstr ""
 #. module: l10n_py_edi_sifen
 #. odoo-python
 #: code:addons/l10n_py_edi_sifen/models/edi_connector.py:0
-#, python-format
 msgid "La conexión con SIFEN fue verificada correctamente."
 msgstr ""
 
