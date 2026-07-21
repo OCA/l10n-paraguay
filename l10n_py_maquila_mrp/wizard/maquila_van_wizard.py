@@ -46,14 +46,17 @@ class MaquilaVanWizard(models.TransientModel):
         compute="_compute_van",
     )
 
-    @api.depends("total_cost", "national_cost", "mercosul_cost")
+    @api.depends("total_cost", "mercosul_cost", "imported_cost")
     def _compute_van(self):
         for wiz in self:
-            wiz.van_amount = wiz.national_cost
+            # National added value = total cost minus foreign-origin inputs
+            # (imported + Mercosul), so VAN and total_cost share the same base.
+            foreign_cost = wiz.mercosul_cost + wiz.imported_cost
+            wiz.van_amount = wiz.total_cost - foreign_cost
             if wiz.total_cost:
-                wiz.van_percentage = (wiz.national_cost / wiz.total_cost) * 100
+                wiz.van_percentage = (wiz.van_amount / wiz.total_cost) * 100
                 wiz.mercosul_content = (
-                    (wiz.national_cost + wiz.mercosul_cost) / wiz.total_cost
+                    (wiz.van_amount + wiz.mercosul_cost) / wiz.total_cost
                 ) * 100
             else:
                 wiz.van_percentage = 0.0
@@ -114,9 +117,8 @@ class MaquilaVanWizard(models.TransientModel):
                 else:
                     self.imported_cost += cost
 
-        # If no production data, use total from analytic as a fallback
-        if not productions and self.total_cost:
-            self.imported_cost = self.total_cost
+        # Without production data the foreign-origin split is unknown; leave it
+        # at zero so VAN equals the total cost instead of forcing VAN to zero.
 
         return {
             "type": "ir.actions.act_window",
