@@ -34,6 +34,7 @@ class MaquilaProgram(models.Model):
         [
             ("pura", "Maquila Pura"),
             ("ociosidad", "Capacidad Ociosa"),
+            ("sub_maquila", "Sub-Maquila (Sub-contratación)"),
             ("abrigo", "Maquila de Abrigo"),
             ("servicio", "Maquila de Servicio"),
         ],
