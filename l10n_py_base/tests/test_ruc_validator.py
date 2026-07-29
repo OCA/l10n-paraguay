@@ -1,5 +1,6 @@
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
+from odoo.tools import mute_logger
 
 from ..validators.ruc_validator import RUCValidator
 
@@ -89,8 +90,9 @@ class TestRucValidator(TransactionCase):
         self.assertEqual(RUCValidator.normalize("800280610"), "80028061-0")
         self.assertEqual(RUCValidator.normalize("80028061-0"), "80028061-0")
 
+    @mute_logger("odoo.addons.l10n_py_base.validators.ruc_validator")
     def test_normalize_invalid_returns_original(self):
-        """Un RUC inválido se devuelve sin cambios"""
+        """Un RUC inválido se devuelve sin cambios (y se registra un warning)"""
         self.assertEqual(RUCValidator.normalize("80028061-1"), "80028061-1")
 
     def test_get_check_digit(self):
