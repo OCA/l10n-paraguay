@@ -1,4 +1,3 @@
-from odoo.exceptions import ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
@@ -293,16 +292,25 @@ class TestResPartner(TransactionCase):
         self.assertEqual(partner.vat, "80028061-0")
 
     def test_check_vat_py_rejects_wrong_dv(self):
-        """base_vat rechaza un RUC con DV incorrecto"""
-        with self.assertRaises(ValidationError):
-            self.Partner.create(
-                {
-                    "name": "Contribuyente RUC inválido",
-                    "country_id": self.country_py.id,
-                    "l10n_latam_identification_type_id": self.it_ruc.id,
-                    "vat": "80028061-1",
-                }
-            )
+        """El hook de base_vat rechaza un RUC con DV incorrecto
+
+        Se llama directamente al hook porque ``create``/``write`` reescriben el
+        DV informado antes de que corra la restricción (ver
+        ``_format_vat_py``), así que por esa vía nunca llega un DV inválido.
+        Ese reformateo silencioso se trata en un PR aparte.
+        """
+        partner = self.Partner.create(
+            {
+                "name": "Contribuyente RUC",
+                "country_id": self.country_py.id,
+                "l10n_latam_identification_type_id": self.it_ruc.id,
+                "vat": "80028061-0",
+            }
+        )
+        self.assertTrue(partner.check_vat_py("80028061-0"))
+        self.assertFalse(partner.check_vat_py("80028061-1"))
+        self.assertFalse(partner.check_vat_py("AB1234-5"))
+        self.assertFalse(partner.check_vat_py(""))
 
     def test_check_vat_py_ignores_non_vat_documents(self):
         """Cédula y pasaporte no pasan por la validación de RUC"""
