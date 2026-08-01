@@ -34,13 +34,17 @@ class TestIvaAffectation(TransactionCase):
         self.env["account.chart.template"].try_loading(
             "py", company=company, install_demo=False
         )
-        tax = self.env["account.tax"].with_company(company).search(
-            [
-                ("type_tax_use", "=", "sale"),
-                ("l10n_py_iva_affectation", "=", "2"),
-                ("amount", "=", 0),
-            ],
-            limit=1,
+        tax = (
+            self.env["account.tax"]
+            .with_company(company)
+            .search(
+                [
+                    ("type_tax_use", "=", "sale"),
+                    ("l10n_py_iva_affectation", "=", "2"),
+                    ("amount", "=", 0),
+                ],
+                limit=1,
+            )
         )
         self.assertTrue(
             tax, "Debe existir un IVA exonerado de venta (afectación 2) en el chart PY"
