@@ -279,10 +279,7 @@ class AccountMove(models.Model):
     def _l10n_py_is_export(self):
         """Factura de Exportación: fiscal position dedicada o parceiro do exterior."""
         self.ensure_one()
-        if (
-            self.fiscal_position_id
-            and self.fiscal_position_id.name == "Ventas - Exportación"
-        ):
+        if self.fiscal_position_id and self.fiscal_position_id.l10n_py_is_export:
             return True
         partner = self.partner_id
         return bool(partner.country_id) and partner.country_id.code != "PY"
@@ -1149,7 +1146,7 @@ class AccountMove(models.Model):
         if (
             self.currency_id
             and self.currency_id.name != "PYG"
-            and not (self.l10n_py_exchange_rate or 0) > 0
+            and (self.l10n_py_exchange_rate or 0) <= 0
         ):
             errors.append(
                 _(
