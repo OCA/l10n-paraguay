@@ -15,6 +15,10 @@ class TestFiscalPositionExport(TransactionCase):
             .search([("name", "=", "Ventas - Exportación")], limit=1)
         )
         self.assertTrue(fp, "FP de exportación debe existir")
+        self.assertTrue(
+            fp.l10n_py_is_export,
+            "El marcador l10n_py_is_export debe venir seteado del CSV del template",
+        )
         vat10 = (
             self.env["account.tax"]
             .with_company(company)
