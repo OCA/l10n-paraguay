@@ -425,8 +425,9 @@ class AccountMove(models.Model):
         if doc_type_code == "4":
             document_data["autofactura"] = self._prepare_autofactura_data()
 
-        # Transporte (tipo=7 — NRE)
-        if doc_type_code == "7" and self.l10n_py_transport_id:
+        # Transporte (tipo=7 NRE, o tipo=1 FE cuando se anexó transporte
+        # explícitamente, p.ej. exportación con Incoterm — Grupo G SIFEN)
+        if doc_type_code in ("1", "7") and self.l10n_py_transport_id:
             document_data["transporte"] = self._prepare_transport_data()
 
         # Totales SIFEN

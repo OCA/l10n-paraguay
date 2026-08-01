@@ -420,6 +420,50 @@ class TestEdiDemoScenarios(TransactionCase):
                 }
             )
 
+    # ============== Transporte en Factura (código 1) — comercio exterior ==
+
+    def test_factura_con_transporte_incluye_bloque_transporte(self):
+        """FE (code=1) con l10n_py.transport anexado → JSON incluye
+        'transporte' con el Incoterm, no solo la NRE (code=7)."""
+        move = self._create_move(
+            "1",
+            invoice_incoterm_id=self.env.ref("account.incoterm_FOB").id,
+        )
+        transport = self.env["l10n_py.transport"].create(
+            {
+                "move_id": move.id,
+                "transport_mode": "3",
+                "incoterm": "FOB",
+            }
+        )
+        move.l10n_py_transport_id = transport.id
+        document_data = move._prepare_edi_document_data()
+        self.assertIn("transporte", document_data)
+        self.assertEqual(document_data["transporte"]["condicionNegociacion"], "FOB")
+
+    def test_factura_sin_transporte_no_incluye_bloque_transporte(self):
+        """FE (code=1) sin l10n_py.transport → sin 'transporte' en el JSON
+        (comportamiento previo preservado para el caso común)."""
+        move = self._create_move("1")
+        document_data = move._prepare_edi_document_data()
+        self.assertNotIn("transporte", document_data)
+
+    def test_transporte_default_incoterm_desde_factura(self):
+        """Al crear l10n_py.transport en el contexto de una factura con
+        invoice_incoterm_id, el campo incoterm se precompleta (evita
+        redigitar el mismo dato que ya llegó del pedido de venta vía
+        sale_stock/invoice_incoterm_id)."""
+        move = self._create_move(
+            "1",
+            invoice_incoterm_id=self.env.ref("account.incoterm_FOB").id,
+        )
+        transport = (
+            self.env["l10n_py.transport"]
+            .with_context(default_move_id=move.id)
+            .new({"transport_mode": "3"})
+        )
+        self.assertEqual(transport.incoterm, "FOB")
+
     # ============== Inutilización de Números ==============
 
     def test_inutilization_valid_range(self):

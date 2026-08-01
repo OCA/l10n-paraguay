@@ -48,6 +48,13 @@
                     >
                         <field name="l10n_py_nre_motive" />
                         <field name="l10n_py_nre_estimated_invoice_date" />
+                    </group>
+                    <group
+                        string="Transporte / Comercio Exterior"
+                        invisible="l10n_py_doc_type_code not in ('1', '7')"
+                        name="transport_section"
+                    >
+                        <field name="invoice_incoterm_id" />
                         <field name="l10n_py_transport_id" />
                     </group>
                     <group
