@@ -277,7 +277,9 @@ class AccountMove(models.Model):
                     iva_5 += line.price_total - base  # F015
                     base_5 += base  # F018
                 else:
-                    affectation = (zero_tax.l10n_py_iva_affectation if zero_tax else None) or "3"
+                    affectation = (
+                        zero_tax.l10n_py_iva_affectation if zero_tax else None
+                    ) or "3"
                     if affectation == "2":
                         exonerado += line.price_subtotal  # dSubExo
                     else:
