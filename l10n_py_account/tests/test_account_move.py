@@ -296,6 +296,15 @@ class TestAccountMove(TransactionCase):
         junto con numeración propia.
         """
         doc_type_nc = self.env.ref("l10n_py_account.dc_py_nc")
+        # Con demo data instalada ya existe una faja NC para main_company;
+        # desactivarlas deja el escenario determinístico (exactamente UNA
+        # faja NC vigente) para poder afirmar la auto-selección.
+        self.Authorization.search(
+            [
+                ("company_id", "=", self.company.id),
+                ("l10n_latam_document_type_id", "=", doc_type_nc.id),
+            ]
+        ).write({"active": False})
         auth_nc = self.Authorization.create(
             {
                 "name": "77889900",
