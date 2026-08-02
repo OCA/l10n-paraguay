@@ -285,6 +285,57 @@ class TestAccountMove(TransactionCase):
         with self.assertRaises(UserError):
             inv3.action_post()
 
+    def test_credit_note_gets_own_number_and_timbrado(self):
+        """Reversión (NC): no hereda número ni timbrado de la factura.
+
+        Regresión del bug "El número de factura debe ser único por
+        timbrado": la NC copiaba l10n_py_invoice_number y
+        l10n_py_authorization_id del documento original, chocando con la
+        restricción de unicidad al confirmar. Con copy=False la NC nace
+        limpia y, existiendo UNA faja vigente de NC, action_post la asigna
+        junto con numeración propia.
+        """
+        doc_type_nc = self.env.ref("l10n_py_account.dc_py_nc")
+        auth_nc = self.Authorization.create(
+            {
+                "name": "77889900",
+                "date_from": date.today() - timedelta(days=30),
+                "date_to": date.today() + timedelta(days=335),
+                "invoice_number_from": 1,
+                "invoice_number_to": 10000,
+                "establishment": "001",
+                "expedition_point": "002",
+                "l10n_latam_document_type_id": doc_type_nc.id,
+                "company_id": self.company.id,
+            }
+        )
+        invoice = self._create_invoice()
+        invoice.action_post()
+        original_number = invoice.l10n_py_invoice_number
+        reversal = (
+            self.env["account.move.reversal"]
+            .with_company(self.company)
+            .create(
+                {
+                    "move_ids": [(6, 0, invoice.ids)],
+                    "journal_id": invoice.journal_id.id,
+                    "reason": "Devolución",
+                }
+            )
+        )
+        action = reversal.refund_moves()
+        credit_note = self.env["account.move"].browse(action["res_id"])
+        # copy=False: nada heredado del original
+        self.assertFalse(credit_note.l10n_py_invoice_number)
+        self.assertFalse(credit_note.l10n_py_authorization_id)
+        credit_note.l10n_latam_document_type_id = doc_type_nc
+        credit_note.action_post()
+        # Timbrado de NC auto-seleccionado (única faja vigente del tipo) y
+        # numeración propia, sin colisión con la factura original.
+        self.assertEqual(credit_note.l10n_py_authorization_id, auth_nc)
+        self.assertEqual(credit_note.l10n_py_invoice_number, 1)
+        self.assertEqual(invoice.l10n_py_invoice_number, original_number)
+
     def test_sale_requires_timbrado(self):
         """F02: Factura de venta sin timbrado → UserError al confirmar"""
         invoice = self._create_invoice(l10n_py_authorization_id=False)
