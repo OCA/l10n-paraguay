@@ -26,17 +26,25 @@ class AccountMove(models.Model):
     l10n_py_authorization_id = fields.Many2one(
         "account.authorization",
         string="Timbrado",
+        copy=False,
         domain=(
             "[('company_id', '=', company_id), "
             "('active', '=', True), "
-            "('state', '!=', 'expired')]"
+            "('state', '!=', 'expired'), "
+            "('l10n_latam_document_type_id', '=', l10n_latam_document_type_id)]"
         ),
-        help="Timbrado utilizado para esta factura",
+        help="Timbrado utilizado para esta factura. La faja está autorizada "
+        "por tipo de documento: una nota de crédito usa un timbrado de NC, "
+        "no el de la factura original.",
     )
 
     l10n_py_invoice_number = fields.Integer(
         string="Número de Factura",
-        help="Número de factura según timbrado autorizado",
+        copy=False,
+        help="Número de factura según timbrado autorizado. copy=False: una "
+        "reversión (nota de crédito) no puede heredar el número del "
+        "documento original — colisionaría con la restricción de unicidad "
+        "por timbrado; el número propio se asigna en action_post.",
     )
 
     l10n_py_full_invoice_number = fields.Char(
@@ -181,6 +189,25 @@ class AccountMove(models.Model):
                         # Pular durante instalação/demo (invoices genéricas
                         # criadas pelo account.chart.template.try_loading)
                         continue
+                    # Reversiones llegan sin timbrado (copy=False): si existe
+                    # exactamente UNA faja vigente para el tipo de documento
+                    # (p.ej. la NC), usarla; ambigüedad sigue siendo elección
+                    # humana.
+                    candidatos = self.env["account.authorization"].search(
+                        [
+                            ("company_id", "=", move.company_id.id),
+                            ("active", "=", True),
+                            ("state", "!=", "expired"),
+                            (
+                                "l10n_latam_document_type_id",
+                                "=",
+                                move.l10n_latam_document_type_id.id,
+                            ),
+                        ]
+                    )
+                    if len(candidatos) == 1:
+                        move.l10n_py_authorization_id = candidatos
+                if not move.l10n_py_authorization_id:
                     raise UserError(
                         _(
                             "Debe seleccionar un timbrado para confirmar "
