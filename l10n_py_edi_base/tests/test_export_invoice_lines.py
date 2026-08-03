@@ -93,6 +93,52 @@ class TestExportInvoiceLines(TransactionCase):
         self.assertEqual(items[0]["ivaTipo"], 3)  # fallback: amount 0 -> '3'
         self.assertEqual(items[0]["iva"], 0)
 
+    def test_upgrade_path_exento_without_default(self):
+        # Camino de upgrade: al agregar la columna en una base existente el
+        # campo debe quedar falsy (sin default), de modo que el impuesto
+        # Exento preexistente pase por el fallback y NO salga como gravado
+        # (ivaTipo=1 con alícuota 0, inconsistente para el SIFEN).
+        tax_legacy = self.env["account.tax"].create(
+            {
+                "name": "IVA Exento legacy",
+                "amount": 0,
+                "amount_type": "percent",
+                "type_tax_use": "sale",
+            }
+        )
+        self.assertFalse(
+            tax_legacy.l10n_py_iva_affectation,
+            "Sin default: el impuesto creado sin afectación debe quedar falsy",
+        )
+        inv = self._invoice_with_tax(tax_legacy)
+        items = inv._prepare_invoice_lines()
+        self.assertEqual(items[0]["ivaTipo"], 3)
+        self.assertEqual(items[0]["ivaBase"], 0)
+
+    def test_line_without_tax_raises(self):
+        # Una línea sin ningún impuesto no puede caer en el default gravado
+        # 10%: debe fallar explícito en la preparación del DE.
+        from odoo.exceptions import UserError
+
+        inv = self.env["account.move"].create(
+            {
+                "move_type": "out_invoice",
+                "partner_id": self.env["res.partner"].create({"name": "Y"}).id,
+                "invoice_line_ids": [
+                    Command.create(
+                        {
+                            "product_id": self.product.id,
+                            "quantity": 1,
+                            "price_unit": 100,
+                            "tax_ids": [Command.clear()],
+                        }
+                    )
+                ],
+            }
+        )
+        with self.assertRaises(UserError):
+            inv._prepare_invoice_lines()
+
     def _invoice_with_transport(self, doc_type_xmlid, partner_country_xmlid):
         """Fatura (out_invoice) com um l10n_py.transport anexado."""
         doc_type = self.env.ref(doc_type_xmlid)
