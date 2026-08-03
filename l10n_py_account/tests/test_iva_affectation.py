@@ -4,7 +4,7 @@ from odoo.tests.common import TransactionCase
 
 @tagged("post_install", "-at_install", "l10n_py")
 class TestIvaAffectation(TransactionCase):
-    def test_field_exists_and_default(self):
+    def test_field_exists_without_default(self):
         tax = self.env["account.tax"].create(
             {
                 "name": "IVA test",
@@ -13,8 +13,11 @@ class TestIvaAffectation(TransactionCase):
                 "type_tax_use": "sale",
             }
         )
-        # campo existe e default '1' (Gravado)
-        self.assertEqual(tax.l10n_py_iva_affectation, "1")
+        # Sin default: un impuesto sin afectación explícita queda falsy para
+        # que el fallback de retrocompatibilidad (_l10n_py_infer_affectation)
+        # trabaje en bases existentes. Un default '1' marcaría como Gravado
+        # el Exento preexistente en el upgrade.
+        self.assertFalse(tax.l10n_py_iva_affectation)
 
     def test_affectation_settable(self):
         tax = self.env["account.tax"].create(
