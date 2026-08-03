@@ -257,7 +257,7 @@ class AccountMove(models.Model):
                 auth = move.l10n_py_authorization_id
                 number_str = str(move.l10n_py_invoice_number).zfill(7)
                 move.l10n_py_full_invoice_number = (
-                    f"{auth.establishment}-" f"{auth.expedition_point}-" f"{number_str}"
+                    f"{auth.establishment}-{auth.expedition_point}-{number_str}"
                 )
             else:
                 move.l10n_py_full_invoice_number = False

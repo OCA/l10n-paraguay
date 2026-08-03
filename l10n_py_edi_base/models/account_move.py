@@ -316,7 +316,7 @@ class AccountMove(models.Model):
         for record in self:
             if record.l10n_py_security_code and len(record.l10n_py_security_code) != 9:
                 raise ValidationError(
-                    _("El código de seguridad debe tener " "exactamente 9 caracteres")
+                    _("El código de seguridad debe tener exactamente 9 caracteres")
                 )
 
     # ============== PRIVATE METHODS ==============
@@ -865,6 +865,17 @@ class AccountMove(models.Model):
             lambda line: line.display_type not in ("line_section", "line_note")
         ):
             # Determinar tasa de IVA e afetação (iAfecIVA)
+            if not line.tax_ids:
+                # Sin guard, la línea caería en el default (gravado 10%) y
+                # declararía una base gravada inexistente ante el SIFEN.
+                raise UserError(
+                    _(
+                        "La línea '%s' no tiene ningún impuesto: cada ítem del "
+                        "DE debe declarar su afectación de IVA (gravado, "
+                        "exonerado, exento o gravado parcial)."
+                    )
+                    % (line.name or line.product_id.display_name)
+                )
             iva_rate = 10  # Por defecto 10%
             iva_type = 1  # Gravado IVA
 
@@ -1474,7 +1485,7 @@ class AccountMove(models.Model):
 
         if self.l10n_py_edi_status not in ["error", "rejected"]:
             raise UserError(
-                _("Solo se pueden reintentar documentos " "con error o rechazados")
+                _("Solo se pueden reintentar documentos con error o rechazados")
             )
 
         return self.action_send_edi()
