@@ -867,6 +867,17 @@ class AccountMove(models.Model):
             lambda line: line.display_type not in ("line_section", "line_note")
         ):
             # Determinar tasa de IVA e afetação (iAfecIVA)
+            if not line.tax_ids:
+                # Sin guard, la línea caería en el default (gravado 10%) y
+                # declararía una base gravada inexistente ante el SIFEN.
+                raise UserError(
+                    _(
+                        "La línea '%s' no tiene ningún impuesto: cada ítem del "
+                        "DE debe declarar su afectación de IVA (gravado, "
+                        "exonerado, exento o gravado parcial)."
+                    )
+                    % (line.name or line.product_id.display_name)
+                )
             iva_rate = 10  # Por defecto 10%
             iva_type = 1  # Gravado IVA
 
