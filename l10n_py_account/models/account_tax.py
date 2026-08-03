@@ -12,7 +12,11 @@ class AccountTax(models.Model):
             ("4", "Gravado parcial"),
         ],
         string="Afectación IVA (SIFEN)",
-        default="1",
+        # Sin default: un impuesto existente (upgrade de base en producción)
+        # debe quedar falsy para que _l10n_py_infer_affectation() haga la
+        # retrocompatibilidad (amount 0 -> exento). Un default "1" marcaría
+        # el impuesto Exento existente como Gravado y el fallback nunca
+        # dispararía. Los impuestos del chart template traen el valor por CSV.
         help="Forma de afectación del IVA (iAfecIVA) para el DE SIFEN. "
         "Exportación usa Exonerado (2).",
     )
