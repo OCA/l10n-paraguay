@@ -21,6 +21,7 @@
         "data/ir_cron_data.xml",
         # Views
         "views/res_company_views.xml",
+        "views/account_authorization_views.xml",
         "views/account_move_views.xml",
         "views/product_template_views.xml",
         "views/l10n_py_edi_log_views.xml",

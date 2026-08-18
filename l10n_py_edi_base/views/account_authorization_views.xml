@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_account_authorization_form_edi" model="ir.ui.view">
+        <field name="name">account.authorization.form.edi</field>
+        <field name="model">account.authorization</field>
+        <field
+            name="inherit_id"
+            ref="l10n_py_account.view_account_authorization_form"
+        />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//div[@name='button_box']/button[@name='check_validity']"
+                position="after"
+            >
+                <button
+                    name="action_open_inutilization_wizard"
+                    type="object"
+                    string="Inutilizar Numeración"
+                    class="oe_stat_button"
+                    icon="fa-ban"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>
