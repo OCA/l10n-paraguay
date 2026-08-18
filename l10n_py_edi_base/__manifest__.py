@@ -26,6 +26,7 @@
         "views/l10n_py_edi_log_views.xml",
         "views/l10n_py_associated_document_views.xml",
         "views/l10n_py_number_inutilization_views.xml",
+        "views/l10n_py_edi_received_event_views.xml",
         "views/l10n_py_transport_views.xml",
         # Wizards
         "wizard/account_move_send_edi_views.xml",
