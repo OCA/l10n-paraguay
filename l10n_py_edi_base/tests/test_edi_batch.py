@@ -1,17 +1,27 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
 from datetime import date, timedelta
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from odoo import Command
+from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
+
+_GET_EDI_CONNECTOR = (
+    "odoo.addons.l10n_py_edi_base.models.account_move" ".AccountMove._get_edi_connector"
+)
 
 
 @tagged("post_install", "-at_install", "l10n_py")
 class TestEDIBatch(TransactionCase):
-    """Envío en lote SIFEN: particionamiento, estado intermediario,
-    falla parcial por documento e idempotencia (no reenviar lo ya enviado).
+    """Envío en lote: particionamiento, estado intermediario, falla parcial
+    por documento e idempotencia (no reenviar lo ya enviado).
+
+    Ejercita exclusivamente la orquestación genérica de account.move
+    (action_send_edi_batch / _l10n_py_send_batch_chunk /
+    _l10n_py_apply_batch_status): el conector EDI se sustituye por un
+    MagicMock, sin depender de ningún proveedor concreto (SIFEN u otro).
     """
 
     @classmethod
@@ -125,7 +135,7 @@ class TestEDIBatch(TransactionCase):
         )
 
         # Producto SIN NCM, usado para forzar una falla de validación (item
-        # inválido, debe ser rechazado ANTES de llegar al SIFEN).
+        # inválido, debe ser rechazado ANTES de llegar al proveedor EDI).
         cls.product_invalido = cls.env["product.product"].create(
             {
                 "name": "Test Product Sin NCM",
@@ -135,14 +145,10 @@ class TestEDIBatch(TransactionCase):
             }
         )
 
-        cls.connector = cls.env["l10n_py.edi.connector"].create(
-            {
-                "name": "SIFEN Test Lote",
-                "company_id": cls.company.id,
-                "provider_type": "sifen",
-                "environment": "test",
-            }
-        )
+    def _mock_connector(self, max_batch_size=50):
+        connector = MagicMock()
+        connector.get_max_batch_size.return_value = max_batch_size
+        return connector
 
     def _create_move(self, product=None, to_send=True):
         """Crear un account.move válido para EDI sin pasar por action_post.
@@ -186,11 +192,7 @@ class TestEDIBatch(TransactionCase):
 
     # ============== Particionamiento ==============
 
-    @patch(
-        "odoo.addons.l10n_py_edi_sifen.models.edi_connector"
-        ".EDIConnector._sifen_send_batch"
-    )
-    def test_action_send_edi_batch_particiona_en_chunks_de_50(self, mock_send_batch):
+    def test_action_send_edi_batch_particiona_en_chunks_de_50(self):
         """120 documentos to_send -> 3 llamadas (50, 50, 20)."""
         moves = self.env["account.move"]
         for _i in range(120):
@@ -211,11 +213,13 @@ class TestEDIBatch(TransactionCase):
                 },
             }
 
-        mock_send_batch.side_effect = _fake_send_batch
+        connector = self._mock_connector()
+        connector.send_batch.side_effect = _fake_send_batch
 
-        moves.action_send_edi_batch()
+        with patch(_GET_EDI_CONNECTOR, return_value=connector):
+            moves.action_send_edi_batch()
 
-        self.assertEqual(mock_send_batch.call_count, 3)
+        self.assertEqual(connector.send_batch.call_count, 3)
         self.assertEqual(call_sizes, [50, 50, 20])
         self.assertTrue(all(m.l10n_py_edi_status == "batch_sent" for m in moves))
 
@@ -227,18 +231,16 @@ class TestEDIBatch(TransactionCase):
 
         selection = move_to_send | move_already_sent
 
-        with patch(
-            "odoo.addons.l10n_py_edi_sifen.models.edi_connector"
-            ".EDIConnector._sifen_send_batch"
-        ) as mock_send_batch:
-            mock_send_batch.return_value = {
-                "success": True,
-                "result": {"batch_protocol": "PROT1", "cdc_list": ["CDC1"]},
-            }
+        connector = self._mock_connector()
+        connector.send_batch.return_value = {
+            "success": True,
+            "result": {"batch_protocol": "PROT1", "cdc_list": ["CDC1"]},
+        }
+        with patch(_GET_EDI_CONNECTOR, return_value=connector):
             selection.action_send_edi_batch()
 
-        mock_send_batch.assert_called_once()
-        self.assertEqual(len(mock_send_batch.call_args[0][0]), 1)
+        connector.send_batch.assert_called_once()
+        self.assertEqual(len(connector.send_batch.call_args[0][0]), 1)
         self.assertEqual(move_to_send.l10n_py_edi_status, "batch_sent")
         # El documento ya aceptado permanece intacto: no se reenvía.
         self.assertEqual(move_already_sent.l10n_py_edi_status, "accepted")
@@ -250,34 +252,28 @@ class TestEDIBatch(TransactionCase):
             {"l10n_py_edi_status": "batch_sent", "l10n_py_edi_batch_id": "OLDPROT"}
         )
 
-        with patch(
-            "odoo.addons.l10n_py_edi_sifen.models.edi_connector"
-            ".EDIConnector._sifen_send_batch"
-        ) as mock_send_batch:
-            from odoo.exceptions import UserError
-
+        connector = self._mock_connector()
+        with patch(_GET_EDI_CONNECTOR, return_value=connector):
             with self.assertRaises(UserError):
                 move.action_send_edi_batch()
 
-        mock_send_batch.assert_not_called()
+        connector.send_batch.assert_not_called()
         self.assertEqual(move.l10n_py_edi_batch_id, "OLDPROT")
 
     def test_send_batch_seta_batch_id_y_status_batch_sent(self):
-        """dProtConsLote=123 del mock -> batch_id=123, status batch_sent."""
+        """batch_protocol=123 del mock -> batch_id=123, status batch_sent."""
         move1 = self._create_move()
         move2 = self._create_move()
 
-        with patch(
-            "odoo.addons.l10n_py_edi_sifen.models.edi_connector"
-            ".EDIConnector._sifen_send_batch"
-        ) as mock_send_batch:
-            mock_send_batch.return_value = {
-                "success": True,
-                "result": {
-                    "batch_protocol": "123",
-                    "cdc_list": ["CDC-A", "CDC-B"],
-                },
-            }
+        connector = self._mock_connector()
+        connector.send_batch.return_value = {
+            "success": True,
+            "result": {
+                "batch_protocol": "123",
+                "cdc_list": ["CDC-A", "CDC-B"],
+            },
+        }
+        with patch(_GET_EDI_CONNECTOR, return_value=connector):
             (move1 | move2).action_send_edi_batch()
 
         self.assertEqual(move1.l10n_py_edi_batch_id, "123")
@@ -285,16 +281,42 @@ class TestEDIBatch(TransactionCase):
         self.assertEqual(move2.l10n_py_edi_batch_id, "123")
         self.assertEqual(move2.l10n_py_edi_status, "batch_sent")
 
-    def test_send_batch_falla_de_transporte_no_marca_ningun_doc(self):
-        """Excepción en enviar_lote -> ningún doc del chunk queda batch_sent."""
+    def test_send_batch_devuelve_menos_cdc_que_documentos_no_marca_excedentes(self):
+        """cdc_list más corta que valid_moves -> excedentes quedan sin CDC.
+
+        Cubre el hallazgo de revisión: si el proveedor EDI devuelve una
+        cdc_list truncada, los documentos que se quedan sin CDC no deben
+        marcarse como enviados en silencio (permanecen 'to_send', y el
+        caso queda registrado en el log de warning).
+        """
         move1 = self._create_move()
         move2 = self._create_move()
 
-        with patch(
-            "odoo.addons.l10n_py_edi_sifen.models.edi_connector"
-            ".EDIConnector._sifen_send_batch"
-        ) as mock_send_batch:
-            mock_send_batch.side_effect = Exception("timeout de red")
+        connector = self._mock_connector()
+        connector.send_batch.return_value = {
+            "success": True,
+            "result": {
+                "batch_protocol": "123",
+                "cdc_list": ["CDC-A"],  # sólo 1 CDC para 2 documentos
+            },
+        }
+        with patch(_GET_EDI_CONNECTOR, return_value=connector):
+            (move1 | move2).action_send_edi_batch()
+
+        self.assertEqual(move1.l10n_py_cdc, "CDC-A")
+        self.assertEqual(move1.l10n_py_edi_status, "batch_sent")
+        # move2 no recibió CDC: no se marca como enviado, queda para retry.
+        self.assertFalse(move2.l10n_py_cdc)
+        self.assertEqual(move2.l10n_py_edi_status, "to_send")
+
+    def test_send_batch_falla_de_transporte_no_marca_ningun_doc(self):
+        """Excepción en el envío -> ningún doc del chunk queda batch_sent."""
+        move1 = self._create_move()
+        move2 = self._create_move()
+
+        connector = self._mock_connector()
+        connector.send_batch.side_effect = Exception("timeout de red")
+        with patch(_GET_EDI_CONNECTOR, return_value=connector):
             (move1 | move2).action_send_edi_batch()
 
         self.assertEqual(move1.l10n_py_edi_status, "to_send")
@@ -302,23 +324,21 @@ class TestEDIBatch(TransactionCase):
         self.assertFalse(move1.l10n_py_edi_batch_id)
         self.assertFalse(move2.l10n_py_edi_batch_id)
 
-    def test_documento_invalido_es_rechazado_antes_de_llegar_a_sifen(self):
+    def test_documento_invalido_es_rechazado_antes_de_llegar_al_proveedor(self):
         """Producto sin NCM -> rechazado en validación, nunca llega al payload."""
         move_valido = self._create_move()
         move_invalido = self._create_move(product=self.product_invalido)
 
-        with patch(
-            "odoo.addons.l10n_py_edi_sifen.models.edi_connector"
-            ".EDIConnector._sifen_send_batch"
-        ) as mock_send_batch:
-            mock_send_batch.return_value = {
-                "success": True,
-                "result": {"batch_protocol": "PROT1", "cdc_list": ["CDC1"]},
-            }
+        connector = self._mock_connector()
+        connector.send_batch.return_value = {
+            "success": True,
+            "result": {"batch_protocol": "PROT1", "cdc_list": ["CDC1"]},
+        }
+        with patch(_GET_EDI_CONNECTOR, return_value=connector):
             (move_valido | move_invalido).action_send_edi_batch()
 
         # Sólo 1 documento llegó al payload (el inválido fue filtrado antes).
-        self.assertEqual(len(mock_send_batch.call_args[0][0]), 1)
+        self.assertEqual(len(connector.send_batch.call_args[0][0]), 1)
         self.assertEqual(move_valido.l10n_py_edi_status, "batch_sent")
         self.assertEqual(move_invalido.l10n_py_edi_status, "rejected")
         self.assertIn("NCM", move_invalido.l10n_py_edi_message)
@@ -345,14 +365,12 @@ class TestEDIBatch(TransactionCase):
             {"cdc": "CDC-4", "status": "rejected", "message": "[124] Error Y"},
         ]
 
-        with patch(
-            "odoo.addons.l10n_py_edi_sifen.models.edi_connector"
-            ".EDIConnector._sifen_check_batch_status"
-        ) as mock_check:
-            mock_check.return_value = {
-                "success": True,
-                "result": {"pending": False, "documents": fake_documents},
-            }
+        connector = self._mock_connector()
+        connector.check_batch_status.return_value = {
+            "success": True,
+            "result": {"pending": False, "documents": fake_documents},
+        }
+        with patch(_GET_EDI_CONNECTOR, return_value=connector):
             self.env["account.move"]._l10n_py_apply_batch_status("PROT-PARCIAL")
 
         statuses = {m.l10n_py_cdc: m.l10n_py_edi_status for m in moves}
@@ -376,14 +394,12 @@ class TestEDIBatch(TransactionCase):
                 }
             )
 
-        with patch(
-            "odoo.addons.l10n_py_edi_sifen.models.edi_connector"
-            ".EDIConnector._sifen_check_batch_status"
-        ) as mock_check:
-            mock_check.return_value = {
-                "success": True,
-                "result": {"pending": True, "documents": []},
-            }
+        connector = self._mock_connector()
+        connector.check_batch_status.return_value = {
+            "success": True,
+            "result": {"pending": True, "documents": []},
+        }
+        with patch(_GET_EDI_CONNECTOR, return_value=connector):
             self.env["account.move"]._l10n_py_apply_batch_status("PROT-PENDIENTE")
 
         for move in moves:
@@ -427,24 +443,14 @@ class TestEDIBatch(TransactionCase):
         """action_send_edi() de un único doc no pasa por el camino de lote."""
         move = self._create_move()
 
-        with (
-            patch(
-                "odoo.addons.l10n_py_edi_sifen.models.edi_connector"
-                ".EDIConnector._sifen_send_document"
-            ) as mock_send_document,
-            patch(
-                "odoo.addons.l10n_py_edi_sifen.models.edi_connector"
-                ".EDIConnector._sifen_send_batch"
-            ) as mock_send_batch,
-        ):
-            mock_send_document.return_value = {
-                "success": True,
-                "result": {
-                    "deList": [{"cdc": "0" * 44, "qr": "", "xml": "<rDE></rDE>"}]
-                },
-            }
+        connector = self._mock_connector()
+        connector.send_document.return_value = {
+            "success": True,
+            "result": {"deList": [{"cdc": "0" * 44, "qr": "", "xml": "<rDE></rDE>"}]},
+        }
+        with patch(_GET_EDI_CONNECTOR, return_value=connector):
             move.action_send_edi()
 
-        mock_send_batch.assert_not_called()
+        connector.send_batch.assert_not_called()
         self.assertEqual(move.l10n_py_edi_status, "accepted")
         self.assertFalse(move.l10n_py_edi_batch_id)
