@@ -22,6 +22,7 @@ from pysifen.de.bindings.v150.xmldsig_core_schema import (
 )
 from pysifen.transmissao import ConsultaSIFEN, TransmissaoDE, TransmissaoEvento
 from pysifen.transmissao.config import PRODUCCION, TEST
+from pysifen.transmissao.de import MAX_LOTE as _SIFEN_MAX_LOTE
 from xsdata.formats.dataclass.serializers import XmlSerializer
 from xsdata.formats.dataclass.serializers.config import SerializerConfig
 
@@ -82,6 +83,21 @@ class EDIConnector(models.Model):
             return super().check_status(document_id)
         return self._sifen_check_status(document_id)
 
+    def send_batch(self, invoice_data_list):
+        if self.provider_type != "sifen":
+            return super().send_batch(invoice_data_list)
+        return self._sifen_send_batch(invoice_data_list)
+
+    def check_batch_status(self, batch_protocol):
+        if self.provider_type != "sifen":
+            return super().check_batch_status(batch_protocol)
+        return self._sifen_check_batch_status(batch_protocol)
+
+    def get_max_batch_size(self):
+        if self.provider_type != "sifen":
+            return super().get_max_batch_size()
+        return _SIFEN_MAX_LOTE
+
     def cancel_document(self, document_id, reason=""):
         if self.provider_type != "sifen":
             return super().cancel_document(document_id, reason)
@@ -138,6 +154,104 @@ class EDIConnector(models.Model):
             return {"success": False, "error": str(e)}
         finally:
             transmissao.cleanup()
+
+    def _sifen_send_batch(self, invoice_data_list):
+        """Envía un lote de DEs al SIFEN vía enviar_lote (asíncrono).
+
+        A diferencia de _sifen_send_document (transmisión síncrona uno a
+        uno), aquí se usa pysifen.enviar_lote: firma cada DE individualmente
+        (mismo costo de firma que el envío individual, el ahorro es sólo de
+        transporte) y hace un único POST con todos concatenados. Sólo
+        confirma que el SIFEN RECIBIÓ el lote (dProtConsLote); el resultado
+        de aceptación/rechazo por documento llega después, vía
+        _sifen_check_batch_status.
+
+        Devuelve el CDC de cada documento en el MISMO ORDEN que
+        invoice_data_list, para que el llamador (account.move) pueda
+        mapear cada CDC de vuelta a su move.
+        """
+        self.ensure_one()
+        transmissao = self._sifen_get_transmissao_de()
+        try:
+            rde_list = [
+                self._sifen_build_rde(invoice_data)
+                for invoice_data in invoice_data_list
+            ]
+            cdc_list = [rde.DE.Id for rde in rde_list]
+            result = transmissao.enviar_lote(rde_list)
+            batch_protocol = getattr(result, "dProtConsLote", None)
+            cod_res = getattr(result, "dCodRes", None)
+            # Sin protocolo de lote = el SIFEN no aceptó la recepción del
+            # lote como un todo: ningún documento fue transmitido.
+            if not batch_protocol:
+                msg = getattr(result, "dMsgRes", None) or "Sin protocolo de lote"
+                return {
+                    "success": False,
+                    "error": f"[{cod_res or ''}] {msg}",
+                }
+            return {
+                "success": True,
+                "result": {
+                    "batch_protocol": str(batch_protocol),
+                    "cdc_list": cdc_list,
+                },
+            }
+        except Exception as e:
+            _logger.error("SIFEN send_batch error: %s", str(e))
+            return {"success": False, "error": str(e)}
+        finally:
+            transmissao.cleanup()
+
+    def _sifen_check_batch_status(self, batch_protocol):
+        """Consulta el resultado de un lote (consultar_lote) por protocolo.
+
+        Devuelve el resultado GRANULAR por documento (por CDC), preservando
+        la misma semántica de aceptado/rechazado del flujo individual: un
+        documento rechazado dentro de un lote aceptado no afecta a los
+        demás. Si el SIFEN aún no terminó de procesar el lote (sin
+        resultados por documento todavía), se informa "pending": True para
+        que el llamador no toque el estado ('batch_sent' se mantiene).
+        """
+        self.ensure_one()
+        consulta = self._sifen_get_consulta()
+        try:
+            result = consulta.consultar_lote(batch_protocol)
+            items = list(getattr(result, "gResProcLote", None) or [])
+            if not items:
+                return {"success": True, "result": {"pending": True, "documents": []}}
+
+            documents = []
+            for item in items:
+                cdc = getattr(item, "id", None) or getattr(item, "Id", None)
+                estado = getattr(item, "dEstRes", "") or ""
+                accepted = estado.strip().lower() == "aprobado"
+                errors = []
+                for proc in getattr(item, "gResProc", None) or []:
+                    cod = getattr(proc, "dCodRes", "") or ""
+                    msg = getattr(proc, "dMsgRes", "") or ""
+                    if cod or msg:
+                        errors.append(f"[{cod}] {msg}")
+                default_msg = (
+                    _("Documento aceptado por SIFEN (lote).")
+                    if accepted
+                    else _("Documento rechazado por SIFEN (lote).")
+                )
+                documents.append(
+                    {
+                        "cdc": cdc,
+                        "status": "accepted" if accepted else "rejected",
+                        "message": "\n".join(errors) or default_msg,
+                    }
+                )
+            return {
+                "success": True,
+                "result": {"pending": False, "documents": documents},
+            }
+        except Exception as e:
+            _logger.error("SIFEN check_batch_status error: %s", str(e))
+            return {"success": False, "error": str(e)}
+        finally:
+            consulta.cleanup()
 
     def _sifen_recibe(self, signed_xml, cert_path, key_path):
         """POST del DE firmado al WS síncrono de recepción (SOAP 1.2 + mTLS)."""
