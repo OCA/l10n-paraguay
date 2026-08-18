@@ -1330,17 +1330,14 @@ class AccountMove(models.Model):
         Selection del campo).
         """
         self.ensure_one()
+        result = response.get("result") or {}
+        sifen_status = result.get("status") or ""
         if response.get("success"):
-            result = response.get("result") or {}
-            sifen_status = result.get("status") or ""
-            if sifen_status == "Aprobado":
-                edi_status = "accepted"
-                message = _("Documento aprobado por el SIFEN")
-            else:
-                edi_status = "rejected"
-                message = _("Estado SIFEN: %s") % (
-                    sifen_status or _("desconocido")
-                )
+            edi_status = "accepted"
+            message = _("Documento aprobado por el SIFEN")
+        elif sifen_status == "Rechazado":
+            edi_status = "rejected"
+            message = _("Estado SIFEN: %s") % sifen_status
         else:
             edi_status = "error"
             message = response.get("error") or _("Error desconocido")
