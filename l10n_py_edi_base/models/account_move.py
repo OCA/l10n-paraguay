@@ -107,6 +107,41 @@ class AccountMove(models.Model):
         help="Documentos asociados al DTE (Grupo H del SIFEN)",
     )
 
+    # Eventos de receptor (acuse de recibo / conformidad / disconformidad /
+    # desconocimiento), sólo relevante cuando esta empresa recibió el DTE
+    # (in_invoice/in_refund). Sólo lectura: la lógica vive en el modelo
+    # dedicado l10n_py.edi.received.event.
+    l10n_py_received_event_ids = fields.One2many(
+        "l10n_py.edi.received.event",
+        "move_id",
+        string="Eventos de Receptor",
+    )
+    l10n_py_received_event_count = fields.Integer(
+        compute="_compute_l10n_py_received_event_count",
+    )
+
+    @api.depends("l10n_py_received_event_ids")
+    def _compute_l10n_py_received_event_count(self):
+        for move in self:
+            move.l10n_py_received_event_count = len(move.l10n_py_received_event_ids)
+
+    def action_open_received_events(self):
+        """Abrir los eventos de receptor de esta factura de proveedor."""
+        self.ensure_one()
+        action = {
+            "type": "ir.actions.act_window",
+            "name": _("Eventos de Receptor"),
+            "res_model": "l10n_py.edi.received.event",
+            "view_mode": "list,form",
+            "domain": [("move_id", "=", self.id)],
+            "context": {
+                "default_move_id": self.id,
+                "default_partner_id": self.partner_id.id,
+                "default_company_id": self.company_id.id,
+            },
+        }
+        return action
+
     # Operación comercial (Grupo D — gOpeCom)
     l10n_py_exchange_rate_condition = fields.Selection(
         [("1", "Global"), ("2", "Por Ítem")],
@@ -306,7 +341,6 @@ class AccountMove(models.Model):
     def _generate_security_code(self):
         """Generar código de seguridad aleatorio de 9 dígitos"""
         return "".join(secrets.choice(string.digits) for _ in range(9))
-
     @staticmethod
     def _get_country_alpha3(country):
         """Convert res.country (ISO alpha-2) to ISO alpha-3 for SIFEN PaisType."""
@@ -340,6 +374,7 @@ class AccountMove(models.Model):
             "CA": "CAN",
         }
         return _ALPHA2_TO_3.get(country.code, country.code)
+
 
     def _prepare_edi_document_data(self):
         """Preparar datos del documento electrónico en formato JSON"""
@@ -784,7 +819,7 @@ class AccountMove(models.Model):
                 errors.append(_("Autofactura: %s es obligatorio.") % desc)
         return errors
 
-    def _validate_edi_document_type(self):
+    def _validate_edi_document_type(self):  # noqa: C901
         """Validar requisitos específicos por tipo de DTE.
 
         Llamado antes del envío EDI. Retorna lista de errores.

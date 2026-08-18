@@ -1,6 +1,7 @@
 # l10n_py_edi_base/models/res_company.py
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class ResCompany(models.Model):
@@ -87,6 +88,20 @@ class ResCompany(models.Model):
                 company.l10n_py_ruc_full = f"{company.l10n_py_ruc}-{company.l10n_py_dv}"
             else:
                 company.l10n_py_ruc_full = False
+
+    # ============== PUBLIC METHODS ==============
+
+    def _get_edi_connector(self):
+        """Buscar el conector EDI configurado para esta empresa."""
+        self.ensure_one()
+        connector = (
+            self.env["l10n_py.edi.connector"]
+            .sudo()
+            .search([("company_id", "=", self.id)], limit=1)
+        )
+        if not connector:
+            raise UserError(_("No hay un conector EDI configurado para esta empresa"))
+        return connector
 
     # ============== PRIVATE METHODS ==============
 

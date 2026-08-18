@@ -50,6 +50,15 @@ class EDILog(models.Model):
 
     cdc = fields.Char(string="CDC", index=True, help="Código de Control del documento")
 
+    l10n_py_received_event_id = fields.Many2one(
+        "l10n_py.edi.received.event",
+        string="Evento de Receptor",
+        ondelete="cascade",
+        index=True,
+        help="Evento de receptor (acuse de recibo / conformidad / "
+        "disconformidad / desconocimiento) relacionado",
+    )
+
     # ============== PROVEDOR EDI ==============
 
     provider = fields.Selection(
