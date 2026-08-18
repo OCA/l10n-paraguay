@@ -122,6 +122,12 @@
                     invisible="not l10n_py_cdc"
                 />
                 <button
+                    name="action_open_check_status_wizard"
+                    string="Consultar Status EDI"
+                    type="object"
+                    invisible="not l10n_py_cdc"
+                />
+                <button
                     name="action_download_xml"
                     string="Descargar XML"
                     type="object"

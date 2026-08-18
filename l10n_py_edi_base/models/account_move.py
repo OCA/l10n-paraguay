@@ -941,6 +941,50 @@ class AccountMove(models.Model):
             raise UserError(_("No hay un conector EDI configurado para esta empresa"))
         return connector
 
+    def _l10n_py_apply_check_status_response(self, response):
+        """Mapear la respuesta de connector.check_status() al documento.
+
+        Fuente única compartida por el wizard de consulta manual y el cron
+        automático, para que ambos caminos persistan el resultado de la
+        misma forma. `response["result"]["status"]` trae el estado crudo
+        del SIFEN (p.ej. "Aprobado"); se traduce a los valores fijos de
+        `l10n_py_edi_status` en vez de escribirlo tal cual (violaría el
+        Selection del campo).
+        """
+        self.ensure_one()
+        if response.get("success"):
+            result = response.get("result") or {}
+            sifen_status = result.get("status") or ""
+            if sifen_status == "Aprobado":
+                edi_status = "accepted"
+                message = _("Documento aprobado por el SIFEN")
+            else:
+                edi_status = "rejected"
+                message = _("Estado SIFEN: %s") % (
+                    sifen_status or _("desconocido")
+                )
+        else:
+            edi_status = "error"
+            message = response.get("error") or _("Error desconocido")
+        self.write(
+            {
+                "l10n_py_edi_status": edi_status,
+                "l10n_py_edi_message": message,
+            }
+        )
+        return edi_status, message
+
+    def action_open_check_status_wizard(self):
+        """Abrir el wizard de consulta manual de status EDI (SIFEN)."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "l10n_py.edi.check.status.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_invoice_id": self.id},
+        }
+
     def _target_new_tab(self, attachment_id):
         """Open an ir.attachment inline in a new browser tab."""
         if attachment_id:
@@ -1260,26 +1304,21 @@ class AccountMove(models.Model):
                 _logger.warning("Error reenviando doc contingencia %s", doc.name)
 
         # 2. Verificar estado de documentos ya enviados
+        # Bug corregido: el conector real (_sifen_check_status) espera el
+        # CDC, no el l10n_py_edi_batch_id; además el resultado ahora se
+        # persiste (antes el cuerpo del if era un `pass`).
         pending_docs = self.search(
             [
                 ("l10n_py_edi_status", "in", ["sent", "processing"]),
-                ("l10n_py_edi_batch_id", "!=", False),
+                ("l10n_py_cdc", "!=", False),
             ]
         )
 
         for doc in pending_docs:
             try:
-                connector = (
-                    self.env["l10n_py.edi.connector"]
-                    .sudo()
-                    .search([("company_id", "=", doc.company_id.id)], limit=1)
-                )
-                if not connector:
-                    continue
-                response = connector.check_status(doc.l10n_py_edi_batch_id)
-                if response.get("success"):
-                    # Actualizar estado según respuesta
-                    pass
+                connector = doc._get_edi_connector()
+                response = connector.check_status(doc.l10n_py_cdc)
+                doc._l10n_py_apply_check_status_response(response)
             except Exception as e:
                 _logger.error(
                     "Error verificando estado EDI para %s: %s",
