@@ -1021,6 +1021,15 @@ class AccountMove(models.Model):
         """Enviar documento a sistema EDI"""
         self.ensure_one()
 
+        if self.l10n_py_edi_status in ("sent", "accepted", "processing", "batch_sent"):
+            raise UserError(
+                _(
+                    "Este documento ya fue enviado o está en proceso de "
+                    "envío (estado: %s). No se puede reenviar."
+                )
+                % self.l10n_py_edi_status
+            )
+
         # Validar datos
         self._validate_edi_data()
 
