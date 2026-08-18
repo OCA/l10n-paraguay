@@ -1177,6 +1177,20 @@ class AccountMove(models.Model):
         batch_protocol = result.get("batch_protocol")
         cdc_list = result.get("cdc_list") or []
 
+        if len(cdc_list) != len(valid_moves):
+            missing_moves = valid_moves[len(cdc_list) :]
+            _logger.warning(
+                "SIFEN devolvió %s CDC(s) para %s documento(s) enviados en "
+                "el chunk de lote #%s (protocolo %s): %s documento(s) "
+                "quedan sin CDC y no se marcan como enviados: %s",
+                len(cdc_list),
+                len(valid_moves),
+                chunk_index,
+                batch_protocol,
+                len(missing_moves),
+                ", ".join(missing_moves.mapped("display_name")),
+            )
+
         for move, cdc in zip(valid_moves, cdc_list, strict=False):
             move.write(
                 {
