@@ -139,7 +139,6 @@ class L10nPyEdiReceivedEvent(models.Model):
         [
             ("draft", "Borrador"),
             ("to_send", "Por Enviar"),
-            ("sent", "Enviado"),
             ("accepted", "Aceptado"),
             ("rejected", "Rechazado"),
             ("error", "Error"),

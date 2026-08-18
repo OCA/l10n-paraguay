@@ -22,7 +22,7 @@
                     <field
                         name="state"
                         widget="statusbar"
-                        statusbar_visible="draft,to_send,sent,accepted"
+                        statusbar_visible="draft,to_send,accepted"
                     />
                 </header>
                 <sheet>
@@ -103,7 +103,7 @@
             <list
                 decoration-success="state=='accepted'"
                 decoration-danger="state in ('rejected', 'error')"
-                decoration-info="state in ('to_send', 'sent')"
+                decoration-info="state == 'to_send'"
             >
                 <field name="cdc" />
                 <field name="partner_id" />
