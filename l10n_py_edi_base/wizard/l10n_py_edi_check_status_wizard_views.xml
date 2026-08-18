@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_l10n_py_edi_check_status_wizard_form" model="ir.ui.view">
+        <field name="name">l10n_py.edi.check.status.wizard.form</field>
+        <field name="model">l10n_py.edi.check.status.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="invoice_id" readonly="1" />
+                </group>
+                <group invisible="not status">
+                    <field name="status" readonly="1" />
+                    <field name="message" readonly="1" />
+                </group>
+                <footer>
+                    <button
+                        name="action_check_status"
+                        string="Consultar"
+                        type="object"
+                        class="oe_highlight"
+                    />
+                    <button string="Cerrar" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
