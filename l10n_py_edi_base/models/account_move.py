@@ -1277,9 +1277,39 @@ class AccountMove(models.Model):
                 if not connector:
                     continue
                 response = connector.check_status(doc.l10n_py_edi_batch_id)
+                result = response.get("result") or {}
+                estado = result.get("status")
+
                 if response.get("success"):
-                    # Actualizar estado según respuesta
-                    pass
+                    doc.write(
+                        {
+                            "l10n_py_edi_status": "accepted",
+                            "l10n_py_edi_message": ("Documento aceptado exitosamente"),
+                        }
+                    )
+                    try:
+                        doc._generate_kude()
+                    except Exception as e:
+                        _logger.warning("Error generando KuDE: %s", str(e))
+                elif estado:
+                    # SIFEN respondió con un estado concreto que no es
+                    # aprobación (ej. "Rechazado")
+                    doc.write(
+                        {
+                            "l10n_py_edi_status": "rejected",
+                            "l10n_py_edi_message": (
+                                response.get("error") or f"Estado SIFEN: {estado}"
+                            ),
+                        }
+                    )
+                # else: sin `result` (ej. "Sin respuesta del SIFEN") -> no toca
+                # el estado, deja que el próximo cron reintente; solo loguea.
+                else:
+                    _logger.info(
+                        "EDI %s aún sin respuesta definitiva del SIFEN: %s",
+                        doc.name,
+                        response.get("error"),
+                    )
             except Exception as e:
                 _logger.error(
                     "Error verificando estado EDI para %s: %s",
