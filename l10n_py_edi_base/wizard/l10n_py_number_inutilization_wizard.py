@@ -1,4 +1,4 @@
-# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+# l10n_py_edi_base/wizard/l10n_py_number_inutilization_wizard.py
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -51,7 +51,9 @@ class L10nPyNumberInutilizationWizard(models.TransientModel):
             "type": "ir.actions.client",
             "tag": "display_notification",
             "params": {
+                "title": _("Inutilización Exitosa"),
                 "message": _("Inutilización enviada al SIFEN."),
                 "type": "success",
+                "sticky": False,
             },
         }
