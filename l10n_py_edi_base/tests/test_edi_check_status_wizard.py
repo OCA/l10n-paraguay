@@ -215,6 +215,51 @@ class TestEdiCheckStatusWizard(TransactionCase):
         self.assertEqual(move.l10n_py_edi_status, "accepted")
         self.assertEqual(wizard.status, "accepted")
 
+    def test_action_check_status_persists_rejected_not_error(self):
+        """success=False con result.status='Rechazado' es rechazo real del
+        SIFEN, no un error técnico: debe persistir 'rejected', nunca 'error'.
+
+        Reproduce la respuesta real de `_sifen_check_status`, que calcula
+        `success = (estado == "Aprobado")` y siempre adjunta `result.status`
+        con el estado crudo devuelto por el SIFEN, incluso cuando ese estado
+        es "Rechazado".
+        """
+        move = self._create_and_post_invoice(
+            cdc="33333333333333333333333333333333333333333", edi_status="sent"
+        )
+        wizard = self.env["l10n_py.edi.check.status.wizard"].create(
+            {"invoice_id": move.id}
+        )
+        with patch.object(
+            type(self.connector),
+            "check_status",
+            return_value={
+                "success": False,
+                "result": {"status": "Rechazado", "cdc": move.l10n_py_cdc},
+            },
+        ):
+            wizard.action_check_status()
+        self.assertEqual(move.l10n_py_edi_status, "rejected")
+        self.assertEqual(wizard.status, "rejected")
+
+    def test_action_check_status_persists_error_without_result_status(self):
+        """success=False sin result.status (error técnico/timeout) sigue
+        mapeando a 'error', para no confundirlo con un rechazo de negocio."""
+        move = self._create_and_post_invoice(
+            cdc="44444444444444444444444444444444444444444", edi_status="sent"
+        )
+        wizard = self.env["l10n_py.edi.check.status.wizard"].create(
+            {"invoice_id": move.id}
+        )
+        with patch.object(
+            type(self.connector),
+            "check_status",
+            return_value={"success": False, "error": "Sin respuesta del SIFEN"},
+        ):
+            wizard.action_check_status()
+        self.assertEqual(move.l10n_py_edi_status, "error")
+        self.assertEqual(wizard.status, "error")
+
     def test_wizard_default_get_pulls_active_id(self):
         move = self._create_and_post_invoice(
             cdc="11111111111111111111111111111111111111111"

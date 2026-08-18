@@ -298,7 +298,7 @@ class AccountMove(models.Model):
         for record in self:
             if record.l10n_py_security_code and len(record.l10n_py_security_code) != 9:
                 raise ValidationError(
-                    _("El código de seguridad debe tener " "exactamente 9 caracteres")
+                    _("El código de seguridad debe tener exactamente 9 caracteres")
                 )
 
     # ============== PRIVATE METHODS ==============
@@ -784,7 +784,7 @@ class AccountMove(models.Model):
                 errors.append(_("Autofactura: %s es obligatorio.") % desc)
         return errors
 
-    def _validate_edi_document_type(self):
+    def _validate_edi_document_type(self):  # noqa: C901
         """Validar requisitos específicos por tipo de DTE.
 
         Llamado antes del envío EDI. Retorna lista de errores.
@@ -952,17 +952,14 @@ class AccountMove(models.Model):
         Selection del campo).
         """
         self.ensure_one()
+        result = response.get("result") or {}
+        sifen_status = result.get("status") or ""
         if response.get("success"):
-            result = response.get("result") or {}
-            sifen_status = result.get("status") or ""
-            if sifen_status == "Aprobado":
-                edi_status = "accepted"
-                message = _("Documento aprobado por el SIFEN")
-            else:
-                edi_status = "rejected"
-                message = _("Estado SIFEN: %s") % (
-                    sifen_status or _("desconocido")
-                )
+            edi_status = "accepted"
+            message = _("Documento aprobado por el SIFEN")
+        elif sifen_status == "Rechazado":
+            edi_status = "rejected"
+            message = _("Estado SIFEN: %s") % sifen_status
         else:
             edi_status = "error"
             message = response.get("error") or _("Error desconocido")
@@ -1219,7 +1216,7 @@ class AccountMove(models.Model):
 
         if self.l10n_py_edi_status not in ["error", "rejected"]:
             raise UserError(
-                _("Solo se pueden reintentar documentos " "con error o rechazados")
+                _("Solo se pueden reintentar documentos con error o rechazados")
             )
 
         return self.action_send_edi()
