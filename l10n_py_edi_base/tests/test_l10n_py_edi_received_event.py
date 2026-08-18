@@ -256,8 +256,17 @@ class TestL10nPyEdiReceivedEvent(TransactionCase):
             "send_receiver_event",
             side_effect=ConnectionError("timeout mTLS"),
         ):
-            with self.assertRaises(UserError):
+            # No usamos self.assertRaises aquí a propósito: en Odoo,
+            # TransactionCase.assertRaises envuelve el bloque en un
+            # savepoint que se revierte al capturar la excepción esperada,
+            # lo que deshace el write(state='error') que queremos verificar
+            # a continuación. Un try/except simple preserva el efecto.
+            try:
                 event.action_send_receiver_event()
+            except UserError as exc:
+                self.assertIn("timeout mTLS", str(exc))
+            else:
+                self.fail("Se esperaba UserError")
         self.assertEqual(event.state, "error")
         self.assertIn("timeout mTLS", event.error_message)
 
