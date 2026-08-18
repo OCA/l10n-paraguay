@@ -353,3 +353,19 @@ class AccountAuthorization(models.Model):
             )
 
         return True
+
+    def action_open_inutilization_wizard(self):
+        """Abrir el wizard de inutilización de numeración desde el timbrado.
+
+        El modelo del wizard vive en l10n_py_edi_base (que depende de este
+        módulo); si l10n_py_edi_base no está instalado, este botón queda
+        presente en la vista pero no encuentra el res_model al hacer clic.
+        """
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "l10n_py.number.inutilization.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_authorization_id": self.id},
+        }

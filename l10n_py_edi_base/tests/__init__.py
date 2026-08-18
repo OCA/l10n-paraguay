@@ -8,3 +8,4 @@ from . import test_edi_lifecycle
 from . import test_edi_demo_scenarios
 from . import test_kude_generation
 from . import test_edi_check_status_wizard
+from . import test_number_inutilization_wizard

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_l10n_py_number_inutilization_wizard_form" model="ir.ui.view">
+        <field name="name">l10n_py.number.inutilization.wizard.form</field>
+        <field name="model">l10n_py.number.inutilization.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="authorization_id" readonly="1" />
+                    <field name="number_from" />
+                    <field name="number_to" />
+                    <field name="motive" />
+                </group>
+                <footer>
+                    <button
+                        name="action_inutilize"
+                        string="Inutilizar"
+                        type="object"
+                        class="oe_highlight"
+                    />
+                    <button string="Cancelar" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
