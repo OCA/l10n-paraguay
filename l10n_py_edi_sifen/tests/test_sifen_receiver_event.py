@@ -182,7 +182,7 @@ class TestSifenReceiverEvent(TransactionCase):
         mock_evento = self._mock_evento(mock_get_evento)
         event = self._create_event(
             event_type="notificacion_recepcion",
-            tipo_receptor="2",
+            tipo_receptor="1",
             fecha_emision_dte="2026-08-01 10:00:00",
             fecha_recepcion="2026-08-02 10:00:00",
             total_gs=2500000.0,
@@ -192,6 +192,37 @@ class TestSifenReceiverEvent(TransactionCase):
         evt = self._assert_only_field_populated(mock_evento, "rGeVeNotRec")
         self.assertEqual(evt.rGeVeNotRec.Id, self.cdc)
         self.assertEqual(evt.rGeVeNotRec.dTotalGs, Decimal("2500000.0"))
+        self.assertEqual(evt.rGeVeNotRec.dRucRec, self.company.l10n_py_ruc)
+        self.assertIsNone(evt.rGeVeNotRec.dTipIDRec)
+        self.assertIsNone(evt.rGeVeNotRec.dNumID)
+
+    # ============== 'No contribuyente' usa dTipIDRec/dNumID ==============
+
+    @patch(
+        "odoo.addons.l10n_py_edi_sifen.models.edi_connector"
+        ".EDIConnector._sifen_get_evento"
+    )
+    def test_send_notificacion_recepcion_no_contribuyente_builds_documento_alterno(
+        self, mock_get_evento
+    ):
+        """tipo_receptor='2' (No contribuyente) debe poblar dTipIDRec/dNumID
+        y NO poblar dRucRec/dDVRec en el payload transmitido."""
+        mock_evento = self._mock_evento(mock_get_evento)
+        event = self._create_event(
+            event_type="notificacion_recepcion",
+            tipo_receptor="2",
+            tipo_documento_id_receptor="2",
+            numero_documento_receptor="AB123456",
+            fecha_emision_dte="2026-08-01 10:00:00",
+            fecha_recepcion="2026-08-02 10:00:00",
+            total_gs=2500000.0,
+        )
+        event.action_send_receiver_event()
+
+        evt = self._assert_only_field_populated(mock_evento, "rGeVeNotRec")
+        self.assertEqual(evt.rGeVeNotRec.dNumID, "AB123456")
+        self.assertIsNone(evt.rGeVeNotRec.dRucRec)
+        self.assertIsNone(evt.rGeVeNotRec.dDVRec)
 
     # ============== 11. Regresión: cancelación no afectada ==============
 

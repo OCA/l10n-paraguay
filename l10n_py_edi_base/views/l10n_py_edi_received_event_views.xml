@@ -44,6 +44,16 @@
                                 required="event_type in ('desconocimiento', 'notificacion_recepcion')"
                             />
                             <field
+                                name="tipo_documento_id_receptor"
+                                invisible="tipo_receptor != '2' or event_type not in ('desconocimiento', 'notificacion_recepcion')"
+                                required="tipo_receptor == '2' and event_type in ('desconocimiento', 'notificacion_recepcion')"
+                            />
+                            <field
+                                name="numero_documento_receptor"
+                                invisible="tipo_receptor != '2' or event_type not in ('desconocimiento', 'notificacion_recepcion')"
+                                required="tipo_receptor == '2' and event_type in ('desconocimiento', 'notificacion_recepcion')"
+                            />
+                            <field
                                 name="tipo_conformidad"
                                 invisible="event_type != 'conformidad'"
                                 required="event_type == 'conformidad'"

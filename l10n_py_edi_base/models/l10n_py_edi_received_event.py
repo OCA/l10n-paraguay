@@ -95,6 +95,26 @@ class L10nPyEdiReceivedEvent(models.Model):
         "técnico SIFEN vigente.",
     )
 
+    tipo_documento_id_receptor = fields.Selection(
+        [
+            ("1", "Cédula paraguaya"),
+            ("2", "Pasaporte"),
+            ("3", "Cédula extranjera"),
+            ("4", "Carnet de residencia"),
+            ("5", "Innominado"),
+        ],
+        string="Tipo de Documento (No Contribuyente)",
+        help="dTipIDRec. Obligatorio cuando 'Tipo de Receptor' = No "
+        "contribuyente. Rótulos placeholder, a confirmar según el manual "
+        "técnico SIFEN vigente.",
+    )
+
+    numero_documento_receptor = fields.Char(
+        string="Número de Documento (No Contribuyente)",
+        size=20,
+        help="dNumID. Obligatorio cuando 'Tipo de Receptor' = No " "contribuyente.",
+    )
+
     tipo_conformidad = fields.Selection(
         [
             ("1", "Conforme"),
@@ -206,6 +226,27 @@ class L10nPyEdiReceivedEvent(models.Model):
                     _("CDC inválido para el evento de receptor: %s") % error
                 )
 
+    @api.constrains(
+        "tipo_receptor", "tipo_documento_id_receptor", "numero_documento_receptor"
+    )
+    def _check_documento_no_contribuyente(self):
+        """Cuando el receptor es 'No contribuyente' (tipo_receptor='2'), el
+        SIFEN identifica a la empresa por documento alternativo (dTipIDRec/
+        dNumID) en vez de RUC (dRucRec/dDVRec). No permite guardar el evento
+        sin esos campos, para no descubrir el payload incompleto sólo al
+        transmitir."""
+        for rec in self:
+            if rec.tipo_receptor != "2":
+                continue
+            if not rec.tipo_documento_id_receptor or not rec.numero_documento_receptor:
+                raise ValidationError(
+                    _(
+                        "Para 'Tipo de Receptor' = No contribuyente, informe "
+                        "el Tipo y Número de Documento del receptor "
+                        "(dTipIDRec/dNumID)."
+                    )
+                )
+
     def _get_missing_fields_for_type(self, raise_error=True):
         """Devuelve (y opcionalmente levanta) los campos condicionales
         faltantes según el `event_type` del registro.
@@ -219,6 +260,10 @@ class L10nPyEdiReceivedEvent(models.Model):
         missing = []
         if self.event_type in _REQUIRE_TIPO_RECEPTOR and not self.tipo_receptor:
             missing.append(_("Tipo de Receptor"))
+        if self.tipo_receptor == "2" and not self.tipo_documento_id_receptor:
+            missing.append(_("Tipo de Documento (No Contribuyente)"))
+        if self.tipo_receptor == "2" and not self.numero_documento_receptor:
+            missing.append(_("Número de Documento (No Contribuyente)"))
         if self.event_type == "conformidad" and not self.tipo_conformidad:
             missing.append(_("Tipo de Conformidad"))
         if self.event_type in _REQUIRE_FECHA_EMISION and not self.fecha_emision_dte:
@@ -338,11 +383,10 @@ class L10nPyEdiReceivedEvent(models.Model):
                     "dFecRecep": self.fecha_recepcion,
                     "iTipRec": self.tipo_receptor,
                     "dNomRec": company.name,
-                    "dRucRec": company.l10n_py_ruc,
-                    "dDVRec": company.l10n_py_dv,
                     "dTotalGs": self.total_gs,
                 }
             )
+            vals.update(self._receptor_identificacion_vals())
         elif self.event_type == "conformidad":
             vals.update(
                 {
@@ -359,12 +403,29 @@ class L10nPyEdiReceivedEvent(models.Model):
                     "dFecRecep": self.fecha_recepcion,
                     "iTipRec": self.tipo_receptor,
                     "dNomRec": company.name,
-                    "dRucRec": company.l10n_py_ruc,
-                    "dDVRec": company.l10n_py_dv,
                     "mOtEve": self.motivo,
                 }
             )
+            vals.update(self._receptor_identificacion_vals())
         return vals
+
+    def _receptor_identificacion_vals(self):
+        """Identificación de la propia empresa como receptor en el payload.
+
+        `tipo_receptor='1'` (Contribuyente) usa RUC/DV (dRucRec/dDVRec);
+        `tipo_receptor='2'` (No contribuyente) usa el documento alternativo
+        (dTipIDRec/dNumID), nunca ambos a la vez (ver constraint
+        `_check_documento_no_contribuyente`)."""
+        self.ensure_one()
+        if self.tipo_receptor == "2":
+            return {
+                "dTipIDRec": self.tipo_documento_id_receptor,
+                "dNumID": self.numero_documento_receptor,
+            }
+        return {
+            "dRucRec": self.company_id.l10n_py_ruc,
+            "dDVRec": self.company_id.l10n_py_dv,
+        }
 
     def _log_attempt(self, connector, response, error=None):
         """Registra la tentativa (éxito o fallo) en l10n_py.edi.log."""

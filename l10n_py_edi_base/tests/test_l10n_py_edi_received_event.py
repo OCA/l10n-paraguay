@@ -184,6 +184,32 @@ class TestL10nPyEdiReceivedEvent(TransactionCase):
             mock_send.assert_called_once()
         self.assertEqual(event.state, "accepted")
 
+    def test_no_contribuyente_requiere_documento_alterno(self):
+        """tipo_receptor='2' (No contribuyente) sin dTipIDRec/dNumID no se
+        puede guardar; con ambos, pasa."""
+        with self.assertRaises(ValidationError):
+            self._create_event(
+                event_type="notificacion_recepcion",
+                tipo_receptor="2",
+                fecha_emision_dte="2026-08-01 10:00:00",
+                fecha_recepcion="2026-08-02 10:00:00",
+                total_gs=1000000.0,
+            )
+
+        event = self._create_event(
+            event_type="notificacion_recepcion",
+            tipo_receptor="2",
+            tipo_documento_id_receptor="2",
+            numero_documento_receptor="AB123456",
+            fecha_emision_dte="2026-08-01 10:00:00",
+            fecha_recepcion="2026-08-02 10:00:00",
+            total_gs=1000000.0,
+        )
+        self.assertEqual(event.numero_documento_receptor, "AB123456")
+
+        with self.assertRaises(ValidationError):
+            event.numero_documento_receptor = False
+
     # ============== 2. Prefill desde move_id ==============
 
     def test_notificacion_recepcion_prefills_from_move(self):
