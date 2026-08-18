@@ -136,4 +136,18 @@
             </xpath>
         </field>
     </record>
+
+    <!-- Acción de servidor en masa: envío en lote a SIFEN sobre la
+         selección múltiple de la lista de facturas (Etapa manual, sin
+         wizard modal: no hay datos adicionales que recolectar del
+         usuario). action_send_edi_batch ya filtra internamente los
+         documentos que no están en 'to_send'. -->
+    <record id="action_server_send_edi_batch" model="ir.actions.server">
+        <field name="name">Enviar en lote a SIFEN</field>
+        <field name="model_id" ref="account.model_account_move" />
+        <field name="binding_model_id" ref="account.model_account_move" />
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_send_edi_batch()</field>
+    </record>
 </odoo>
