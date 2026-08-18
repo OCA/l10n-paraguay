@@ -5,22 +5,28 @@
         <field name="model">l10n_py.edi.check.status.wizard</field>
         <field name="arch" type="xml">
             <form>
-                <group>
-                    <field name="invoice_id" readonly="1" />
-                </group>
-                <group invisible="not status">
-                    <field name="status" readonly="1" />
-                    <field name="message" readonly="1" />
-                </group>
-                <footer>
-                    <button
-                        name="action_check_status"
-                        string="Consultar"
-                        type="object"
-                        class="oe_highlight"
-                    />
-                    <button string="Cerrar" special="cancel" />
-                </footer>
+                <sheet>
+                    <group>
+                        <field name="invoice_id" readonly="1" />
+                    </group>
+                    <group invisible="not status">
+                        <field name="status" readonly="1" />
+                        <field name="message" readonly="1" />
+                    </group>
+                    <footer>
+                        <button
+                            name="action_check_status"
+                            string="Consultar"
+                            type="object"
+                            class="oe_highlight"
+                        />
+                        <button
+                            string="Cerrar"
+                            class="btn-secondary"
+                            special="cancel"
+                        />
+                    </footer>
+                </sheet>
             </form>
         </field>
     </record>

@@ -5,21 +5,27 @@
         <field name="model">l10n_py.number.inutilization.wizard</field>
         <field name="arch" type="xml">
             <form>
-                <group>
-                    <field name="authorization_id" readonly="1" />
-                    <field name="number_from" />
-                    <field name="number_to" />
-                    <field name="motive" />
-                </group>
-                <footer>
-                    <button
-                        name="action_inutilize"
-                        string="Inutilizar"
-                        type="object"
-                        class="oe_highlight"
-                    />
-                    <button string="Cancelar" special="cancel" />
-                </footer>
+                <sheet>
+                    <group>
+                        <field name="authorization_id" readonly="1" />
+                        <field name="number_from" />
+                        <field name="number_to" />
+                        <field name="motive" />
+                    </group>
+                    <footer>
+                        <button
+                            name="action_inutilize"
+                            string="Inutilizar"
+                            type="object"
+                            class="oe_highlight"
+                        />
+                        <button
+                            string="Cancelar"
+                            class="btn-secondary"
+                            special="cancel"
+                        />
+                    </footer>
+                </sheet>
             </form>
         </field>
     </record>
