@@ -163,6 +163,34 @@ class TestBatchFileDispatch(AccountTestInvoicingCommon):
         handler.assert_called_once()
         self.assertIs(result, sentinel)
 
+    def test_dispatches_to_api_handler_when_export_mode_is_api(self):
+        """When a bank's export_mode is 'api', the framework calls
+        '_l10n_py_dispatch_batch_api_<code>' instead of
+        '_l10n_py_generate_batch_file_<code>' -- this is the hook a
+        direct-API exporter module (e.g. the Banco Atlas one) relies on."""
+        order = self._create_order()
+        bank = order.company_partner_bank_id.bank_id
+        bank.l10n_py_sipap_export_code = "dummy_api_format"
+        bank.l10n_py_sipap_export_mode = "api"
+
+        sentinel = object()
+        with mock.patch.object(
+            AccountPaymentOrder,
+            "_l10n_py_dispatch_batch_api_dummy_api_format",
+            create=True,
+            return_value=sentinel,
+        ) as handler:
+            result = order._l10n_py_generate_batch_file()
+        handler.assert_called_once()
+        self.assertIs(result, sentinel)
+
+    def test_file_mode_is_the_default_and_unaffected(self):
+        """Existing behavior (export_mode defaults to 'file') must be
+        unchanged by this task -- regression guard."""
+        order = self._create_order()
+        bank = order.company_partner_bank_id.bank_id
+        self.assertEqual(bank.l10n_py_sipap_export_mode, "file")
+
     def test_generate_payment_file_dispatches_for_sipap_method(self):
         """generate_payment_file() delegates to the SIPAP framework only
         when the order's payment method is the SIPAP batch method."""

@@ -8,6 +8,10 @@
             <group name="bank_details" position="inside">
                 <field name="l10n_py_sipap_bank_code" />
                 <field name="l10n_py_sipap_export_code" />
+                <field
+                    name="l10n_py_sipap_export_mode"
+                    invisible="not l10n_py_sipap_export_code"
+                />
             </group>
         </field>
     </record>

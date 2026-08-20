@@ -63,7 +63,13 @@ class AccountPaymentOrder(models.Model):
                     bank=company_bank_account.bank_id.display_name,
                 )
             )
-        handler_name = f"_l10n_py_generate_batch_file_{export_code}"
+        export_mode = company_bank_account.bank_id.l10n_py_sipap_export_mode
+        handler_prefix = (
+            "_l10n_py_dispatch_batch_api_"
+            if export_mode == "api"
+            else "_l10n_py_generate_batch_file_"
+        )
+        handler_name = f"{handler_prefix}{export_code}"
         handler = getattr(self, handler_name, None)
         if handler is None:
             raise UserError(

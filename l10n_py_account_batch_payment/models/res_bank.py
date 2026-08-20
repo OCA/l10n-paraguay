@@ -25,3 +25,14 @@ class ResBank(models.Model):
         "mensaje de error explícito, en lugar de producir un archivo "
         "en un formato no confirmado.",
     )
+    l10n_py_sipap_export_mode = fields.Selection(
+        [("file", "Archivo (subida manual)"), ("api", "API directa")],
+        string="Modo de Exportación SIPAP",
+        default="file",
+        help="'Archivo' resuelve contra "
+        "'_l10n_py_generate_batch_file_<code>' (comportamiento histórico "
+        "de este framework: produce un archivo para subir manualmente al "
+        "home banking). 'API directa' resuelve en cambio contra "
+        "'_l10n_py_dispatch_batch_api_<code>', para bancos que exponen "
+        "una API de disparo directo (por ejemplo Banco Atlas).",
+    )
