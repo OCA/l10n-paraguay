@@ -23,6 +23,9 @@ import requests
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 
+from odoo import _
+from odoo.exceptions import UserError
+
 
 def _b64url_encode(raw_bytes: bytes) -> str:
     """Base64url without padding, as required by JWT (RFC 7519)."""
@@ -32,9 +35,12 @@ def _b64url_encode(raw_bytes: bytes) -> str:
 class AtlasApiClient:
     """Client for one Banco Atlas bank account's credentials.
 
-    Full constructor and ``call()``/``_verify_response_jwt()`` are added in
-    Task 3; this task only adds the pure, database-free JWT builder so it
-    can be unit-tested without an Odoo environment.
+    NOTE: this client does NOT verify the bank's response signature.
+    ``atlas_bank_public_key_pem`` is collected and stored on the bank
+    account, but no ``_verify_response_jwt()`` method exists yet -- a
+    tampered or spoofed response would not be detected. This is a known,
+    documented gap (see ``l10n_py_account_payment_atlas``'s README), not
+    an oversight of this docstring.
     """
 
     @staticmethod
@@ -102,7 +108,38 @@ class AtlasApiClient:
     @classmethod
     def from_bank_account(cls, bank_account):
         """Build a client from a Banco-Atlas-enabled ``res.partner.bank``
-        record (fields added in Task 4)."""
+        record. Raises a clear ``UserError`` for every misconfiguration
+        that would otherwise surface as an opaque ``KeyError`` or
+        ``requests`` exception deep inside ``call()``."""
+        if not bank_account or not bank_account.atlas_enabled:
+            raise UserError(
+                _(
+                    "Esta cuenta bancaria no está configurada para el "
+                    "Banco Atlas (falta habilitar 'Banco Atlas' en la "
+                    "cuenta bancaria)."
+                )
+            )
+        if not bank_account.atlas_environment:
+            raise UserError(
+                _(
+                    "La cuenta bancaria '%(account)s' no tiene un "
+                    "entorno Atlas (Testing/Producción) configurado.",
+                    account=bank_account.display_name,
+                )
+            )
+        if (
+            bank_account.atlas_environment == "production"
+            and not bank_account.atlas_production_url
+        ):
+            raise UserError(
+                _(
+                    "La cuenta bancaria '%(account)s' está configurada "
+                    "para el entorno de Producción del Banco Atlas, pero "
+                    "no tiene la URL de producción configurada. "
+                    "Complétela antes de continuar.",
+                    account=bank_account.display_name,
+                )
+            )
         environment_urls = {
             "testing": "https://secure2.atlas.com.py:8443",
             "production": bank_account.atlas_production_url or "",
@@ -144,14 +181,40 @@ class AtlasApiClient:
             "X-Atl-Auth": token,
             "Content-Type": "application/json",
         }
-        response = requests.request(
-            method,
-            f"{self.environment_url}{path}",
-            headers=headers,
-            json=body,
-            timeout=30,
-        )
-        response_json = response.json()
+        try:
+            response = requests.request(
+                method,
+                f"{self.environment_url}{path}",
+                headers=headers,
+                json=body,
+                timeout=30,
+            )
+        except requests.exceptions.RequestException as exc:
+            raise AtlasApiError(
+                code=None,
+                message=_(
+                    "No se pudo conectar con el Banco Atlas (%(url)s): " "%(error)s",
+                    url=f"{self.environment_url}{path}",
+                    error=str(exc),
+                ),
+                error_type="CONNECTION",
+            ) from exc
+
+        try:
+            response_json = response.json()
+        except ValueError as exc:
+            raw_excerpt = (response.text or "")[:200]
+            raise AtlasApiError(
+                code=response.status_code,
+                message=_(
+                    "El Banco Atlas devolvió una respuesta no-JSON (HTTP "
+                    "%(status)s): %(excerpt)r",
+                    status=response.status_code,
+                    excerpt=raw_excerpt,
+                ),
+                error_type="INVALID_RESPONSE",
+            ) from exc
+
         if response.status_code != 200:
             raise AtlasApiError(
                 code=response_json.get("code"),
@@ -175,8 +238,14 @@ class AtlasApiClient:
         )
 
 
-class AtlasApiError(Exception):
-    """Raised for any non-200 response from a Banco Atlas API.
+class AtlasApiError(UserError):
+    """Raised for any non-200 response from a Banco Atlas API, and for
+    transport-level failures (connection errors, timeouts, non-JSON
+    responses) that would otherwise surface as an opaque traceback.
+
+    Subclasses ``UserError`` (per spec §2.4) so a bank-side rejection or
+    a transport failure surfaces as a proper Odoo user-facing error
+    dialog instead of an uncaught exception.
 
     Every Banco Atlas API uses the same error body shape:
     ``{"code": ..., "message": ..., "type": ..., "useApiMessage": ...}``.

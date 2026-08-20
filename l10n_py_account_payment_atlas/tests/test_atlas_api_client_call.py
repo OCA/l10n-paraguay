@@ -94,8 +94,9 @@ class TestAtlasApiClientCall(TransactionCase):
         client.call("POST", "/proveedores/123456/registrar-pago", body={"a": 1})
         _, post_kwargs = mock_request.call_args
         # Both calls must succeed and send a JWT; the content-hash claim
-        # itself is internal to the JWT payload (opaque, checked in Task 2's
-        # tests) -- this test only asserts both call shapes work end-to-end.
+        # itself is internal to the JWT payload (opaque, checked in
+        # test_atlas_api_client_jwt.py) -- this test only asserts both
+        # call shapes work end-to-end.
         self.assertIn("X-Atl-Auth", get_kwargs["headers"])
         self.assertIn("X-Atl-Auth", post_kwargs["headers"])
         self.assertEqual(post_kwargs["json"], {"a": 1})
