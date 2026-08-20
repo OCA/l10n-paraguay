@@ -425,16 +425,37 @@ module’s CONFIGURE.md.</li>
 </div>
 <div class="section" id="configuration">
 <h1><a class="toc-backref" href="#toc-entry-1">Configuration</a></h1>
-<ol class="arabic simple">
-<li>Configure the company’s own bank account (<tt class="docutils literal">res.partner.bank</tt>) as a
-Banco Atlas account (see <tt class="docutils literal">l10n_py_account_payment_atlas</tt>).</li>
-<li>On the relevant <tt class="docutils literal">res.bank</tt> (the beneficiary’s OR the company’s own
+<ol class="arabic">
+<li><p class="first">Configure the company’s own bank account (<tt class="docutils literal">res.partner.bank</tt>) as a
+Banco Atlas account (see <tt class="docutils literal">l10n_py_account_payment_atlas</tt>).</p>
+</li>
+<li><p class="first">On the relevant <tt class="docutils literal">res.bank</tt> (the beneficiary’s OR the company’s own
 bank – whichever this payment method targets), set “Formato de
 Exportación SIPAP” to <tt class="docutils literal">atlas</tt> and “Modo de Exportación SIPAP” to
-“API directa”.</li>
-<li>Add the “SIPAP Batch File” payment method to the relevant bank
+“API directa”.</p>
+</li>
+<li><p class="first">Add the “SIPAP Batch File” payment method to the relevant bank
 journal (see <tt class="docutils literal">l10n_py_account_batch_payment</tt>’s own CONFIGURE.md for
-that step – unchanged by this module).</li>
+that step – unchanged by this module).</p>
+</li>
+<li><p class="first">Mark the newly-added “SIPAP Batch File” line as <strong>Selectable</strong>. This
+is a property of the underlying <tt class="docutils literal">account_payment_batch_oca</tt>
+framework’s <tt class="docutils literal">account.payment.method.line</tt> model: new lines default
+to <tt class="docutils literal">selectable = False</tt>, so the method will NOT appear as a
+choosable option in a new Payment Order’s “Payment Method” field
+until this is turned on. You can toggle it either:</p>
+<ul class="simple">
+<li>inline, in the journal’s own “Outgoing Payments” tab, by clicking
+the “Selectable” toggle column on the “SIPAP Batch File” row; or</li>
+<li>via Accounting &gt; Configuration &gt; Management &gt; Payment Methods,
+opening the “SIPAP Batch File” line and checking “Selectable”
+there.</li>
+</ul>
+<p>No developer mode is required for either path – this cost
+significant time to diagnose during live testing because it is easy
+to add the payment method to the journal and assume it is immediately
+usable.</p>
+</li>
 </ol>
 <p>Known limitation: the Atlas credential fields (API Key, private key PEM,
 auth token) are restricted to the Accounting Manager group

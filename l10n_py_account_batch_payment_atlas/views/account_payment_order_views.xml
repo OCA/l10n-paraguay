@@ -26,4 +26,18 @@
             </xpath>
         </field>
     </record>
+
+    <record id="view_account_payment_order_form_atlas" model="ir.ui.view">
+        <field name="name">account.payment.order.form.atlas</field>
+        <field name="model">account.payment.order</field>
+        <field
+            name="inherit_id"
+            ref="account_payment_batch_oca.account_payment_order_form"
+        />
+        <field name="arch" type="xml">
+            <field name="company_partner_bank_id" position="after">
+                <field name="l10n_py_atlas_tipo_transferencia" />
+            </field>
+        </field>
+    </record>
 </odoo>
