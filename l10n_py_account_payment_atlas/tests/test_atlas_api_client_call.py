@@ -1,11 +1,13 @@
 # Copyright 2026 KMEE
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 
-import unittest
 from unittest import mock
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
+
+from odoo.tests import tagged
+from odoo.tests.common import TransactionCase
 
 from odoo.addons.l10n_py_account_payment_atlas.models.atlas_api_client import (
     AtlasApiClient,
@@ -29,7 +31,8 @@ def _client():
     )
 
 
-class TestAtlasApiClientCall(unittest.TestCase):
+@tagged("post_install", "-at_install", "l10n_py")
+class TestAtlasApiClientCall(TransactionCase):
     @mock.patch(
         "odoo.addons.l10n_py_account_payment_atlas.models.atlas_api_client.requests.request"
     )
@@ -96,7 +99,3 @@ class TestAtlasApiClientCall(unittest.TestCase):
         self.assertIn("X-Atl-Auth", get_kwargs["headers"])
         self.assertIn("X-Atl-Auth", post_kwargs["headers"])
         self.assertEqual(post_kwargs["json"], {"a": 1})
-
-
-if __name__ == "__main__":
-    unittest.main()

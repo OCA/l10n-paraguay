@@ -3,9 +3,11 @@
 
 import base64
 import json
-import unittest
 
 from cryptography.hazmat.primitives.asymmetric import rsa
+
+from odoo.tests import tagged
+from odoo.tests.common import TransactionCase
 
 from odoo.addons.l10n_py_account_payment_atlas.models.atlas_api_client import (
     AtlasApiClient,
@@ -26,7 +28,8 @@ def _pem(key):
     ).decode()
 
 
-class TestAtlasApiClientJwt(unittest.TestCase):
+@tagged("post_install", "-at_install", "l10n_py")
+class TestAtlasApiClientJwt(TransactionCase):
     def test_jwt_has_three_dot_separated_base64url_segments(self):
         token = AtlasApiClient.build_jwt(
             private_key_pem=_pem(_TEST_PRIVATE_KEY),
@@ -62,7 +65,3 @@ class TestAtlasApiClientJwt(unittest.TestCase):
         payload = json.loads(base64.urlsafe_b64decode(payload_b64))
         self.assertNotIn("auth", payload)
         self.assertNotIn("content-hash", payload)
-
-
-if __name__ == "__main__":
-    unittest.main()
