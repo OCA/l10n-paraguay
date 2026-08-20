@@ -76,10 +76,33 @@ class AtlasApiClient:
         )
         signing_input = f"{header_b64}.{payload_b64}".encode()
 
-        private_key = serialization.load_pem_private_key(
-            private_key_pem.encode(), password=None
-        )
-        signature = private_key.sign(signing_input, padding.PKCS1v15(), hashes.SHA256())
+        if not private_key_pem:
+            raise AtlasApiError(
+                code=None,
+                message=_(
+                    "Falta configurar la clave privada (PEM) de Banco "
+                    "Atlas en esta cuenta bancaria."
+                ),
+                error_type="MISSING_CREDENTIALS",
+            )
+
+        try:
+            private_key = serialization.load_pem_private_key(
+                private_key_pem.encode(), password=None
+            )
+            signature = private_key.sign(
+                signing_input, padding.PKCS1v15(), hashes.SHA256()
+            )
+        except ValueError as exc:
+            raise AtlasApiError(
+                code=None,
+                message=_(
+                    "La clave privada (PEM) de Banco Atlas configurada en "
+                    "esta cuenta no es válida. Verifique que el formato "
+                    "sea PEM/PKCS8 correcto."
+                ),
+                error_type="INVALID_CREDENTIALS",
+            ) from exc
         signature_b64 = _b64url_encode(signature)
 
         return f"{header_b64}.{payload_b64}.{signature_b64}"
@@ -161,6 +184,16 @@ class AtlasApiClient:
         responsibility (this client is a thin, side-effect-transparent
         transport layer).
         """
+        if not self.api_key:
+            raise AtlasApiError(
+                code=None,
+                message=_(
+                    "Falta configurar la API Key de Banco Atlas en esta "
+                    "cuenta bancaria."
+                ),
+                error_type="MISSING_CREDENTIALS",
+            )
+
         timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat()
         content_hash = None
         raw_body = None

@@ -100,3 +100,37 @@ class TestAtlasApiClientCall(TransactionCase):
         self.assertIn("X-Atl-Auth", get_kwargs["headers"])
         self.assertIn("X-Atl-Auth", post_kwargs["headers"])
         self.assertEqual(post_kwargs["json"], {"a": 1})
+
+    def test_call_with_empty_api_key_raises_clean_error(self):
+        client = AtlasApiClient(
+            api_key=False,
+            environment_url="https://secure2.atlas.com.py:8443",
+            private_key_pem=_TEST_PRIVATE_KEY_PEM,
+        )
+        with self.assertRaises(AtlasApiError) as ctx:
+            client.call("GET", "/cuentas/123456/saldo")
+        self.assertIn("API Key", str(ctx.exception))
+
+    def test_call_with_empty_private_key_pem_raises_clean_error(self):
+        client = AtlasApiClient(
+            api_key="test-api-key",
+            environment_url="https://secure2.atlas.com.py:8443",
+            private_key_pem=False,
+        )
+        with self.assertRaises(AtlasApiError) as ctx:
+            client.call("GET", "/cuentas/123456/saldo")
+        self.assertIn("clave privada", str(ctx.exception))
+
+    def test_call_with_malformed_private_key_pem_raises_clean_error(self):
+        client = AtlasApiClient(
+            api_key="test-api-key",
+            environment_url="https://secure2.atlas.com.py:8443",
+            private_key_pem=(
+                "-----BEGIN PRIVATE KEY-----\n"
+                "not-a-real-base64-key-body\n"
+                "-----END PRIVATE KEY-----\n"
+            ),
+        )
+        with self.assertRaises(AtlasApiError) as ctx:
+            client.call("GET", "/cuentas/123456/saldo")
+        self.assertIn("no es válida", str(ctx.exception))
