@@ -19,11 +19,31 @@ class AccountPaymentLine(models.Model):
     )
     atlas_nro_orden = fields.Integer(string="N.º de Orden Atlas")
     atlas_error_codigo = fields.Char(string="Código de Resultado Atlas")
-    atlas_error_mensaje = fields.Char(string="Mensaje de Resultado Atlas")
+    atlas_error_mensaje = fields.Char(
+        string="Mensaje de Resultado Atlas",
+        help="Mensaje/motivo crudo devuelto por el banco en el último "
+        "intento (envío, consulta de status) -- para auditoría/display. "
+        "Separado de atlas_estado, que es el estado de ciclo de vida "
+        "usado por el cron de polling para decidir qué sigue pendiente.",
+    )
+    atlas_estado = fields.Char(
+        string="Estado Atlas",
+        help="Estado de liquidación/ciclo de vida de esta línea en Banco "
+        "Atlas (por ejemplo 'sent', 'confirmed', 'rejected', "
+        "'reversed') -- separado de atlas_error_mensaje, que guarda el "
+        "mensaje crudo del banco. El cron de polling usa este campo "
+        "(no atlas_error_mensaje) para decidir qué líneas siguen "
+        "pendientes de confirmación.",
+    )
+    atlas_reversal_reference = fields.Char(
+        string="Referencia de Reversión Atlas",
+        help="Número de operación de reversión devuelto por el banco "
+        "(campo 'numeroOperacion' de reversar-pago).",
+    )
 
     def action_atlas_reversar_pago(self):
-        """Request a reversal from Banco Atlas via
-        POST /proveedores/{cuenta}/reversar-pago.
+        """Request a reversal from Banco Atlas via POST
+        /proveedores-atlas/v1.5.0/proveedores/{cuenta}/reversar-pago.
 
         Open question the bank has not answered yet (spec §4.5): whether
         'nroFactura' in this endpoint means the bank's own nroOrden or
@@ -36,12 +56,20 @@ class AccountPaymentLine(models.Model):
             client = AtlasApiClient.from_bank_account(bank_account)
             result = client.call(
                 "POST",
-                f"/proveedores/{bank_account.atlas_numero_cuenta}/reversar-pago",
+                f"/proveedores-atlas/v1.5.0/proveedores/"
+                f"{bank_account.atlas_numero_cuenta}/reversar-pago",
                 body={
                     "nroFactura": str(line.atlas_nro_orden),
                     "observacion": _("Reversión solicitada desde Odoo"),
                 },
             )
-            line.atlas_error_mensaje = _(
-                "Reversión solicitada: %(op)s", op=result.get("numeroOperacion")
+            # atlas_error_mensaje keeps the ORIGINAL dispatch message
+            # intact (audit trail of the bank's per-attempt reason) --
+            # the reversal moves the lifecycle state instead, and its own
+            # confirmation reference goes to a dedicated field.
+            line.write(
+                {
+                    "atlas_estado": "reversed",
+                    "atlas_reversal_reference": result.get("numeroOperacion"),
+                }
             )

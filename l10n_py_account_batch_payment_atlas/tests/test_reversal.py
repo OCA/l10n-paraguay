@@ -87,11 +87,20 @@ class TestAtlasReversal(AccountTestInvoicingCommon):
                 "currency_id": self.env.ref("base.PYG", raise_if_not_found=False).id
                 or self.env["res.currency"].create({"name": "PYG_TEST"}).id,
                 "atlas_nro_orden": 765313,
+                "atlas_estado": "sent",
+                "atlas_error_mensaje": "Aprobado",
             }
         )
         line.action_atlas_reversar_pago()
         mock_call.assert_called_once_with(
             "POST",
-            "/proveedores/763797/reversar-pago",
+            "/proveedores-atlas/v1.5.0/proveedores/763797/reversar-pago",
             body={"nroFactura": "765313", "observacion": mock.ANY},
         )
+        # I3: reversal moves the lifecycle state and records its own
+        # confirmation reference, WITHOUT clobbering the original
+        # dispatch message (audit trail of the bank's per-attempt
+        # reason for THIS line).
+        self.assertEqual(line.atlas_estado, "reversed")
+        self.assertEqual(line.atlas_reversal_reference, "765313")
+        self.assertEqual(line.atlas_error_mensaje, "Aprobado")

@@ -72,7 +72,7 @@ class TestAtlasPolling(AccountTestInvoicingCommon):
             )
         cls.method_line = method_line
 
-    def _pending_line(self, nro_orden=888853):
+    def _pending_line(self, nro_orden=888853, atlas_estado=False):
         order = self.env["account.payment.order"].create(
             {
                 "payment_type": "outbound",
@@ -90,6 +90,7 @@ class TestAtlasPolling(AccountTestInvoicingCommon):
                 "amount_currency": 1000,
                 "currency_id": currency.id,
                 "atlas_nro_orden": nro_orden,
+                "atlas_estado": atlas_estado,
             }
         )
 
@@ -103,7 +104,13 @@ class TestAtlasPolling(AccountTestInvoicingCommon):
             {"nroOrden": 888853, "estado": "CONCRETADA"},
         ]
         self.env["account.payment.order"]._l10n_py_atlas_cron_poll_pending()
+        self.assertEqual(line.atlas_estado, "confirmed")
         self.assertEqual(line.atlas_error_mensaje, "CONCRETADA")
+        # C3: same product prefix as every other Atlas API call.
+        args, _kwargs = mock_call.call_args
+        self.assertEqual(
+            args[1], "/proveedores-atlas/v1.5.0/proveedores/763797/consultar-pago"
+        )
 
     @mock.patch(
         "odoo.addons.l10n_py_account_payment_atlas.models.atlas_api_client."
@@ -118,4 +125,39 @@ class TestAtlasPolling(AccountTestInvoicingCommon):
             {"nroOrden": 111111, "estado": "CONCRETADA"},
         ]
         self.env["account.payment.order"]._l10n_py_atlas_cron_poll_pending()
+        self.assertFalse(line.atlas_estado)
         self.assertFalse(line.atlas_error_mensaje)
+
+    @mock.patch(
+        "odoo.addons.l10n_py_account_payment_atlas.models.atlas_api_client."
+        "AtlasApiClient.call"
+    )
+    def test_poll_finds_a_line_already_dispatched_with_sent_status(self, mock_call):
+        """I3 regression: a real post-dispatch line already carries a
+        non-empty atlas_error_mensaje (e.g. 'Aprobado') right after
+        _l10n_py_dispatch_batch_api_atlas() -- the OLD domain
+        ("atlas_error_mensaje", "=", False) would never match it, making
+        the cron permanently inert. The new domain keys on atlas_estado
+        instead, so a line dispatched with atlas_estado='sent' (and
+        atlas_error_mensaje already set to 'Aprobado') must still be
+        picked up."""
+        line = self._pending_line(nro_orden=767348, atlas_estado="sent")
+        line.atlas_error_mensaje = "Aprobado"
+        mock_call.return_value = [
+            {"nroOrden": 767348, "estado": "CONCRETADA"},
+        ]
+        self.env["account.payment.order"]._l10n_py_atlas_cron_poll_pending()
+        self.assertEqual(line.atlas_estado, "confirmed")
+
+    @mock.patch(
+        "odoo.addons.l10n_py_account_payment_atlas.models.atlas_api_client."
+        "AtlasApiClient.call"
+    )
+    def test_poll_skips_lines_already_in_a_terminal_state(self, mock_call):
+        """A line already 'confirmed'/'rejected'/'reversed' must not be
+        included in the search at all -- regression guard for the new
+        domain."""
+        self._pending_line(nro_orden=555555, atlas_estado="confirmed")
+        mock_call.return_value = []
+        self.env["account.payment.order"]._l10n_py_atlas_cron_poll_pending()
+        mock_call.assert_not_called()

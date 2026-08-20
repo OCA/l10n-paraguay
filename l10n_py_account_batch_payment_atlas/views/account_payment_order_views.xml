@@ -18,8 +18,10 @@
                         invisible="not atlas_nro_orden"
                     />
                     <field name="atlas_nro_orden" readonly="1" />
+                    <field name="atlas_estado" readonly="1" />
                     <field name="atlas_error_codigo" readonly="1" />
                     <field name="atlas_error_mensaje" readonly="1" />
+                    <field name="atlas_reversal_reference" readonly="1" />
                 </group>
             </xpath>
         </field>

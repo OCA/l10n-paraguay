@@ -107,6 +107,41 @@ class TestAtlasRouting(AccountTestInvoicingCommon):
         with self.assertRaises(UserError):
             order._check_l10n_py_atlas_routing()
 
+    def test_many_small_pyg_lines_summing_above_limit_still_route_to_spi(self):
+        """I9/§50.01: the Gs. 5.000.000 limit is PER TRANSFER, not per
+        batch total. Ten lines of Gs. 1.000.000 each (sum: Gs. 10.000.000,
+        well above the limit) must still be allowed to route to SPI,
+        because every INDIVIDUAL line is well within the limit."""
+        order = self._order_with_amount(1_000_000)
+        for i in range(9):
+            partner = self.env["res.partner"].create({"name": f"Proveedor {i}"})
+            self.env["account.payment.line"].create(
+                {
+                    "order_id": order.id,
+                    "partner_id": partner.id,
+                    "amount_currency": 1_000_000,
+                    "currency_id": self.pyg.id,
+                }
+            )
+        self.assertEqual(len(order.payment_line_ids), 10)
+        self.assertEqual(order.l10n_py_atlas_tipo_transferencia, "SPI")
+        # And the pre-flight guard must accept it too.
+        order._check_l10n_py_atlas_routing()
+
+    def test_one_line_individually_over_limit_forces_lbtr_even_if_only_line(self):
+        """The inverse case: a single line over the per-transfer limit
+        must force LBTR even though there's only one line (sum == that
+        one line's amount, so this also passes under the old, wrong
+        sum-based check -- included as a regression guard so the fix
+        doesn't accidentally flip this case)."""
+        from odoo.exceptions import UserError
+
+        order = self._order_with_amount(5_000_001)
+        self.assertEqual(order.l10n_py_atlas_tipo_transferencia, "LBTR")
+        order.l10n_py_atlas_tipo_transferencia = "SPI"
+        with self.assertRaises(UserError):
+            order._check_l10n_py_atlas_routing()
+
     def test_mixed_currency_batch_raises(self):
         from odoo.exceptions import UserError
 
