@@ -19,6 +19,15 @@
                         <field name="atlas_private_key_pem" />
                         <field name="atlas_bank_public_key_pem" />
                         <field name="atlas_auth_token" password="True" />
+                        <button
+                            name="action_atlas_consultar_saldo"
+                            type="object"
+                            string="Consultar saldo"
+                            class="btn-secondary"
+                        />
+                        <field name="atlas_saldo" readonly="1" />
+                        <field name="atlas_saldo_disponible" readonly="1" />
+                        <field name="atlas_saldo_consulta_fecha" readonly="1" />
                     </group>
                 </group>
             </xpath>

@@ -3,6 +3,8 @@
 
 from odoo import fields, models
 
+from .atlas_api_client import AtlasApiClient
+
 
 class ResPartnerBank(models.Model):
     _inherit = "res.partner.bank"
@@ -52,3 +54,34 @@ class ResPartnerBank(models.Model):
         "banco fuera de esta API (proceso manual/comercial). Revocable "
         "sin afectar otros tokens.",
     )
+    atlas_saldo = fields.Monetary(
+        string="Saldo Atlas", currency_field="atlas_saldo_currency_id"
+    )
+    atlas_saldo_disponible = fields.Monetary(
+        string="Saldo Disponible Atlas", currency_field="atlas_saldo_currency_id"
+    )
+    atlas_saldo_currency_id = fields.Many2one(
+        "res.currency",
+        string="Moneda del Saldo Atlas",
+        default=lambda self: self.env.ref("base.PYG", raise_if_not_found=False),
+    )
+    atlas_saldo_consulta_fecha = fields.Datetime(
+        string="Última Consulta de Saldo Atlas"
+    )
+
+    def action_atlas_consultar_saldo(self):
+        """Query the current balance for this Banco-Atlas-enabled account
+        and store it (spec §2.5 -- this is an on-demand snapshot, not a
+        reconciliation feed; the API returns no transaction list)."""
+        self.ensure_one()
+        client = AtlasApiClient.from_bank_account(self)
+        response = client.call(
+            "GET", f"/cuentas-atlas/v1.5.0/cuentas/{self.atlas_numero_cuenta}/saldo"
+        )
+        self.write(
+            {
+                "atlas_saldo": response.get("saldo"),
+                "atlas_saldo_disponible": response.get("saldoDisponible"),
+                "atlas_saldo_consulta_fecha": fields.Datetime.now(),
+            }
+        )
