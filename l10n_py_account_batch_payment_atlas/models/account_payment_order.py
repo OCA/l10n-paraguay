@@ -1,0 +1,44 @@
+# Copyright 2026 KMEE
+# License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
+
+from odoo import api, fields, models
+
+# Official SPI limit per BCP Resolución 1/2023 §50.01: "Límite de pago:
+# Las transferencias enviadas por el SPI tendrán un límite de
+# Gs. 5.000.000 (guaraníes cinco millones)." PYG-only, no queueing.
+L10N_PY_ATLAS_SPI_LIMIT_PYG = 5_000_000
+
+
+class AccountPaymentOrder(models.Model):
+    _inherit = "account.payment.order"
+
+    l10n_py_atlas_tipo_transferencia = fields.Selection(
+        [
+            ("SPI", "SPI - Instantáneo"),
+            ("LBTR", "LBTR - Alto valor"),
+            ("ACH", "ACH - Bajo valor, lote"),
+            ("ATLAS", "Atlas - Interna"),
+        ],
+        string="Tipo de Transferencia Atlas",
+        compute="_compute_l10n_py_atlas_tipo_transferencia",
+        store=True,
+        readonly=False,
+        help="Sugerido automáticamente según el límite oficial del BCP "
+        "para SPI (Gs. 5.000.000, solo PYG) -- override manual permitido. "
+        "'ACH' nunca se sugiere automáticamente: la documentación del "
+        "Banco Atlas no da un criterio de cuándo preferirlo sobre SPI.",
+    )
+
+    @api.depends("payment_line_ids.amount_currency", "payment_line_ids.currency_id")
+    def _compute_l10n_py_atlas_tipo_transferencia(self):
+        for order in self:
+            currencies = order.payment_line_ids.currency_id
+            if not currencies:
+                order.l10n_py_atlas_tipo_transferencia = False
+                continue
+            total = sum(order.payment_line_ids.mapped("amount_currency"))
+            is_pyg = len(currencies) == 1 and currencies.name == "PYG"
+            if is_pyg and total <= L10N_PY_ATLAS_SPI_LIMIT_PYG:
+                order.l10n_py_atlas_tipo_transferencia = "SPI"
+            else:
+                order.l10n_py_atlas_tipo_transferencia = "LBTR"
