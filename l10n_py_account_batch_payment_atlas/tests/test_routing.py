@@ -98,3 +98,29 @@ class TestAtlasRouting(AccountTestInvoicingCommon):
         # real dependency change invalidates the cache -- here we assert
         # the value simply stays ACH after being set by hand.
         self.assertEqual(order.l10n_py_atlas_tipo_transferencia, "ACH")
+
+    def test_forcing_spi_above_limit_raises_on_confirm(self):
+        from odoo.exceptions import UserError
+
+        order = self._order_with_amount(5_000_001)
+        order.l10n_py_atlas_tipo_transferencia = "SPI"
+        with self.assertRaises(UserError):
+            order._check_l10n_py_atlas_routing()
+
+    def test_mixed_currency_batch_raises(self):
+        from odoo.exceptions import UserError
+
+        order = self._order_with_amount(1000)
+        usd = self.env.ref("base.USD")
+        self.env["account.payment.line"].create(
+            {
+                "order_id": order.id,
+                "partner_id": self.env["res.partner"]
+                .create({"name": "Segundo Proveedor"})
+                .id,
+                "amount_currency": 50,
+                "currency_id": usd.id,
+            }
+        )
+        with self.assertRaises(UserError):
+            order._check_l10n_py_atlas_routing()
