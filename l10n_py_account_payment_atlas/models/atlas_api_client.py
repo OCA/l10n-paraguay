@@ -17,6 +17,7 @@ import base64
 import datetime
 import hashlib
 import json
+from urllib.parse import urlencode
 
 import requests
 from cryptography.hazmat.primitives import hashes, serialization
@@ -158,6 +159,20 @@ class AtlasApiClient:
                 error_type=response_json.get("type"),
             )
         return response_json
+
+    def consultar_alias(
+        self, tipo: str, alias: str, cod_swift: str | None = None
+    ) -> dict:
+        """Resolve a CAS alias (CI/RUC/CRP/CRC/EMAIL/MOBILE) to account
+        data via ``GET /cuentas-atlas/v1.5.0/cuentas/cas/obt-cta-by-alias``.
+        ``tipo`` must be one of the bank's documented values verbatim."""
+        params = {"tipo": tipo, "alias": alias}
+        if cod_swift:
+            params["codSwift"] = cod_swift
+        query = urlencode(params)
+        return self.call(
+            "GET", f"/cuentas-atlas/v1.5.0/cuentas/cas/obt-cta-by-alias?{query}"
+        )
 
 
 class AtlasApiError(Exception):
