@@ -132,3 +132,31 @@ class AccountPaymentOrder(models.Model):
                 }
             )
         return True
+
+    @api.model
+    def _l10n_py_atlas_cron_poll_pending(self):
+        """Scheduled action: poll Pago a Proveedores' consultar-pago for
+        every line dispatched to Atlas that has a nroOrden but no
+        confirmed final status yet. No webhook exists on this API (spec
+        §4.4) -- "not appearing in the response" means "still pending",
+        not an error (the bank's own doc: consultar-pago only returns
+        already-processed-and-confirmed payments)."""
+        pending_lines = self.env["account.payment.line"].search(
+            [("atlas_nro_orden", "!=", False), ("atlas_error_mensaje", "=", False)]
+        )
+        by_bank_account = {}
+        for line in pending_lines:
+            bank_account = line.order_id.company_partner_bank_id
+            by_bank_account.setdefault(bank_account, []).append(line)
+
+        for bank_account, lines in by_bank_account.items():
+            client = AtlasApiClient.from_bank_account(bank_account)
+            response = client.call(
+                "GET",
+                f"/proveedores/{bank_account.atlas_numero_cuenta}/consultar-pago",
+            )
+            by_nro_orden = {item.get("nroOrden"): item for item in response}
+            for line in lines:
+                result = by_nro_orden.get(line.atlas_nro_orden)
+                if result:
+                    line.atlas_error_mensaje = result.get("estado")

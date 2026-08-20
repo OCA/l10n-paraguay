@@ -11,7 +11,9 @@
         "l10n_py_account_batch_payment",
         "l10n_py_account_payment_atlas",
     ],
-    "data": [],
+    "data": [
+        "data/ir_cron_data.xml",
+    ],
     "installable": True,
     "application": False,
     "auto_install": False,

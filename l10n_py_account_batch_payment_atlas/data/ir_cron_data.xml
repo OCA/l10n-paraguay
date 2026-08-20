@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="ir_cron_atlas_poll_pending" model="ir.cron">
+        <field name="name">Atlas: consultar status de pagamentos pendentes</field>
+        <field
+            name="model_id"
+            ref="account_payment_batch_oca.model_account_payment_order"
+        />
+        <field name="state">code</field>
+        <field name="code">model._l10n_py_atlas_cron_poll_pending()</field>
+        <field name="interval_number">15</field>
+        <field name="interval_type">minutes</field>
+        <field name="active">False</field>
+    </record>
+</odoo>
