@@ -123,3 +123,19 @@ class L10nPyAtlasExteriorTransfer(models.Model):
                 "state": "quoted",
             }
         )
+
+    def action_atlas_confirmar(self):
+        """Modo C: confirm a previously quoted transfer, using the
+        numeroReferencia from action_atlas_cotizar(). This is what
+        actually debits the account (spec §5.2)."""
+        self.ensure_one()
+        if self.state != "quoted" or not self.numero_referencia:
+            raise UserError(_("Solo se puede confirmar una transferencia ya cotizada."))
+        client = AtlasApiClient.from_bank_account(self.company_bank_account_id)
+        response = client.call(
+            "POST",
+            "/transferencias-atlas/v1.5.0/exterior/registrar-operacion",
+            body=self._l10n_py_atlas_exterior_payload("C"),
+        )
+        estado = response.get("respuesta", {}).get("estado")
+        self.state = "confirmed" if estado == "OK" else "rejected"

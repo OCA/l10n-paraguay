@@ -12,6 +12,7 @@
     ],
     "data": [
         "security/ir.model.access.csv",
+        "views/exterior_transfer_views.xml",
     ],
     "installable": True,
     "application": False,
