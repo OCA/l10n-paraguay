@@ -4,6 +4,10 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
+from odoo.addons.l10n_py_account_payment_atlas.models.atlas_api_client import (
+    AtlasApiClient,
+)
+
 # Official SPI limit per BCP Resolución 1/2023 §50.01: "Límite de pago:
 # Las transferencias enviadas por el SPI tendrán un límite de
 # Gs. 5.000.000 (guaraníes cinco millones)." PYG-only, no queueing.
@@ -75,3 +79,56 @@ class AccountPaymentOrder(models.Model):
                         limit=f"{L10N_PY_ATLAS_SPI_LIMIT_PYG:,}".replace(",", "."),
                     )
                 )
+
+    def _l10n_py_dispatch_batch_api_atlas(self):
+        """Dispatch this batch directly to Banco Atlas's Pago a
+        Proveedores API (POST /proveedores/{cuenta}/registrar-pago),
+        instead of generating a file for manual upload.
+
+        Synchronous: the response already carries a per-line result
+        (spec §4.3) -- final settlement confirmation for lines still
+        pending after this call is handled by the polling cron (Task 12),
+        since this API exposes no webhook.
+        """
+        self.ensure_one()
+        self._check_l10n_py_atlas_routing()
+        company_bank_account = self.company_partner_bank_id
+        client = AtlasApiClient.from_bank_account(company_bank_account)
+
+        beneficiarios = []
+        for index, line in enumerate(self.payment_line_ids, start=1):
+            beneficiarios.append(
+                {
+                    "nombreBeneficiario": line.partner_id.display_name,
+                    "formaPago": "C",
+                    "monto": line.amount_currency,
+                    "nroCuentaCredito": line.partner_bank_id.acc_number,
+                    "nroRegistro": index,
+                }
+            )
+
+        response = client.call(
+            "POST",
+            f"/proveedores/{company_bank_account.atlas_numero_cuenta}"
+            "/registrar-pago",
+            body={"tipoDestino": "P", "beneficiarioProveedorList": beneficiarios},
+        )
+
+        resultados = (
+            response.get("transaccion", {})
+            .get("infoAdicional", {})
+            .get("beneficiarios", [])
+        )
+        resultados_by_registro = {r.get("nroRegistro"): r for r in resultados}
+        for index, line in enumerate(self.payment_line_ids, start=1):
+            resultado = resultados_by_registro.get(index, {})
+            error = resultado.get("error", {})
+            line.write(
+                {
+                    "atlas_nro_registro": index,
+                    "atlas_nro_orden": resultado.get("nroOrden"),
+                    "atlas_error_codigo": error.get("codigo"),
+                    "atlas_error_mensaje": error.get("mensaje"),
+                }
+            )
+        return True
