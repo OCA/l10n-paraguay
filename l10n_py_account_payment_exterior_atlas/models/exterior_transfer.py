@@ -18,7 +18,10 @@ class L10nPyAtlasExteriorTransfer(models.Model):
     _description = "Transferencia al Exterior (Banco Atlas)"
 
     company_bank_account_id = fields.Many2one(
-        "res.partner.bank", required=True, string="Cuenta Origen (Atlas)"
+        "res.partner.bank",
+        required=True,
+        string="Cuenta Origen (Atlas)",
+        domain="[('atlas_enabled', '=', True)]",
     )
     state = fields.Selection(
         [
