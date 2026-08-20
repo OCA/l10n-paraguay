@@ -13,6 +13,7 @@
     ],
     "data": [
         "data/ir_cron_data.xml",
+        "views/account_payment_order_views.xml",
     ],
     "installable": True,
     "application": False,
