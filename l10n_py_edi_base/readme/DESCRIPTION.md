@@ -18,6 +18,10 @@ This module provides the base functionality for electronic invoicing (facturaci�
 - **JSON Builder**: Automatic generation of JSON for SIFEN
 - **QR Code Generation**: Ready for KUDE (Código Único de Documento Electrónico)
 - **Log System**: Complete audit trail of EDI operations
+- **Receiver-side Events**: Register and transmit Notificación de Recepción,
+  Conformidad, Disconformidad and Desconocimiento for DTEs received from
+  suppliers, analogous to the Manifestação do Destinatário of the Brazilian
+  NF-e
 
 ### Compliance
 - **SIFEN Compatible**: Sistema Integrado de Facturación Electrónica Nacional
