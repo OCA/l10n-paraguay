@@ -398,6 +398,10 @@ res.company</li>
 <li><strong>QR Code Generation</strong>: Ready for KUDE (Código Único de Documento
 Electrónico)</li>
 <li><strong>Log System</strong>: Complete audit trail of EDI operations</li>
+<li><strong>Status Check Wizard</strong>: Query SIFEN status for a single invoice on
+demand</li>
+<li><strong>Number Range Voiding</strong>: Wizard to void (inutilizar) a range of
+numbers within a timbrado directly from the authorization record</li>
 </ul>
 </div>
 <div class="section" id="compliance">
@@ -1008,6 +1012,16 @@ pip<span class="w"> </span>install<span class="w"> </span>qrcode<span class="w">
 <li>Status and messages update</li>
 </ol>
 </div>
+<div class="section" id="single-invoice-status-check">
+<h3>Single-invoice Status Check</h3>
+<p>For a quick check on one invoice without leaving the form:</p>
+<ol class="arabic simple">
+<li>Open an invoice that already has a <strong>CDC</strong> (already sent)</li>
+<li>Click <strong>Consultar Status EDI</strong></li>
+<li>A popup shows the current status and message returned by SIFEN, and
+the invoice’s own status is updated in the background</li>
+</ol>
+</div>
 </div>
 <div class="section" id="cancelling-electronic-documents">
 <h2>Cancelling Electronic Documents</h2>
@@ -1030,6 +1044,19 @@ pip<span class="w"> </span>install<span class="w"> </span>qrcode<span class="w">
 <li>System sends cancellation to SET</li>
 </ol>
 </div>
+</div>
+<div class="section" id="voiding-a-number-range-inutilizacion">
+<h2>Voiding a Number Range (Inutilización)</h2>
+<p>To declare a range of invoice numbers within a timbrado as void/unused
+with SIFEN (e.g. numbers skipped due to a printing error):</p>
+<ol class="arabic simple">
+<li>Open the <strong>Timbrado</strong> (account.authorization) record</li>
+<li>Click the <strong>Inutilizar Numeración</strong> button</li>
+<li>Enter <strong>Número Desde</strong> / <strong>Número Hasta</strong> and a <strong>Motivo</strong></li>
+<li>Confirm — the range is validated against the timbrado (must fall
+inside its authorized range and not overlap numbers already used) and
+sent to SIFEN in one step</li>
+</ol>
 </div>
 <div class="section" id="downloading-documents">
 <h2>Downloading Documents</h2>
