@@ -12,3 +12,5 @@ Features:
 - RDe (Documento Electrónico) building from invoice data
 - Support for FE, NCE, NDE, NRE, AFE document types
 - Test and Production environment support
+- Automatic certificate expiration tracking, with a daily check and a
+  status badge (valid / to expire / expired) on the company form
