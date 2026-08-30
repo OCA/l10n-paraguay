@@ -57,6 +57,37 @@ class EDIConnector(models.Model):
             % self.provider_type
         )
 
+    def send_batch(self, invoice_data_list):
+        """Send a batch of documents in a single call.
+
+        Returns dict: {"success": True, "result": {"batch_protocol": ...,
+        "cdc_list": [...]}} en el mismo orden que invoice_data_list, o
+        {"success": False, "error": ...} si el lote entero falló (ningún
+        documento fue transmitido).
+        """
+        self.ensure_one()
+        raise UserError(
+            _("El proveedor '%s' no implementa el envío en lote") % self.provider_type
+        )
+
+    def check_batch_status(self, batch_protocol):
+        """Check the result of a previously sent batch.
+
+        Returns dict: {"success": True, "result": {"pending": bool,
+        "documents": [{"cdc": ..., "status": "accepted"/"rejected",
+        "message": ...}, ...]}}, o {"success": False, "error": ...}.
+        """
+        self.ensure_one()
+        raise UserError(
+            _("El proveedor '%s' no implementa la consulta de estado de lote")
+            % self.provider_type
+        )
+
+    def get_max_batch_size(self):
+        """Máximo de documentos por llamada de lote soportado por el proveedor."""
+        self.ensure_one()
+        return 50
+
     def cancel_document(self, document_id, reason=""):
         """Cancel an approved document."""
         self.ensure_one()

@@ -78,6 +78,7 @@ class AccountMove(models.Model):
             ("to_send", "Para Enviar"),
             ("sent", "Enviado"),
             ("processing", "Procesando"),
+            ("batch_sent", "Lote Enviado"),
             ("accepted", "Aceptado"),
             ("rejected", "Rechazado"),
             ("cancelled", "Cancelado"),
@@ -90,7 +91,14 @@ class AccountMove(models.Model):
     )
 
     l10n_py_edi_message = fields.Text("Mensaje EDI", readonly=True, copy=False)
-    l10n_py_edi_batch_id = fields.Char("ID de Lote", readonly=True, copy=False)
+    l10n_py_edi_batch_id = fields.Char(
+        "ID de Lote",
+        readonly=True,
+        copy=False,
+        help="Protocolo del lote SIFEN (dProtConsLote) cuando el documento "
+        "fue enviado vía action_send_edi_batch. Se usa para consultar el "
+        "resultado del lote (consultar_lote) y aplicarlo por documento.",
+    )
     l10n_py_security_code = fields.Char(
         "Código de Seguridad", size=9, readonly=True, copy=False
     )
@@ -1013,6 +1021,15 @@ class AccountMove(models.Model):
         """Enviar documento a sistema EDI"""
         self.ensure_one()
 
+        if self.l10n_py_edi_status in ("sent", "accepted", "processing", "batch_sent"):
+            raise UserError(
+                _(
+                    "Este documento ya fue enviado o está en proceso de "
+                    "envío (estado: %s). No se puede reenviar."
+                )
+                % self.l10n_py_edi_status
+            )
+
         # Validar datos
         self._validate_edi_data()
 
@@ -1039,6 +1056,231 @@ class AccountMove(models.Model):
             self.l10n_py_edi_status = "error"
             self.l10n_py_edi_message = str(e)
             raise UserError(_("Error enviando documento: %s") % str(e)) from e
+
+    # ============== ENVÍO EN LOTE ==============
+
+    def action_send_edi_batch(self):
+        """Enviar los documentos seleccionados a SIFEN en lote(s).
+
+        A diferencia de action_send_edi, NO hace ensure_one(): opera sobre
+        toda la selección múltiple de la lista. Reglas:
+
+        - Sólo entran al lote los documentos en estado 'to_send'; los demás
+          se ignoran (no abortan el envío de los que sí califican). Esto
+          también actúa como guarda de idempotencia: un documento ya
+          enviado ('sent'/'batch_sent'/'accepted'/'processing') nunca
+          vuelve a incluirse en un lote nuevo.
+        - Cada documento se valida individualmente (_validate_edi_data,
+          la misma validación del envío individual) ANTES de entrar al
+          payload; los inválidos se marcan 'rejected' con el motivo y
+          nunca llegan a ser transmitidos al SIFEN.
+        - El resto se particiona en chunks de hasta connector.get_max_batch_size()
+          (por defecto 50, MAX_LOTE de la lib SIFEN) y cada chunk se envía
+          en una única llamada a connector.send_batch().
+        - Si la llamada de un chunk falla (red, validación de la lib, etc.),
+          NINGÚN documento de ese chunk se marca como enviado: quedan en
+          'to_send' para poder reintentarse.
+        """
+        to_process = self.filtered(lambda m: m.l10n_py_edi_status == "to_send")
+        skipped = self - to_process
+        if skipped:
+            _logger.warning(
+                "action_send_edi_batch: %s documento(s) ignorados por no "
+                "estar en estado 'to_send' (ya enviados o en otro estado): %s",
+                len(skipped),
+                ", ".join(skipped.mapped("display_name")),
+            )
+
+        if not to_process:
+            raise UserError(
+                _(
+                    "Ningún documento seleccionado está en estado 'Para "
+                    "Enviar'. Documentos ya enviados no se reenvían."
+                )
+            )
+
+        connector = to_process[0]._get_edi_connector()
+        max_lote = connector.get_max_batch_size() or 50
+
+        chunk_count = 0
+        for start in range(0, len(to_process), max_lote):
+            chunk = to_process[start : start + max_lote]
+            chunk_count += 1
+            self._l10n_py_send_batch_chunk(chunk, connector, chunk_count)
+
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": _("Envío en lote iniciado"),
+                "message": _(
+                    "%(count)s documento(s) en %(chunks)s lote(s) enviados "
+                    "a SIFEN. El resultado por documento se confirma al "
+                    "consultar el estado del lote.",
+                    count=len(to_process),
+                    chunks=chunk_count,
+                ),
+                "type": "success",
+                "sticky": False,
+            },
+        }
+
+    def _l10n_py_send_batch_chunk(self, chunk, connector, chunk_index=0):
+        """Validar, armar el payload y enviar UN chunk (<= MAX_LOTE) al SIFEN.
+
+        Documentos que no pasan _validate_edi_data se marcan 'rejected' y
+        quedan fuera del payload (nunca llegan al SIFEN). Si el envío del
+        chunk falla como un todo, ningún documento válido se marca como
+        enviado (permanecen 'to_send').
+        """
+        valid_moves = self.browse()
+        invoice_data_list = []
+
+        for move in chunk:
+            try:
+                move._validate_edi_data()
+            except UserError as e:
+                move.write(
+                    {
+                        "l10n_py_edi_status": "rejected",
+                        "l10n_py_edi_message": str(e),
+                    }
+                )
+                continue
+            valid_moves |= move
+            invoice_data_list.append(move._prepare_edi_document_data())
+
+        if not valid_moves:
+            return
+
+        try:
+            response = connector.send_batch(invoice_data_list)
+        except Exception as e:
+            _logger.error(
+                "Error enviando chunk de lote #%s (%s documentos): %s",
+                chunk_index,
+                len(valid_moves),
+                str(e),
+            )
+            return
+
+        if not response.get("success"):
+            _logger.error(
+                "SIFEN rechazó el envío del chunk de lote #%s (%s " "documentos): %s",
+                chunk_index,
+                len(valid_moves),
+                response.get("error"),
+            )
+            return
+
+        result = response.get("result", {})
+        batch_protocol = result.get("batch_protocol")
+        cdc_list = result.get("cdc_list") or []
+
+        if len(cdc_list) != len(valid_moves):
+            missing_moves = valid_moves[len(cdc_list) :]
+            _logger.warning(
+                "SIFEN devolvió %s CDC(s) para %s documento(s) enviados en "
+                "el chunk de lote #%s (protocolo %s): %s documento(s) "
+                "quedan sin CDC y no se marcan como enviados: %s",
+                len(cdc_list),
+                len(valid_moves),
+                chunk_index,
+                batch_protocol,
+                len(missing_moves),
+                ", ".join(missing_moves.mapped("display_name")),
+            )
+
+        for move, cdc in zip(valid_moves, cdc_list, strict=False):
+            move.write(
+                {
+                    "l10n_py_cdc": cdc,
+                    "l10n_py_edi_batch_id": batch_protocol,
+                    "l10n_py_edi_status": "batch_sent",
+                    "l10n_py_edi_message": _(
+                        "Lote #%(chunk)s enviado a SIFEN. Protocolo: "
+                        "%(protocol)s. Aguardando confirmación.",
+                        chunk=chunk_index,
+                        protocol=batch_protocol,
+                    ),
+                }
+            )
+
+    @api.model
+    def _l10n_py_apply_batch_status(self, batch_protocol):
+        """Consultar el resultado de un lote SIFEN y aplicarlo por documento.
+
+        Mapea cada resultado individual (por CDC) al account.move
+        correspondiente. La falla al aplicar el resultado de UN documento
+        (p.ej. un write() inesperado) no debe impedir que los demás
+        documentos del mismo lote se actualicen.
+        """
+        moves = self.search(
+            [
+                ("l10n_py_edi_batch_id", "=", batch_protocol),
+                ("l10n_py_edi_status", "=", "batch_sent"),
+            ]
+        )
+        if not moves:
+            return
+
+        connector = moves[0]._get_edi_connector()
+        try:
+            response = connector.check_batch_status(batch_protocol)
+        except Exception as e:
+            _logger.error(
+                "Error consultando estado del lote %s: %s", batch_protocol, str(e)
+            )
+            return
+
+        if not response.get("success"):
+            _logger.error(
+                "SIFEN no pudo confirmar el lote %s: %s",
+                batch_protocol,
+                response.get("error"),
+            )
+            return
+
+        result = response.get("result", {})
+        if result.get("pending"):
+            # El SIFEN aún está procesando el lote: se mantiene 'batch_sent'
+            # y se reintenta en el próximo ciclo (cron).
+            return
+
+        by_cdc = {
+            doc.get("cdc"): doc for doc in result.get("documents", []) if doc.get("cdc")
+        }
+
+        for move in moves:
+            doc_result = by_cdc.get(move.l10n_py_cdc)
+            if not doc_result:
+                # No vino en la respuesta de este ciclo: se mantiene
+                # 'batch_sent' sin registrar error.
+                continue
+            try:
+                if doc_result.get("status") == "accepted":
+                    move.write(
+                        {
+                            "l10n_py_edi_status": "accepted",
+                            "l10n_py_edi_message": doc_result.get("message")
+                            or _("Documento aceptado exitosamente (lote)."),
+                        }
+                    )
+                    move._l10n_py_generate_qr_image()
+                else:
+                    move.write(
+                        {
+                            "l10n_py_edi_status": "rejected",
+                            "l10n_py_edi_message": doc_result.get("message")
+                            or _("Documento rechazado por SIFEN (lote)."),
+                        }
+                    )
+            except Exception as e:
+                _logger.error(
+                    "Error aplicando resultado de lote al documento %s: %s",
+                    move.name,
+                    str(e),
+                )
 
     def _process_edi_response(self, response):
         """Procesar respuesta exitosa del EDI"""
@@ -1259,30 +1501,24 @@ class AccountMove(models.Model):
             except Exception:
                 _logger.warning("Error reenviando doc contingencia %s", doc.name)
 
-        # 2. Verificar estado de documentos ya enviados
-        pending_docs = self.search(
+        # 2. Verificar estado de lotes enviados (envío en masa, batch_sent).
+        # Se consulta UNA vez por l10n_py_edi_batch_id distinto (protocolo de
+        # lote), no una vez por documento: un mismo lote agrupa N documentos.
+        batch_docs = self.search(
             [
-                ("l10n_py_edi_status", "in", ["sent", "processing"]),
+                ("l10n_py_edi_status", "=", "batch_sent"),
                 ("l10n_py_edi_batch_id", "!=", False),
             ]
         )
-
-        for doc in pending_docs:
+        # mapped() sobre un campo Char no relacional NO deduplica: hay que
+        # deduplicar explícitamente para consultar una vez por lote, no una
+        # vez por documento.
+        for batch_id in set(batch_docs.mapped("l10n_py_edi_batch_id")):
             try:
-                connector = (
-                    self.env["l10n_py.edi.connector"]
-                    .sudo()
-                    .search([("company_id", "=", doc.company_id.id)], limit=1)
-                )
-                if not connector:
-                    continue
-                response = connector.check_status(doc.l10n_py_edi_batch_id)
-                if response.get("success"):
-                    # Actualizar estado según respuesta
-                    pass
+                self._l10n_py_apply_batch_status(batch_id)
             except Exception as e:
                 _logger.error(
-                    "Error verificando estado EDI para %s: %s",
-                    doc.name,
+                    "Error verificando estado del lote %s: %s",
+                    batch_id,
                     str(e),
                 )

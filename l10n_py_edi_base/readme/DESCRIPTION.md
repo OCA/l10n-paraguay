@@ -18,6 +18,9 @@ This module provides the base functionality for electronic invoicing (facturaci�
 - **JSON Builder**: Automatic generation of JSON for SIFEN
 - **QR Code Generation**: Ready for KUDE (Código Único de Documento Electrónico)
 - **Log System**: Complete audit trail of EDI operations
+- **Batch Sending**: Send multiple documents to SIFEN in a single call
+  (chunked, idempotent, with per-document result applied once the batch
+  is confirmed)
 
 ### Compliance
 - **SIFEN Compatible**: Sistema Integrado de Facturación Electrónica Nacional
