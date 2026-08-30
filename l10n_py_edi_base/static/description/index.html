@@ -398,6 +398,9 @@ res.company</li>
 <li><strong>QR Code Generation</strong>: Ready for KUDE (Código Único de Documento
 Electrónico)</li>
 <li><strong>Log System</strong>: Complete audit trail of EDI operations</li>
+<li><strong>Batch Sending</strong>: Send multiple documents to SIFEN in a single call
+(chunked, idempotent, with per-document result applied once the batch
+is confirmed)</li>
 </ul>
 </div>
 <div class="section" id="compliance">
@@ -1133,15 +1136,36 @@ pip<span class="w"> </span>install<span class="w"> </span>qrcode<span class="w">
 </div>
 <div class="section" id="batch-operations">
 <h2>Batch Operations</h2>
-<div class="section" id="sending-multiple-documents">
-<h3>Sending Multiple Documents</h3>
+<div class="section" id="sending-multiple-documents-to-sifen-in-a-batch">
+<h3>Sending Multiple Documents to SIFEN in a Batch</h3>
 <ol class="arabic simple">
 <li>Go to invoice list view</li>
-<li>Select multiple invoices</li>
-<li>Click <strong>Action &gt; Send EDI</strong></li>
-<li>System sends all selected documents</li>
-<li>Check status individually</li>
+<li>Select multiple invoices in status <strong>Para Enviar</strong></li>
+<li>Click <strong>Action &gt; Enviar en Lote a SIFEN</strong></li>
+<li>Each document is validated individually first — any that fail
+validation are marked <strong>Rechazado</strong> with the reason and are never
+transmitted</li>
+<li>The valid documents are split into batches of up to 50 (SIFEN’s
+<tt class="docutils literal">MAX_LOTE</tt>) and each batch is sent in a single call — status
+becomes <strong>Lote Enviado</strong></li>
+<li>Documents not in <strong>Para Enviar</strong> (already sent or in another state)
+are silently skipped, so it’s safe to re-run the action over the same
+selection</li>
 </ol>
+<p>If sending a batch fails outright (connection error, etc.), none of its
+documents are marked as sent — they remain <strong>Para Enviar</strong> and can be
+resubmitted.</p>
+</div>
+<div class="section" id="checking-batch-results">
+<h3>Checking Batch Results</h3>
+<ul class="simple">
+<li>The EDI status-check cron polls SIFEN once per pending batch
+protocol, not once per document</li>
+<li>Each document is updated individually as soon as SIFEN confirms it:
+<strong>Aceptado</strong> or <strong>Rechazado</strong></li>
+<li>While SIFEN is still processing the batch, its documents stay in
+<strong>Lote Enviado</strong> and are checked again on the next run</li>
+</ul>
 </div>
 <div class="section" id="updating-multiple-statuses">
 <h3>Updating Multiple Statuses</h3>

@@ -42,6 +42,8 @@ Features:
 -  RDe (Documento Electrónico) building from invoice data
 -  Support for FE, NCE, NDE, NRE, AFE document types
 -  Test and Production environment support
+-  Batch send/query (``enviar_lote``/``consultar_lote``) for the batch
+   sending workflow of ``l10n_py_edi_base``
 
 **Table of contents**
 

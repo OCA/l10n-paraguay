@@ -58,6 +58,9 @@ Core Functionality
 -  **QR Code Generation**: Ready for KUDE (Código Único de Documento
    Electrónico)
 -  **Log System**: Complete audit trail of EDI operations
+-  **Batch Sending**: Send multiple documents to SIFEN in a single call
+   (chunked, idempotent, with per-document result applied once the batch
+   is confirmed)
 
 Compliance
 ~~~~~~~~~~
@@ -751,14 +754,35 @@ Customers can scan to verify authenticity.
 Batch Operations
 ----------------
 
-Sending Multiple Documents
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Sending Multiple Documents to SIFEN in a Batch
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. Go to invoice list view
-2. Select multiple invoices
-3. Click **Action > Send EDI**
-4. System sends all selected documents
-5. Check status individually
+2. Select multiple invoices in status **Para Enviar**
+3. Click **Action > Enviar en Lote a SIFEN**
+4. Each document is validated individually first — any that fail
+   validation are marked **Rechazado** with the reason and are never
+   transmitted
+5. The valid documents are split into batches of up to 50 (SIFEN's
+   ``MAX_LOTE``) and each batch is sent in a single call — status
+   becomes **Lote Enviado**
+6. Documents not in **Para Enviar** (already sent or in another state)
+   are silently skipped, so it's safe to re-run the action over the same
+   selection
+
+If sending a batch fails outright (connection error, etc.), none of its
+documents are marked as sent — they remain **Para Enviar** and can be
+resubmitted.
+
+Checking Batch Results
+~~~~~~~~~~~~~~~~~~~~~~
+
+-  The EDI status-check cron polls SIFEN once per pending batch
+   protocol, not once per document
+-  Each document is updated individually as soon as SIFEN confirms it:
+   **Aceptado** or **Rechazado**
+-  While SIFEN is still processing the batch, its documents stay in
+   **Lote Enviado** and are checked again on the next run
 
 Updating Multiple Statuses
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
