@@ -155,8 +155,8 @@ class NumberInutilization(models.Model):
         auth = self.authorization_id
         data = {
             "timbrado": auth.name or "",
-            "establecimiento": auth.l10n_py_establishment or "001",
-            "punto": auth.l10n_py_point or "001",
+            "establecimiento": auth.establishment or "001",
+            "punto": auth.expedition_point or "001",
             "numeroDesde": str(self.number_from).zfill(7),
             "numeroHasta": str(self.number_to).zfill(7),
             "tipoDocumento": 1,  # FE por defecto

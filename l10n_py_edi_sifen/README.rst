@@ -1,7 +1,3 @@
-.. image:: https://odoo-community.org/readme-banner-image
-   :target: https://odoo-community.org/get-involved?utm_source=readme
-   :alt: Odoo Community Association
-
 =====================================
 Paraguay - SIFEN Direct EDI Connector
 =====================================
@@ -17,7 +13,7 @@ Paraguay - SIFEN Direct EDI Connector
 .. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
     :target: https://odoo-community.org/page/development-status
     :alt: Beta
-.. |badge2| image:: https://img.shields.io/badge/license-LGPL--3-blue.png
+.. |badge2| image:: https://img.shields.io/badge/licence-LGPL--3-blue.png
     :target: http://www.gnu.org/licenses/lgpl-3.0-standalone.html
     :alt: License: LGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Fl10n--paraguay-lightgray.png?logo=github
@@ -41,11 +37,13 @@ without intermediary services like FactPy or FacturaSend.
 
 Features:
 
-- Direct SOAP/mTLS communication with SIFEN
-- Digital signature via PKCS12 certificate
-- RDe (Documento Electrónico) building from invoice data
-- Support for FE, NCE, NDE, NRE, AFE document types
-- Test and Production environment support
+-  Direct SOAP/mTLS communication with SIFEN
+-  Digital signature via PKCS12 certificate
+-  RDe (Documento Electrónico) building from invoice data
+-  Support for FE, NCE, NDE, NRE, AFE document types
+-  Test and Production environment support
+-  Automatic certificate expiration tracking, with a daily check and a
+   status badge (valid / to expire / expired) on the company form
 
 **Table of contents**
 
@@ -70,11 +68,17 @@ Configuration
 2. Go to **Accounting > Facturación Electrónica > Conectores** and
    create a new connector:
 
-   - Provider: **SIFEN Directo**
-   - Environment: **Pruebas** or **Producción**
-   - Company: select the company
+   -  Provider: **SIFEN Directo**
+   -  Environment: **Pruebas** or **Producción**
+   -  Company: select the company
 
 3. Click **Probar Conexión** to verify the mTLS connection with SIFEN.
+
+4. Once uploaded, the certificate's expiration date is read
+   automatically and shown next to a status badge (**Válido** / **Por
+   vencer** / **Vencido**, the last two triggering at 30 days before
+   expiry). A daily scheduled action keeps this status current even if
+   nobody opens the company record.
 
 Usage
 =====
