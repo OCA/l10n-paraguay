@@ -1,7 +1,3 @@
-.. image:: https://odoo-community.org/readme-banner-image
-   :target: https://odoo-community.org/get-involved?utm_source=readme
-   :alt: Odoo Community Association
-
 ====================================
 Paraguay - Electronic Invoicing Base
 ====================================
@@ -17,7 +13,7 @@ Paraguay - Electronic Invoicing Base
 .. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
     :target: https://odoo-community.org/page/development-status
     :alt: Beta
-.. |badge2| image:: https://img.shields.io/badge/license-LGPL--3-blue.png
+.. |badge2| image:: https://img.shields.io/badge/licence-LGPL--3-blue.png
     :target: http://www.gnu.org/licenses/lgpl-3.0-standalone.html
     :alt: License: LGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Fl10n--paraguay-lightgray.png?logo=github
@@ -45,57 +41,60 @@ Features
 Document Types Support
 ~~~~~~~~~~~~~~~~~~~~~~
 
-- **Factura Electrónica**: Electronic invoice
-- **Nota de Crédito Electrónica**: Electronic credit note
-- **Nota de Débito Electrónica**: Electronic debit note
-- **Nota de Remisión Electrónica**: Electronic delivery note
-- **Autofactura Electrónica**: Electronic self-invoice
+-  **Factura Electrónica**: Electronic invoice
+-  **Nota de Crédito Electrónica**: Electronic credit note
+-  **Nota de Débito Electrónica**: Electronic debit note
+-  **Nota de Remisión Electrónica**: Electronic delivery note
+-  **Autofactura Electrónica**: Electronic self-invoice
 
 Core Functionality
 ~~~~~~~~~~~~~~~~~~
 
-- **Data Models**: Complete models for electronic documents
-- **Field Extensions**: Enhanced account.move, res.partner, and
-  res.company
-- **Fiscal Validation**: RUC and DV validation
-- **JSON Builder**: Automatic generation of JSON for SIFEN
-- **QR Code Generation**: Ready for KUDE (Código Único de Documento
-  Electrónico)
-- **Log System**: Complete audit trail of EDI operations
+-  **Data Models**: Complete models for electronic documents
+-  **Field Extensions**: Enhanced account.move, res.partner, and
+   res.company
+-  **Fiscal Validation**: RUC and DV validation
+-  **JSON Builder**: Automatic generation of JSON for SIFEN
+-  **QR Code Generation**: Ready for KUDE (Código Único de Documento
+   Electrónico)
+-  **Log System**: Complete audit trail of EDI operations
+-  **Batch Sending**: Send multiple documents to SIFEN in a single call
+   (chunked, idempotent, with per-document result applied once the batch
+   is confirmed)
 
 Compliance
 ~~~~~~~~~~
 
-- **SIFEN Compatible**: Sistema Integrado de Facturación Electrónica
-  Nacional
-- **SET Requirements**: Meets all SET regulatory requirements
-- **Contingency Mode**: Support for offline operation
-- **KUDE Support**: Ready for electronic document codes
+-  **SIFEN Compatible**: Sistema Integrado de Facturación Electrónica
+   Nacional
+-  **SET Requirements**: Meets all SET regulatory requirements
+-  **Contingency Mode**: Support for offline operation
+-  **KUDE Support**: Ready for electronic document codes
 
 Integration Ready
 ~~~~~~~~~~~~~~~~~
 
 This is a base module that requires a connector:
 
-- ``l10n_py_edi_factpy``: FactPy integration
-- ``l10n_py_edi_facturasend``: FacturaSend integration
+-  ``l10n_py_edi_factpy``: FactPy integration
+-  ``l10n_py_edi_facturasend``: FacturaSend integration
 
 Technical Architecture
 ----------------------
 
-- **Provider-agnostic**: Works with multiple EDI providers
-- **Extensible**: Easy to add new document types
-- **Robust**: Error handling and retry mechanisms
-- **Auditable**: Complete logging of all operations
+-  **Provider-agnostic**: Works with multiple EDI providers
+-  **Extensible**: Easy to add new document types
+-  **Robust**: Error handling and retry mechanisms
+-  **Auditable**: Complete logging of all operations
 
 Dependencies
 ------------
 
-- ``account``: Core accounting
-- ``l10n_py_base``: Base Paraguayan localization
-- ``l10n_py_account``: Accounting extensions (timbrado management)
-- ``product``: Product management
-- ``sale``: Sales management
+-  ``account``: Core accounting
+-  ``l10n_py_base``: Base Paraguayan localization
+-  ``l10n_py_account``: Accounting extensions (timbrado management)
+-  ``product``: Product management
+-  ``sale``: Sales management
 
 **Table of contents**
 
@@ -114,29 +113,29 @@ Prerequisites
 Required Modules
 ~~~~~~~~~~~~~~~~
 
-- Odoo 16.0
-- ``account``: Core accounting module
-- ``l10n_py_base``: Paraguayan base localization
-- ``l10n_py_account``: Accounting extensions with timbrado
-- ``product``: Product management
-- ``sale``: Sales management
+-  Odoo 16.0
+-  ``account``: Core accounting module
+-  ``l10n_py_base``: Paraguayan base localization
+-  ``l10n_py_account``: Accounting extensions with timbrado
+-  ``product``: Product management
+-  ``sale``: Sales management
 
 Required Python Packages
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 The module requires these Python packages:
 
-- ``qrcode``: QR code generation
-- ``requests``: HTTP client for API calls
-- ``cryptography``: Encryption and security
+-  ``qrcode``: QR code generation
+-  ``requests``: HTTP client for API calls
+-  ``cryptography``: Encryption and security
 
 EDI Provider
 ~~~~~~~~~~~~
 
 You must choose and configure one provider:
 
-- FactPy (install ``l10n_py_edi_factpy``)
-- FacturaSend (install ``l10n_py_edi_facturasend``)
+-  FactPy (install ``l10n_py_edi_factpy``)
+-  FacturaSend (install ``l10n_py_edi_facturasend``)
 
 Installation Steps
 ------------------
@@ -155,8 +154,8 @@ Step 2: Install Base Modules
 
 1. Install prerequisites in order:
 
-   - ``l10n_py_base``
-   - ``l10n_py_account``
+   -  ``l10n_py_base``
+   -  ``l10n_py_account``
 
 Step 3: Install EDI Base
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -191,9 +190,9 @@ Step 1: Verify Installation
 
 Check that new menus appear:
 
-- **Facturación Electrónica** main menu
-- **EDI Logs** submenu
-- **Connectors** submenu
+-  **Facturación Electrónica** main menu
+-  **EDI Logs** submenu
+-  **Connectors** submenu
 
 Step 2: Configure Company
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -202,17 +201,17 @@ Step 2: Configure Company
 2. Edit your company
 3. Configure **Electronic Invoicing** tab:
 
-   - Enable EDI
-   - Select environment (Test/Production)
-   - Choose provider
+   -  Enable EDI
+   -  Select environment (Test/Production)
+   -  Choose provider
 
 Step 3: Configure EDI Provider
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Follow provider-specific configuration:
 
-- See ``l10n_py_edi_factpy`` documentation, or
-- See ``l10n_py_edi_facturasend`` documentation
+-  See ``l10n_py_edi_factpy`` documentation, or
+-  See ``l10n_py_edi_facturasend`` documentation
 
 Step 4: Configure Security
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -220,8 +219,8 @@ Step 4: Configure Security
 1. Go to **Settings > Users & Companies > Groups**
 2. Assign users to EDI groups:
 
-   - **Electronic Invoicing / User**
-   - **Electronic Invoicing / Manager**
+   -  **Electronic Invoicing / User**
+   -  **Electronic Invoicing / Manager**
 
 Step 5: Initial Test
 ~~~~~~~~~~~~~~~~~~~~
@@ -237,10 +236,10 @@ Data Initialization
 
 The module loads:
 
-- Electronic document type definitions
-- Cron job configurations
-- Email templates
-- Report templates
+-  Electronic document type definitions
+-  Cron job configurations
+-  Email templates
+-  Report templates
 
 No manual data loading required.
 
@@ -249,17 +248,18 @@ System Parameters
 
 Configure in **Settings > Technical > Parameters > System Parameters**:
 
-+-----------------------------+----------------------+-----------------------+
-| Parameter                   | Description          | Example               |
-+=============================+======================+=======================+
-| ``l10n_py.edi_provider``    | Active EDI provider  | ``factpy`` or         |
-|                             |                      | ``facturasend``       |
-+-----------------------------+----------------------+-----------------------+
-| ``l10n_py.edi_environment`` | Environment          | ``test`` or           |
-|                             |                      | ``production``        |
-+-----------------------------+----------------------+-----------------------+
-| ``l10n_py.edi_auto_send``   | Auto-send on confirm | ``True`` or ``False`` |
-+-----------------------------+----------------------+-----------------------+
++----------------------+----------------------+----------------------+
+| Parameter            | Description          | Example              |
++======================+======================+======================+
+| ``l1                 | Active EDI provider  | ``factpy`` or        |
+| 0n_py.edi_provider`` |                      | ``facturasend``      |
++----------------------+----------------------+----------------------+
+| ``l10n_              | Environment          | ``test`` or          |
+| py.edi_environment`` |                      | ``production``       |
++----------------------+----------------------+----------------------+
+| ``l10                | Auto-send on confirm | ``True`` or          |
+| n_py.edi_auto_send`` |                      | ``False``            |
++----------------------+----------------------+----------------------+
 
 Database Preparation
 --------------------
@@ -269,9 +269,9 @@ Existing Invoices
 
 For existing invoices (pre-EDI):
 
-- They will NOT be sent to EDI automatically
-- You can migrate them manually if needed
-- New invoices will use EDI
+-  They will NOT be sent to EDI automatically
+-  You can migrate them manually if needed
+-  New invoices will use EDI
 
 Product Updates
 ~~~~~~~~~~~~~~~
@@ -297,18 +297,18 @@ Testing Checklist
 
 Before going to production:
 
-- ☐ Test environment configured
-- ☐ Test credentials working
-- ☐ Sample invoice sent successfully
-- ☐ PDF download works
-- ☐ XML download works
-- ☐ QR code generates correctly
-- ☐ Status updates work
-- ☐ Credit note flow tested
-- ☐ Cancellation tested
-- ☐ Error handling tested
-- ☐ Email sending tested
-- ☐ All users have correct permissions
+-  ☐ Test environment configured
+-  ☐ Test credentials working
+-  ☐ Sample invoice sent successfully
+-  ☐ PDF download works
+-  ☐ XML download works
+-  ☐ QR code generates correctly
+-  ☐ Status updates work
+-  ☐ Credit note flow tested
+-  ☐ Cancellation tested
+-  ☐ Error handling tested
+-  ☐ Email sending tested
+-  ☐ All users have correct permissions
 
 Production Deployment
 ---------------------
@@ -387,9 +387,9 @@ To uninstall (not recommended):
 
 **Warning**: Uninstalling will:
 
-- Disable EDI functionality
-- Remove EDI menus
-- Keep existing data but make it inaccessible
+-  Disable EDI functionality
+-  Remove EDI menus
+-  Keep existing data but make it inaccessible
 
 Upgrade Notes
 -------------
@@ -418,9 +418,9 @@ Step 1: Company Configuration
 2. Edit your company
 3. Navigate to **Electronic Invoicing** tab:
 
-   - Enable **Electronic Invoicing**
-   - Configure **Environment** (Test/Production)
-   - Set **EDI Provider** (factpy/facturasend)
+   -  Enable **Electronic Invoicing**
+   -  Configure **Environment** (Test/Production)
+   -  Set **EDI Provider** (factpy/facturasend)
 
 Step 2: Select EDI Provider
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -448,9 +448,9 @@ For each product/service:
 2. Edit product
 3. In **Invoicing** tab:
 
-   - Set **NCM Code** (if applicable)
-   - Configure **GTIN** (barcode for SET)
-   - Set tax information
+   -  Set **NCM Code** (if applicable)
+   -  Configure **GTIN** (barcode for SET)
+   -  Set tax information
 
 Step 4: Partner Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -470,11 +470,11 @@ Available Document Types
 
 The module pre-configures these document types:
 
-- **Factura Electrónica (1)**: Standard invoice
-- **Nota de Crédito (4)**: Credit note
-- **Nota de Débito (5)**: Debit note
-- **Nota de Remisión (7)**: Delivery note
-- **Autofactura (2)**: Self-invoice
+-  **Factura Electrónica (1)**: Standard invoice
+-  **Nota de Crédito (4)**: Credit note
+-  **Nota de Débito (5)**: Debit note
+-  **Nota de Remisión (7)**: Delivery note
+-  **Autofactura (2)**: Self-invoice
 
 Journal Configuration
 ~~~~~~~~~~~~~~~~~~~~~
@@ -482,9 +482,9 @@ Journal Configuration
 1. Go to **Accounting > Configuration > Journals**
 2. For each sales journal:
 
-   - Enable **Electronic Invoicing**
-   - Select **Document Type**
-   - Ensure timbrado is configured
+   -  Enable **Electronic Invoicing**
+   -  Select **Document Type**
+   -  Ensure timbrado is configured
 
 Security Groups
 ---------------
@@ -495,8 +495,8 @@ Configure user permissions:
 2. Edit user
 3. In **Electronic Invoicing** section:
 
-   - **User**: Can create and send documents
-   - **Manager**: Can configure and cancel documents
+   -  **User**: Can create and send documents
+   -  **Manager**: Can configure and cancel documents
 
 Automatic Operations
 --------------------
@@ -511,8 +511,8 @@ The module includes automatic jobs:
 
 Configure in **Settings > Technical > Automation > Scheduled Actions**:
 
-- Adjust frequency as needed
-- Enable/disable jobs
+-  Adjust frequency as needed
+-  Enable/disable jobs
 
 Automatic Sending
 ~~~~~~~~~~~~~~~~~
@@ -522,8 +522,8 @@ Configure automatic sending on invoice confirmation:
 1. Go to company settings
 2. In **Electronic Invoicing** tab:
 
-   - Enable **Auto Send on Confirm**
-   - Set **Auto Download PDF/XML**
+   -  Enable **Auto Send on Confirm**
+   -  Set **Auto Download PDF/XML**
 
 Environment Configuration
 -------------------------
@@ -607,14 +607,14 @@ Document Status
 
 Electronic invoices have these statuses:
 
-- **Draft**: Not yet confirmed
-- **To Send**: Confirmed, ready to send
-- **Sending**: Being sent to provider
-- **Sent**: Successfully sent
-- **Approved**: Approved by SET
-- **Rejected**: Rejected by SET
-- **Cancelled**: Cancelled document
-- **Error**: Error occurred
+-  **Draft**: Not yet confirmed
+-  **To Send**: Confirmed, ready to send
+-  **Sending**: Being sent to provider
+-  **Sent**: Successfully sent
+-  **Approved**: Approved by SET
+-  **Rejected**: Rejected by SET
+-  **Cancelled**: Cancelled document
+-  **Error**: Error occurred
 
 Checking Document Status
 ------------------------
@@ -642,9 +642,9 @@ Cancelling Electronic Documents
 Requirements
 ~~~~~~~~~~~~
 
-- Document must be approved by SET
-- Within cancellation timeframe (per SET rules)
-- Valid cancellation reason
+-  Document must be approved by SET
+-  Within cancellation timeframe (per SET rules)
+-  Valid cancellation reason
 
 Process
 ~~~~~~~
@@ -705,10 +705,10 @@ View all EDI operations:
 1. Go to **Facturación Electrónica > EDI Logs**
 2. Filter by:
 
-   - Document
-   - Status
-   - Date
-   - Error type
+   -  Document
+   -  Status
+   -  Date
+   -  Error type
 
 Error Handling
 ~~~~~~~~~~~~~~
@@ -733,35 +733,56 @@ When printing invoices:
 2. Select **KUDE Report**
 3. Report includes:
 
-   - QR code
-   - CDC (Código de Control)
-   - All fiscal information
-   - SET-compliant format
+   -  QR code
+   -  CDC (Código de Control)
+   -  All fiscal information
+   -  SET-compliant format
 
 QR Code
 ~~~~~~~
 
 The QR code contains:
 
-- Document number
-- RUC
-- CDC
-- Amounts
-- Validation URL
+-  Document number
+-  RUC
+-  CDC
+-  Amounts
+-  Validation URL
 
 Customers can scan to verify authenticity.
 
 Batch Operations
 ----------------
 
-Sending Multiple Documents
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Sending Multiple Documents to SIFEN in a Batch
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. Go to invoice list view
-2. Select multiple invoices
-3. Click **Action > Send EDI**
-4. System sends all selected documents
-5. Check status individually
+2. Select multiple invoices in status **Para Enviar**
+3. Click **Action > Enviar en Lote a SIFEN**
+4. Each document is validated individually first — any that fail
+   validation are marked **Rechazado** with the reason and are never
+   transmitted
+5. The valid documents are split into batches of up to 50 (SIFEN's
+   ``MAX_LOTE``) and each batch is sent in a single call — status
+   becomes **Lote Enviado**
+6. Documents not in **Para Enviar** (already sent or in another state)
+   are silently skipped, so it's safe to re-run the action over the same
+   selection
+
+If sending a batch fails outright (connection error, etc.), none of its
+documents are marked as sent — they remain **Para Enviar** and can be
+resubmitted.
+
+Checking Batch Results
+~~~~~~~~~~~~~~~~~~~~~~
+
+-  The EDI status-check cron polls SIFEN once per pending batch
+   protocol, not once per document
+-  Each document is updated individually as soon as SIFEN confirms it:
+   **Aceptado** or **Rechazado**
+-  While SIFEN is still processing the batch, its documents stay in
+   **Lote Enviado** and are checked again on the next run
 
 Updating Multiple Statuses
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -791,10 +812,10 @@ View EDI metrics:
 1. Go to **Facturación Electrónica > Dashboard**
 2. See:
 
-   - Documents sent today/week/month
-   - Success rate
-   - Pending documents
-   - Errors
+   -  Documents sent today/week/month
+   -  Success rate
+   -  Pending documents
+   -  Errors
 
 Custom Reports
 ~~~~~~~~~~~~~~
@@ -872,26 +893,26 @@ Short Term (Next Release)
 Enhanced Validation
 ~~~~~~~~~~~~~~~~~~~
 
-- ☐ More comprehensive RUC validation
-- ☐ Automatic DV calculation for RUC
-- ☐ Product code validation against SET catalog
-- ☐ Real-time validation before sending
+-  ☐ More comprehensive RUC validation
+-  ☐ Automatic DV calculation for RUC
+-  ☐ Product code validation against SET catalog
+-  ☐ Real-time validation before sending
 
 Improved User Experience
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-- ☐ Better error messages with suggested fixes
-- ☐ Inline EDI status on invoice form
-- ☐ Dashboard with EDI statistics
-- ☐ Bulk operations improvement
+-  ☐ Better error messages with suggested fixes
+-  ☐ Inline EDI status on invoice form
+-  ☐ Dashboard with EDI statistics
+-  ☐ Bulk operations improvement
 
 Additional Reports
 ~~~~~~~~~~~~~~~~~~
 
-- ☐ Monthly EDI summary report
-- ☐ Tax authority compliance report
-- ☐ Document tracking report
-- ☐ Error analysis report
+-  ☐ Monthly EDI summary report
+-  ☐ Tax authority compliance report
+-  ☐ Document tracking report
+-  ☐ Error analysis report
 
 Medium Term (2-3 Releases)
 --------------------------
@@ -899,34 +920,34 @@ Medium Term (2-3 Releases)
 Additional Document Types
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- ☐ Comprobante de Retención (Retention receipt)
-- ☐ Factura de Exportación (Export invoice)
-- ☐ Factura de Importación (Import invoice)
-- ☐ Boleta de Venta (Sales receipt)
+-  ☐ Comprobante de Retención (Retention receipt)
+-  ☐ Factura de Exportación (Export invoice)
+-  ☐ Factura de Importación (Import invoice)
+-  ☐ Boleta de Venta (Sales receipt)
 
 Integration Enhancements
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-- ☐ Direct SIFEN integration (bypass third-party)
-- ☐ Webhook support for status updates
-- ☐ Batch sending optimization
-- ☐ Offline mode improvements
+-  ☐ Direct SIFEN integration (bypass third-party)
+-  ☐ Webhook support for status updates
+-  ☐ Batch sending optimization
+-  ☐ Offline mode improvements
 
 Advanced Features
 ~~~~~~~~~~~~~~~~~
 
-- ☐ Electronic credit management
-- ☐ Payment integration with electronic documents
-- ☐ Multi-currency support for EDI
-- ☐ Document routing rules
+-  ☐ Electronic credit management
+-  ☐ Payment integration with electronic documents
+-  ☐ Multi-currency support for EDI
+-  ☐ Document routing rules
 
 Compliance Updates
 ~~~~~~~~~~~~~~~~~~
 
-- ☐ Support for SET regulation changes
-- ☐ Enhanced contingency mode
-- ☐ Document versioning
-- ☐ Legal archive management (7-year retention)
+-  ☐ Support for SET regulation changes
+-  ☐ Enhanced contingency mode
+-  ☐ Document versioning
+-  ☐ Legal archive management (7-year retention)
 
 Long Term (Future Vision)
 -------------------------
@@ -934,42 +955,42 @@ Long Term (Future Vision)
 AI and Automation
 ~~~~~~~~~~~~~~~~~
 
-- ☐ Intelligent error detection and correction
-- ☐ Automatic document classification
-- ☐ Predictive timbrado expiration alerts
-- ☐ Smart retry strategies
+-  ☐ Intelligent error detection and correction
+-  ☐ Automatic document classification
+-  ☐ Predictive timbrado expiration alerts
+-  ☐ Smart retry strategies
 
 Integration Ecosystem
 ~~~~~~~~~~~~~~~~~~~~~
 
-- ☐ Point of Sale (POS) integration
-- ☐ E-commerce integration
-- ☐ Accounting software exports
-- ☐ Bank reconciliation integration
+-  ☐ Point of Sale (POS) integration
+-  ☐ E-commerce integration
+-  ☐ Accounting software exports
+-  ☐ Bank reconciliation integration
 
 Analytics and Intelligence
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- ☐ Advanced EDI analytics
-- ☐ Customer behavior insights
-- ☐ Tax optimization suggestions
-- ☐ Compliance scoring
+-  ☐ Advanced EDI analytics
+-  ☐ Customer behavior insights
+-  ☐ Tax optimization suggestions
+-  ☐ Compliance scoring
 
 Mobile Support
 ~~~~~~~~~~~~~~
 
-- ☐ Mobile app for document approval
-- ☐ QR code scanning verification
-- ☐ Mobile notifications
-- ☐ Offline mobile capabilities
+-  ☐ Mobile app for document approval
+-  ☐ QR code scanning verification
+-  ☐ Mobile notifications
+-  ☐ Offline mobile capabilities
 
 Additional Providers
 ~~~~~~~~~~~~~~~~~~~~
 
-- ☐ Additional EDI provider integrations
-- ☐ Provider comparison tools
-- ☐ Automatic failover between providers
-- ☐ Cost optimization across providers
+-  ☐ Additional EDI provider integrations
+-  ☐ Provider comparison tools
+-  ☐ Automatic failover between providers
+-  ☐ Cost optimization across providers
 
 Technical Improvements
 ----------------------
@@ -977,26 +998,26 @@ Technical Improvements
 Performance
 ~~~~~~~~~~~
 
-- ☐ Asynchronous document sending
-- ☐ Caching layer for provider responses
-- ☐ Database query optimization
-- ☐ Bulk operation performance
+-  ☐ Asynchronous document sending
+-  ☐ Caching layer for provider responses
+-  ☐ Database query optimization
+-  ☐ Bulk operation performance
 
 Code Quality
 ~~~~~~~~~~~~
 
-- ☐ Increase test coverage to 90%+
-- ☐ API documentation
-- ☐ Developer guide
-- ☐ Code refactoring for maintainability
+-  ☐ Increase test coverage to 90%+
+-  ☐ API documentation
+-  ☐ Developer guide
+-  ☐ Code refactoring for maintainability
 
 Security
 ~~~~~~~~
 
-- ☐ Enhanced credential encryption
-- ☐ Audit trail improvements
-- ☐ Role-based access control refinement
-- ☐ Security compliance certifications
+-  ☐ Enhanced credential encryption
+-  ☐ Audit trail improvements
+-  ☐ Role-based access control refinement
+-  ☐ Security compliance certifications
 
 Community Requests
 ------------------
@@ -1026,23 +1047,23 @@ Version Planning
 v16.0.2.0.0 (Q2 2024)
 ~~~~~~~~~~~~~~~~~~~~~
 
-- Enhanced validation
-- Additional reports
-- UX improvements
+-  Enhanced validation
+-  Additional reports
+-  UX improvements
 
 v16.0.3.0.0 (Q3 2024)
 ~~~~~~~~~~~~~~~~~~~~~
 
-- New document types
-- Improved integrations
-- Performance optimizations
+-  New document types
+-  Improved integrations
+-  Performance optimizations
 
 v17.0.1.0.0 (Q4 2024)
 ~~~~~~~~~~~~~~~~~~~~~
 
-- Odoo 17 migration
-- New features from roadmap
-- Architecture improvements
+-  Odoo 17 migration
+-  New features from roadmap
+-  Architecture improvements
 
 Deprecation Notices
 -------------------
@@ -1050,9 +1071,9 @@ Deprecation Notices
 Planned Deprecations
 ~~~~~~~~~~~~~~~~~~~~
 
-- Legacy provider adapters will be deprecated in v17.0
-- Old XML format support ends in v16.0.5.0.0
-- Python 3.7 support ends with v16.0 series
+-  Legacy provider adapters will be deprecated in v17.0
+-  Old XML format support ends in v16.0.5.0.0
+-  Python 3.7 support ends with v16.0 series
 
 Migration Paths
 ~~~~~~~~~~~~~~~
@@ -1065,16 +1086,16 @@ Feedback
 
 This roadmap is subject to change based on:
 
-- SET regulatory changes
-- Community feedback
-- Technical constraints
-- Resource availability
+-  SET regulatory changes
+-  Community feedback
+-  Technical constraints
+-  Resource availability
 
 Submit feedback:
 
-- GitHub issues
-- Community forums
-- Direct contact with maintainers
+-  GitHub issues
+-  Community forums
+-  Direct contact with maintainers
 
 --------------
 
