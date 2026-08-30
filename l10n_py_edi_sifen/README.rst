@@ -42,6 +42,10 @@ Features:
 -  RDe (Documento Electrónico) building from invoice data
 -  Support for FE, NCE, NDE, NRE, AFE document types
 -  Test and Production environment support
+-  Transmission of receiver-side events (Notificación de Recepción,
+   Conformidad, Disconformidad, Desconocimiento) for
+   ``l10n_py.edi.received.event`` records from ``l10n_py_edi_base``,
+   reusing the same ``evento`` endpoint as cancellation/inutilización
 
 **Table of contents**
 

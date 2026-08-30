@@ -89,6 +89,44 @@ To manually check status:
 3. System creates note with EDI reference
 4. Send to EDI as usual
 
+## Registering Receiver-side Events (Acuse de Recibo)
+
+When your company is the **receiver** of an electronic invoice issued by a
+supplier, SIFEN lets you (and in some cases requires you to) report events
+referencing the supplier's CDC — analogous to the *Manifestação do
+Destinatário* of the Brazilian NF-e.
+
+### Event Types
+
+- **Notificación de Recepción**: confirms the document was received (the
+  "acuse de recibo" itself)
+- **Conformidad**: accepts the document (full or partial)
+- **Disconformidad**: rejects the document, with a reason
+- **Desconocimiento**: declares the document unknown/not recognized
+
+### Registering an Event
+
+1. Go to **Facturación Electrónica > Eventos de Receptor**
+2. Create a new event
+3. Optionally link an existing **Factura de proveedor** — this pre-fills
+   the CDC, supplier, issue date and total (still editable)
+4. Or enter the supplier's **CDC** manually if the invoice isn't
+   registered in Odoo yet
+5. Select the **Tipo de Evento**
+6. Fill in the fields required for that event type (**Tipo de Receptor**,
+   **Motivo**, dates, etc. — the form only requires what that type needs)
+7. Click **Enviar Evento**
+
+### Rules
+
+- Only one event among Conformidad/Disconformidad/Desconocimiento can be
+  **Aceptado** per CDC — SIFEN treats them as mutually exclusive merit
+  events. Notificación de Recepción is independent of this rule.
+- A rejected or errored event can be reset to draft (**Volver a
+  Borrador**) and resubmitted; there is no automatic retry.
+- Events already transmitted (any state other than Borrador) can't be
+  deleted.
+
 ## Monitoring EDI Operations
 
 ### EDI Log

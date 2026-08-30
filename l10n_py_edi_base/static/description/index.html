@@ -398,6 +398,10 @@ res.company</li>
 <li><strong>QR Code Generation</strong>: Ready for KUDE (Código Único de Documento
 Electrónico)</li>
 <li><strong>Log System</strong>: Complete audit trail of EDI operations</li>
+<li><strong>Receiver-side Events</strong>: Register and transmit Notificación de
+Recepción, Conformidad, Disconformidad and Desconocimiento for DTEs
+received from suppliers, analogous to the Manifestação do
+Destinatário of the Brazilian NF-e</li>
 </ul>
 </div>
 <div class="section" id="compliance">
@@ -1071,6 +1075,51 @@ pip<span class="w"> </span>install<span class="w"> </span>qrcode<span class="w">
 <li>System creates note with EDI reference</li>
 <li>Send to EDI as usual</li>
 </ol>
+</div>
+</div>
+<div class="section" id="registering-receiver-side-events-acuse-de-recibo">
+<h2>Registering Receiver-side Events (Acuse de Recibo)</h2>
+<p>When your company is the <strong>receiver</strong> of an electronic invoice issued by
+a supplier, SIFEN lets you (and in some cases requires you to) report
+events referencing the supplier’s CDC — analogous to the <em>Manifestação
+do Destinatário</em> of the Brazilian NF-e.</p>
+<div class="section" id="event-types">
+<h3>Event Types</h3>
+<ul class="simple">
+<li><strong>Notificación de Recepción</strong>: confirms the document was received
+(the “acuse de recibo” itself)</li>
+<li><strong>Conformidad</strong>: accepts the document (full or partial)</li>
+<li><strong>Disconformidad</strong>: rejects the document, with a reason</li>
+<li><strong>Desconocimiento</strong>: declares the document unknown/not recognized</li>
+</ul>
+</div>
+<div class="section" id="registering-an-event">
+<h3>Registering an Event</h3>
+<ol class="arabic simple">
+<li>Go to <strong>Facturación Electrónica &gt; Eventos de Receptor</strong></li>
+<li>Create a new event</li>
+<li>Optionally link an existing <strong>Factura de proveedor</strong> — this pre-fills
+the CDC, supplier, issue date and total (still editable)</li>
+<li>Or enter the supplier’s <strong>CDC</strong> manually if the invoice isn’t
+registered in Odoo yet</li>
+<li>Select the <strong>Tipo de Evento</strong></li>
+<li>Fill in the fields required for that event type (<strong>Tipo de
+Receptor</strong>, <strong>Motivo</strong>, dates, etc. — the form only requires what
+that type needs)</li>
+<li>Click <strong>Enviar Evento</strong></li>
+</ol>
+</div>
+<div class="section" id="rules">
+<h3>Rules</h3>
+<ul class="simple">
+<li>Only one event among Conformidad/Disconformidad/Desconocimiento can
+be <strong>Aceptado</strong> per CDC — SIFEN treats them as mutually exclusive
+merit events. Notificación de Recepción is independent of this rule.</li>
+<li>A rejected or errored event can be reset to draft (<strong>Volver a
+Borrador</strong>) and resubmitted; there is no automatic retry.</li>
+<li>Events already transmitted (any state other than Borrador) can’t be
+deleted.</li>
+</ul>
 </div>
 </div>
 <div class="section" id="monitoring-edi-operations">
