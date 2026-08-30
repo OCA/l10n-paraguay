@@ -2,3 +2,4 @@
 
 from . import test_rde_builder
 from . import test_sifen_connector
+from . import test_sifen_receiver_event

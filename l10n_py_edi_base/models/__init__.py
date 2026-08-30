@@ -6,5 +6,6 @@ from . import product_template
 from . import l10n_py_edi_log
 from . import l10n_py_edi_document_type
 from . import l10n_py_associated_document
+from . import l10n_py_edi_received_event
 from . import l10n_py_number_inutilization
 from . import l10n_py_transport

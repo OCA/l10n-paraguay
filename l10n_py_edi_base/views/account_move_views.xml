@@ -82,6 +82,23 @@
                 </page>
             </xpath>
 
+            <!-- Smart button: eventos de receptor (sólo facturas de proveedor) -->
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <button
+                    name="action_open_received_events"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-inbox"
+                    invisible="move_type not in ('in_invoice', 'in_refund')"
+                >
+                    <field
+                        name="l10n_py_received_event_count"
+                        widget="statinfo"
+                        string="Eventos de Receptor"
+                    />
+                </button>
+            </xpath>
+
             <!-- Header buttons -->
             <xpath expr="//header" position="inside">
                 <button

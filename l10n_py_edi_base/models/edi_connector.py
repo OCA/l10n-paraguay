@@ -87,6 +87,20 @@ class EDIConnector(models.Model):
             _("El proveedor '%s' no implementa la inutilización") % self.provider_type
         )
 
+    def send_receiver_event(self, cdc, event_type, vals):
+        """Envía un evento del lado receptor (Notificación de Recepción,
+        Conformidad, Disconformidad o Desconocimiento) para el CDC de un DTE
+        ajeno (emitido por un proveedor).
+
+        Returns dict con al menos {'success': bool, 'protocol': str|None,
+        'error': str|None}.
+        """
+        self.ensure_one()
+        raise UserError(
+            _("El proveedor '%s' no implementa el envío de eventos de receptor")
+            % self.provider_type
+        )
+
     def test_connection(self):
         """Test connectivity. Returns notification action."""
         self.ensure_one()

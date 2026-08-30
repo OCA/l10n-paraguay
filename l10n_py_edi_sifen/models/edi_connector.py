@@ -3,15 +3,20 @@
 import logging
 import re
 from datetime import datetime
+from decimal import Decimal
 
-from pysifen.de.bindings.v150.evento_types_v150 import TiTiDeev
+from pysifen.de.bindings.v150.evento_types_v150 import TiTiDeev, TiTipEve
 from pysifen.de.bindings.v150.evento_v150 import (
     TgGroupEvt,
     TgGroupGesEve,
     TrEve,
     TrGesEve,
     TrGeVeCan,
+    TrGeVeConf,
+    TrGeVeDescon,
+    TrGeVeDisconf,
     TrGeVeInu,
+    TrGeVeNotRec,
 )
 from pysifen.de.bindings.v150.xmldsig_core_schema import (
     CanonicalizationMethod,
@@ -46,6 +51,25 @@ _DOC_TYPE_TO_EVENTO = {
     5: TiTiDeev.VALUE_5,
     6: TiTiDeev.VALUE_6,
 }
+
+# event_type (l10n_py.edi.received.event) → (binding pysifen, campo de TgGroupEvt)
+_RECEIVER_EVENT_BUILDERS = {
+    "notificacion_recepcion": (TrGeVeNotRec, "rGeVeNotRec"),
+    "conformidad": (TrGeVeConf, "rGeVeConf"),
+    "disconformidad": (TrGeVeDisconf, "rGeVeDisconf"),
+    "desconocimiento": (TrGeVeDescon, "rGeVeDescon"),
+}
+
+# tipo_receptor/tipo_conformidad ('1'/'2', Selection en el modelo Odoo) →
+# TiTipEve del binding pysifen (mismo enum crudo VALUE_1/VALUE_2 para ambos
+# campos, ver riesgo de modelagem #1 del design doc).
+_TIPO_EVENTO_MAP = {
+    "1": TiTipEve.VALUE_1,
+    "2": TiTipEve.VALUE_2,
+}
+
+# Campos del payload que representan un enum TiTipEve
+_TIPO_EVENTO_FIELDS = ("iTipRec", "iTipConf")
 
 
 class EDIConnector(models.Model):
@@ -91,6 +115,11 @@ class EDIConnector(models.Model):
         if self.provider_type != "sifen":
             return super().inutilize_range(data)
         return self._sifen_inutilize_range(data)
+
+    def send_receiver_event(self, cdc, event_type, vals):
+        if self.provider_type != "sifen":
+            return super().send_receiver_event(cdc, event_type, vals)
+        return self._sifen_send_receiver_event(cdc, event_type, vals)
 
     def preview_document(self, invoice_data):
         if self.provider_type != "sifen":
@@ -470,6 +499,97 @@ class EDIConnector(models.Model):
             return {"success": False, "error": str(e)}
         finally:
             evento.cleanup()
+
+    def _sifen_send_receiver_event(self, cdc, event_type, vals):
+        """Envía un evento del lado receptor (Notificación de Recepción,
+        Conformidad, Disconformidad o Desconocimiento) reusando el mismo
+        endpoint `evento` y `TgGroupEvt` que cancelación/inutilización: sólo
+        cambia qué campo del grupo se popula (ver design doc, Tesis
+        central).
+        """
+        self.ensure_one()
+        builder = _RECEIVER_EVENT_BUILDERS.get(event_type)
+        if builder is None:
+            return {
+                "success": False,
+                "error": f"Tipo de evento de receptor desconocido: {event_type}",
+            }
+        evento_cls, group_field = builder
+        evento = self._sifen_get_evento()
+        try:
+            payload = self._sifen_prepare_receiver_event_payload(vals)
+            event_obj = evento_cls(Id=cdc, **payload)
+            now_str = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+            empty_signature = Signature(
+                SignedInfo=SignedInfo(
+                    CanonicalizationMethod=CanonicalizationMethod(Algorithm=""),
+                    SignatureMethod=SignatureMethod(Algorithm=""),
+                ),
+                SignatureValue=SignatureValue(),
+            )
+            r_eve = TrEve(
+                dFecFirma=now_str,
+                dVerFor="150",
+                gGroupTiEvt=TgGroupEvt(**{group_field: event_obj}),
+                Id="1",
+            )
+            r_ges_eve = TrGesEve(rEve=r_eve, Signature=empty_signature)
+            grupo = TgGroupGesEve(rGesEve=[r_ges_eve])
+
+            result = evento.enviar_evento(grupo)
+            _logger.info(
+                "SIFEN receiver event result for CDC %s (%s): %s",
+                cdc,
+                event_type,
+                result,
+            )
+
+            if hasattr(result, "gResProcEVe") and result.gResProcEVe:
+                proc = result.gResProcEVe
+                if hasattr(proc, "dEstRes") and proc.dEstRes == "Aprobado":
+                    protocol = getattr(proc, "dProtConsLote", None) or getattr(
+                        proc, "Id", None
+                    )
+                    return {"success": True, "protocol": protocol}
+                error_msg = getattr(proc, "dMsgRes", "Error desconocido")
+                return {"success": False, "error": error_msg}
+
+            return {"success": False, "error": "Sin respuesta del SIFEN"}
+        except Exception as e:
+            _logger.error("SIFEN receiver event error: %s", str(e))
+            return {"success": False, "error": str(e)}
+        finally:
+            evento.cleanup()
+
+    @staticmethod
+    def _sifen_format_datetime(value):
+        """Convierte un `datetime`/`Datetime` de Odoo al formato
+        `AAAA-MM-DDTHH:MM:SS` exigido por el binding pysifen."""
+        if not value:
+            return value
+        if hasattr(value, "strftime"):
+            return value.strftime("%Y-%m-%dT%H:%M:%S")
+        return str(value)
+
+    @classmethod
+    def _sifen_prepare_receiver_event_payload(cls, vals):
+        """Traduce el dict genérico armado por
+        `l10n_py.edi.received.event._prepare_event_vals()` a los tipos que
+        el binding pysifen espera (enum `TiTipEve`, `Decimal`, fechas en
+        formato SIFEN), quitando claves con valor `None` (campos
+        opcionales del binding que no aplican al `event_type` actual)."""
+        payload = {}
+        for key, value in vals.items():
+            if value is None or value is False or value == "":
+                continue
+            if key in _TIPO_EVENTO_FIELDS:
+                value = _TIPO_EVENTO_MAP.get(str(value), value)
+            elif key.startswith("dFec"):
+                value = cls._sifen_format_datetime(value)
+            elif key == "dTotalGs":
+                value = Decimal(str(value))
+            payload[key] = value
+        return payload
 
     def _sifen_test_connection(self):
         """Test mTLS connection by querying company RUC."""

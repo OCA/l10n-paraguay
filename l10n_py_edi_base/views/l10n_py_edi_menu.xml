@@ -21,4 +21,12 @@
         parent="menu_l10n_py_edi_root"
         sequence="20"
     />
+
+    <menuitem
+        id="menu_l10n_py_edi_received_event"
+        name="Eventos de Receptor"
+        parent="menu_l10n_py_edi_root"
+        action="action_l10n_py_edi_received_event"
+        sequence="15"
+    />
 </odoo>
