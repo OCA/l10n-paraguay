@@ -382,6 +382,8 @@ without intermediary services like FactPy or FacturaSend.</p>
 <li>RDe (Documento Electrónico) building from invoice data</li>
 <li>Support for FE, NCE, NDE, NRE, AFE document types</li>
 <li>Test and Production environment support</li>
+<li>Automatic certificate expiration tracking, with a daily check and a
+status badge (valid / to expire / expired) on the company form</li>
 </ul>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
@@ -417,6 +419,11 @@ create a new connector:<ul>
 </ul>
 </li>
 <li>Click <strong>Probar Conexión</strong> to verify the mTLS connection with SIFEN.</li>
+<li>Once uploaded, the certificate’s expiration date is read
+automatically and shown next to a status badge (<strong>Válido</strong> / <strong>Por
+vencer</strong> / <strong>Vencido</strong>, the last two triggering at 30 days before
+expiry). A daily scheduled action keeps this status current even if
+nobody opens the company record.</li>
 </ol>
 </div>
 <div class="section" id="usage">

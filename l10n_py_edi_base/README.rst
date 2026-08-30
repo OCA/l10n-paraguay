@@ -58,6 +58,10 @@ Core Functionality
 -  **QR Code Generation**: Ready for KUDE (Código Único de Documento
    Electrónico)
 -  **Log System**: Complete audit trail of EDI operations
+-  **Status Check Wizard**: Query SIFEN status for a single invoice on
+   demand
+-  **Number Range Voiding**: Wizard to void (inutilizar) a range of
+   numbers within a timbrado directly from the authorization record
 
 Compliance
 ~~~~~~~~~~
@@ -633,6 +637,16 @@ To manually check status:
 3. System queries provider
 4. Status and messages update
 
+Single-invoice Status Check
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For a quick check on one invoice without leaving the form:
+
+1. Open an invoice that already has a **CDC** (already sent)
+2. Click **Consultar Status EDI**
+3. A popup shows the current status and message returned by SIFEN, and
+   the invoice's own status is updated in the background
+
 Cancelling Electronic Documents
 -------------------------------
 
@@ -652,6 +666,19 @@ Process
 4. Enter **Reason Details**
 5. Click **Cancel Document**
 6. System sends cancellation to SET
+
+Voiding a Number Range (Inutilización)
+--------------------------------------
+
+To declare a range of invoice numbers within a timbrado as void/unused
+with SIFEN (e.g. numbers skipped due to a printing error):
+
+1. Open the **Timbrado** (account.authorization) record
+2. Click the **Inutilizar Numeración** button
+3. Enter **Número Desde** / **Número Hasta** and a **Motivo**
+4. Confirm — the range is validated against the timbrado (must fall
+   inside its authorized range and not overlap numbers already used) and
+   sent to SIFEN in one step
 
 Downloading Documents
 ---------------------

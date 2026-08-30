@@ -42,6 +42,8 @@ Features:
 -  RDe (Documento Electrónico) building from invoice data
 -  Support for FE, NCE, NDE, NRE, AFE document types
 -  Test and Production environment support
+-  Automatic certificate expiration tracking, with a daily check and a
+   status badge (valid / to expire / expired) on the company form
 
 **Table of contents**
 
@@ -71,6 +73,12 @@ Configuration
    -  Company: select the company
 
 3. Click **Probar Conexión** to verify the mTLS connection with SIFEN.
+
+4. Once uploaded, the certificate's expiration date is read
+   automatically and shown next to a status badge (**Válido** / **Por
+   vencer** / **Vencido**, the last two triggering at 30 days before
+   expiry). A daily scheduled action keeps this status current even if
+   nobody opens the company record.
 
 Usage
 =====
