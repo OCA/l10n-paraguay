@@ -270,6 +270,27 @@ class AtlasApiClient:
             "GET", f"/cuentas-atlas/v1.5.0/cuentas/cas/obt-cta-by-alias?{query}"
         )
 
+    def consultar_banco_exterior(self, codigo_swift: str) -> dict:
+        """Look up a foreign bank by SWIFT/BIC code via
+        ``GET /datos-generales-atlas/v1.5.0/exterior/bancos/{codigo-swift}``.
+
+        Confirmed active by the bank (2026-09-02, item 8 of the SIPAP
+        clarification round) -- this is the *Transferencias Exterior*
+        branch of that answer only. The *domestic* "Consulta de
+        Entidades Participantes" endpoint referenced in the same answer
+        has no path/parameters yet (follow-up sent, awaiting response) --
+        do not use this method as a stand-in for that one.
+
+        NOTE: the bank's documentation for this specific endpoint gives
+        no example response body -- the exact field name for the bank's
+        name is a best-effort guess (see
+        ``L10nPyAtlasExteriorTransfer.action_validar_swift``), not
+        confirmed against a real sandbox call yet.
+        """
+        return self.call(
+            "GET", f"/datos-generales-atlas/v1.5.0/exterior/bancos/{codigo_swift}"
+        )
+
 
 class AtlasApiError(UserError):
     """Raised for any non-200 response from a Banco Atlas API, and for
