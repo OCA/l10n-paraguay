@@ -87,7 +87,8 @@ class AccountPaymentOrder(models.Model):
                     )
                 )
             is_pyg = len(currencies) == 1 and currencies.name == "PYG"
-            # Per-line check (§50.01 is per-transfer, not per-batch-total)
+            # Per-line check (per Banco Atlas's 2026-09-02 confirmation:
+            # the limit is per-transfer, not per-batch-total)
             amounts = order.payment_line_ids.mapped("amount_currency")
             over_limit = any(amount > L10N_PY_ATLAS_SPI_LIMIT_PYG for amount in amounts)
             if order.l10n_py_atlas_tipo_transferencia == "SPI" and (
@@ -97,10 +98,10 @@ class AccountPaymentOrder(models.Model):
                     _(
                         "El lote '%(order)s' fue forzado a SPI pero al "
                         "menos una de sus líneas supera, individualmente, "
-                        "el límite oficial del BCP (Gs. %(limit)s por "
-                        "transferencia, solo PYG -- Resolución 1/2023 "
-                        "§50.01) o el lote no está en PYG. Use LBTR para "
-                        "este lote.",
+                        "el límite confirmado por Banco Atlas (Gs. "
+                        "%(limit)s por transferencia, solo PYG -- "
+                        "confirmación 2026-09-02) o el lote no está en "
+                        "PYG. Use LBTR para este lote.",
                         order=order.display_name,
                         limit=f"{L10N_PY_ATLAS_SPI_LIMIT_PYG:,}".replace(",", "."),
                     )
