@@ -77,11 +77,11 @@ class TestAtlasRouting(AccountTestInvoicingCommon):
         return order
 
     def test_pyg_below_spi_limit_routes_to_spi(self):
-        order = self._order_with_amount(5_000_000)
+        order = self._order_with_amount(10_000_000)
         self.assertEqual(order.l10n_py_atlas_tipo_transferencia, "SPI")
 
     def test_pyg_above_spi_limit_routes_to_lbtr(self):
-        order = self._order_with_amount(5_000_001)
+        order = self._order_with_amount(10_000_001)
         self.assertEqual(order.l10n_py_atlas_tipo_transferencia, "LBTR")
 
     def test_non_pyg_currency_always_routes_to_lbtr(self):
@@ -102,7 +102,7 @@ class TestAtlasRouting(AccountTestInvoicingCommon):
     def test_forcing_spi_above_limit_raises_on_confirm(self):
         from odoo.exceptions import UserError
 
-        order = self._order_with_amount(5_000_001)
+        order = self._order_with_amount(10_000_001)
         order.l10n_py_atlas_tipo_transferencia = "SPI"
         with self.assertRaises(UserError):
             order._check_l10n_py_atlas_routing()
@@ -136,7 +136,7 @@ class TestAtlasRouting(AccountTestInvoicingCommon):
         doesn't accidentally flip this case)."""
         from odoo.exceptions import UserError
 
-        order = self._order_with_amount(5_000_001)
+        order = self._order_with_amount(10_000_001)
         self.assertEqual(order.l10n_py_atlas_tipo_transferencia, "LBTR")
         order.l10n_py_atlas_tipo_transferencia = "SPI"
         with self.assertRaises(UserError):

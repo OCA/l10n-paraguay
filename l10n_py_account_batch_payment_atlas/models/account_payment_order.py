@@ -8,10 +8,13 @@ from odoo.addons.l10n_py_account_payment_atlas.models.atlas_api_client import (
     AtlasApiClient,
 )
 
-# Official SPI limit per BCP Resolución 1/2023 §50.01: "Límite de pago:
-# Las transferencias enviadas por el SPI tendrán un límite de
-# Gs. 5.000.000 (guaraníes cinco millones)." PYG-only, no queueing.
-L10N_PY_ATLAS_SPI_LIMIT_PYG = 5_000_000
+# Limit confirmed by Banco Atlas (2026-09-02, item 9 of the SIPAP
+# clarification round): Gs. 10.000.000 for SPI (PYG-only), LBTR above
+# that value or for any operation in a currency other than PYG. This
+# supersedes the Gs. 5.000.000 figure previously assumed from BCP
+# Resolución 1/2023 §50.01, which the bank's own confirmation
+# overrides for this integration.
+L10N_PY_ATLAS_SPI_LIMIT_PYG = 10_000_000
 
 
 class AccountPaymentOrder(models.Model):
@@ -28,9 +31,9 @@ class AccountPaymentOrder(models.Model):
         compute="_compute_l10n_py_atlas_tipo_transferencia",
         store=True,
         readonly=False,
-        help="Sugerido automáticamente según el límite oficial del BCP "
-        "para SPI (Gs. 5.000.000 por transferencia individual, solo PYG "
-        "-- Resolución 1/2023 §50.01 aplica el límite POR TRANSFERENCIA, "
+        help="Sugerido automáticamente según el límite confirmado por "
+        "Banco Atlas (Gs. 10.000.000 por transferencia individual, solo "
+        "PYG -- confirmación 2026-09-02 aplica el límite POR TRANSFERENCIA, "
         "no por lote: un lote es elegible para SPI solo si TODAS sus "
         "líneas están, cada una individualmente, dentro del límite -- "
         "override manual permitido. 'ACH' nunca se sugiere "
@@ -52,9 +55,9 @@ class AccountPaymentOrder(models.Model):
                 order.l10n_py_atlas_tipo_transferencia = False
                 continue
             is_pyg = len(currencies) == 1 and currencies.name == "PYG"
-            # BCP Resolución 1/2023 §50.01 sets the Gs. 5.000.000 limit
-            # PER TRANSFER, not per batch total -- check every line
-            # individually, never the sum (a batch of many small,
+            # Banco Atlas confirmed (2026-09-02) the Gs. 10.000.000
+            # limit is PER TRANSFER, not per batch total -- check every
+            # line individually, never the sum (a batch of many small,
             # individually-legal SPI transfers must not be forced to
             # LBTR just because their sum exceeds the limit).
             all_lines_within_limit = all(
