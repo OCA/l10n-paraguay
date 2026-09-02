@@ -45,21 +45,26 @@ class AccountPaymentLine(models.Model):
         """Request a reversal from Banco Atlas via POST
         /proveedores-atlas/v1.5.0/proveedores/{cuenta}/reversar-pago.
 
-        Open question the bank has not answered yet (spec §4.5): whether
-        'nroFactura' in this endpoint means the bank's own nroOrden or
-        the Odoo invoice number. This implementation sends atlas_nro_orden
-        under that key, matching the only concrete example in the bank's
-        own documentation -- revisit if the bank clarifies otherwise.
+        'nroFactura' is the vendor's own invoice reference, confirmed by
+        the bank (2026-09-02, cross-referencing item 5 with the Home
+        Banking layout in item 12): NRO_ORDEN and NRO_FACTURA are
+        distinct fields, the latter being the supplier's invoice number,
+        never the bank's/Odoo's own order number. Falls back to the
+        move's internal sequence name when no vendor reference was
+        entered, and to the Atlas order number only when the line has no
+        linked bill at all (e.g. manually created payment lines).
         """
         for line in self:
             bank_account = line.order_id.company_partner_bank_id
             client = AtlasApiClient.from_bank_account(bank_account)
+            move = line.move_line_id.move_id
+            nro_factura = move.ref or move.name or str(line.atlas_nro_orden)
             result = client.call(
                 "POST",
                 f"/proveedores-atlas/v1.5.0/proveedores/"
                 f"{bank_account.atlas_numero_cuenta}/reversar-pago",
                 body={
-                    "nroFactura": str(line.atlas_nro_orden),
+                    "nroFactura": nro_factura,
                     "observacion": _("Reversión solicitada desde Odoo"),
                 },
             )
