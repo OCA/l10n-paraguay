@@ -6,6 +6,7 @@ from odoo.exceptions import UserError
 
 from odoo.addons.l10n_py_account_payment_atlas.models.atlas_api_client import (
     AtlasApiClient,
+    AtlasApiError,
 )
 
 
@@ -61,6 +62,14 @@ class L10nPyAtlasExteriorTransfer(models.Model):
     )
     beneficiario_direccion = fields.Char(required=True)
     swift_banco_intermediario = fields.Char()
+    beneficiario_banco_nombre = fields.Char(
+        readonly=True,
+        string="Nombre Banco Beneficiario (Atlas)",
+        help="Completado por 'Validar SWIFT' -- nombre del banco "
+        "beneficiario devuelto por Banco Atlas al consultar el código "
+        "SWIFT, usado para llenar 'nombreBancoBeneficiario' en el "
+        "payload en vez de enviarlo vacío.",
+    )
 
     numero_referencia = fields.Integer(readonly=True)
     monto_cargo = fields.Monetary(readonly=True, currency_field="currency_id")
@@ -93,7 +102,7 @@ class L10nPyAtlasExteriorTransfer(models.Model):
                 "codigoPaisBeneficiario": self.beneficiario_pais,
                 "codigoCiudadBeneficiario": self.beneficiario_ciudad,
                 "codigoSwiftBancoBeneficiario": self.beneficiario_swift,
-                "nombreBancoBeneficiario": "",
+                "nombreBancoBeneficiario": self.beneficiario_banco_nombre or "",
             },
         }
         if self.numero_orden_pago_dna:
@@ -103,6 +112,42 @@ class L10nPyAtlasExteriorTransfer(models.Model):
         if modo == "C":
             payload["numeroReferencia"] = self.numero_referencia
         return payload
+
+    def action_validar_swift(self):
+        """Validate beneficiario_swift against Banco Atlas's foreign-bank
+        lookup (spec item 8, exterior branch) before quoting, catching a
+        typo before it reaches the real quote/confirm endpoint. On
+        success, caches the bank's own name so the payload no longer
+        sends an empty nombreBancoBeneficiario. Deliberately NOT called
+        automatically from action_atlas_cotizar -- see this plan's
+        Global Constraints for why."""
+        self.ensure_one()
+        if not self.beneficiario_swift:
+            raise UserError(
+                _("Ingrese el código SWIFT del banco beneficiario antes de validar.")
+            )
+        client = AtlasApiClient.from_bank_account(self.company_bank_account_id)
+        try:
+            datos = client.consultar_banco_exterior(self.beneficiario_swift)
+        except AtlasApiError as exc:
+            raise UserError(
+                _(
+                    "El Banco Atlas no reconoce el código SWIFT '%(swift)s': "
+                    "%(error)s",
+                    swift=self.beneficiario_swift,
+                    error=exc.message,
+                )
+            ) from exc
+        nombre_banco = datos.get("nombreBanco")
+        if not nombre_banco:
+            raise UserError(
+                _(
+                    "El Banco Atlas no devolvió un nombre de banco para el "
+                    "código SWIFT '%(swift)s'.",
+                    swift=self.beneficiario_swift,
+                )
+            )
+        self.beneficiario_banco_nombre = nombre_banco
 
     def action_atlas_cotizar(self):
         """Modo V: quote the transfer's fees without debiting yet."""

@@ -7,6 +7,12 @@
             <form>
                 <header>
                     <button
+                        name="action_validar_swift"
+                        type="object"
+                        string="Validar SWIFT"
+                        invisible="state != 'draft'"
+                    />
+                    <button
                         name="action_atlas_cotizar"
                         type="object"
                         string="Cotizar"
@@ -29,6 +35,7 @@
                             <field name="beneficiario_nombre" />
                             <field name="beneficiario_cuenta" />
                             <field name="beneficiario_swift" />
+                            <field name="beneficiario_banco_nombre" readonly="1" />
                             <field name="beneficiario_pais" />
                             <field name="beneficiario_ciudad" />
                             <field name="beneficiario_direccion" />
