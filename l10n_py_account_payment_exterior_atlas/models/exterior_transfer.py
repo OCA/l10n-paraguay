@@ -86,6 +86,25 @@ class L10nPyAtlasExteriorTransfer(models.Model):
                 [("name", "=", record.moneda)], limit=1
             )
 
+    @api.onchange("beneficiario_swift")
+    def _onchange_beneficiario_swift(self):
+        """Editing the SWIFT code invalidates any previously cached
+        bank name -- otherwise the payload could pair a new SWIFT code
+        with a stale ``beneficiario_banco_nombre`` from a different
+        bank, cached by a previous 'Validar SWIFT' call."""
+        self.beneficiario_banco_nombre = False
+
+    def write(self, vals):
+        """Mirror ``_onchange_beneficiario_swift`` for RPC/API writes,
+        which never go through onchange: clear the cached bank name
+        whenever ``beneficiario_swift`` changes, unless the same call
+        also explicitly sets ``beneficiario_banco_nombre`` (e.g. a
+        legitimate simultaneous write of both, such as re-applying a
+        validated result)."""
+        if "beneficiario_swift" in vals and "beneficiario_banco_nombre" not in vals:
+            vals = dict(vals, beneficiario_banco_nombre=False)
+        return super().write(vals)
+
     def _l10n_py_atlas_exterior_payload(self, modo):
         self.ensure_one()
         payload = {

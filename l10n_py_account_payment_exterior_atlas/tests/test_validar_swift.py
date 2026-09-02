@@ -65,7 +65,7 @@ class TestValidarSwift(AccountTestInvoicingCommon):
         mock_call.side_effect = AtlasApiError(
             code=404, message="Not found", error_type="NOT_FOUND"
         )
-        with self.assertRaises(UserError):
+        with self.assertRaisesRegex(UserError, "no reconoce el código SWIFT"):
             self.transfer.action_validar_swift()
         self.assertFalse(self.transfer.beneficiario_banco_nombre)
 
@@ -73,6 +73,29 @@ class TestValidarSwift(AccountTestInvoicingCommon):
         self.transfer.beneficiario_swift = False
         with self.assertRaises(UserError):
             self.transfer.action_validar_swift()
+
+    @mock.patch(
+        "odoo.addons.l10n_py_account_payment_atlas.models.atlas_api_client."
+        "AtlasApiClient.call"
+    )
+    def test_validar_swift_no_bank_name_in_response_raises_user_error(self, mock_call):
+        mock_call.return_value = {}
+        with self.assertRaisesRegex(UserError, "no devolvió un nombre de banco"):
+            self.transfer.action_validar_swift()
+        self.assertFalse(self.transfer.beneficiario_banco_nombre)
+
+    @mock.patch(
+        "odoo.addons.l10n_py_account_payment_atlas.models.atlas_api_client."
+        "AtlasApiClient.call"
+    )
+    def test_write_new_swift_clears_cached_bank_name(self, mock_call):
+        mock_call.return_value = {"nombreBanco": "VISION BANCO S.A.E.C.A."}
+        self.transfer.action_validar_swift()
+        self.assertEqual(
+            self.transfer.beneficiario_banco_nombre, "VISION BANCO S.A.E.C.A."
+        )
+        self.transfer.write({"beneficiario_swift": "BBVAPYAS"})
+        self.assertFalse(self.transfer.beneficiario_banco_nombre)
 
     @mock.patch(
         "odoo.addons.l10n_py_account_payment_atlas.models.atlas_api_client."
