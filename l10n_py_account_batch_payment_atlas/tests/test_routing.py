@@ -108,18 +108,19 @@ class TestAtlasRouting(AccountTestInvoicingCommon):
             order._check_l10n_py_atlas_routing()
 
     def test_many_small_pyg_lines_summing_above_limit_still_route_to_spi(self):
-        """I9/§50.01: the Gs. 5.000.000 limit is PER TRANSFER, not per
-        batch total. Ten lines of Gs. 1.000.000 each (sum: Gs. 10.000.000,
-        well above the limit) must still be allowed to route to SPI,
-        because every INDIVIDUAL line is well within the limit."""
-        order = self._order_with_amount(1_000_000)
+        """Per Banco Atlas's 2026-09-02 confirmation, the Gs. 10.000.000
+        limit is PER TRANSFER, not per batch total. Ten lines of Gs.
+        2.000.000 each (sum: Gs. 20.000.000, well above the limit) must
+        still be allowed to route to SPI, because every INDIVIDUAL line
+        is well within the limit."""
+        order = self._order_with_amount(2_000_000)
         for i in range(9):
             partner = self.env["res.partner"].create({"name": f"Proveedor {i}"})
             self.env["account.payment.line"].create(
                 {
                     "order_id": order.id,
                     "partner_id": partner.id,
-                    "amount_currency": 1_000_000,
+                    "amount_currency": 2_000_000,
                     "currency_id": self.pyg.id,
                 }
             )

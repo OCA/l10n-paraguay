@@ -31,11 +31,14 @@ Paraguay - SIPAP Batch Payment: Banco Atlas Exporter
 The first real (non-file) SIPAP batch payment exporter for Banco Atlas:
 dispatches ``account.payment.order`` batches directly to the bank's
 ``Pago a Proveedores`` REST API instead of generating a file for manual
-upload, with automatic SPI/LBTR routing based on the official BCP limit
-(Gs. 5.000.000 per SPI transfer, PYG only -- Resolución 1/2023 §50.01
-applies this limit PER TRANSFER: a batch is only routed/validated as SPI
-when EVERY individual line is within the limit, never based on the
-batch's total sum).
+upload, with automatic SPI/LBTR routing based on the limit confirmed by
+Banco Atlas (2026-09-02, item 9 of the SIPAP clarification round): Gs.
+10.000.000 per SPI transfer, PYG only. This supersedes the Gs. 5.000.000
+figure previously assumed from BCP Resolución 1/2023 §50.01, which the
+bank's own confirmation overrides for this integration. The limit
+applies PER TRANSFER: a batch is only routed/validated as SPI when EVERY
+individual line is within the limit, never based on the batch's total
+sum).
 
 No webhook exists on this API: confirmation of a pending payment relies
 on a scheduled polling job.
