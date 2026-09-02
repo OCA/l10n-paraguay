@@ -17,7 +17,7 @@ import base64
 import datetime
 import hashlib
 import json
-from urllib.parse import urlencode
+from urllib.parse import quote, urlencode
 
 import requests
 from cryptography.hazmat.primitives import hashes, serialization
@@ -288,7 +288,9 @@ class AtlasApiClient:
         confirmed against a real sandbox call yet.
         """
         return self.call(
-            "GET", f"/datos-generales-atlas/v1.5.0/exterior/bancos/{codigo_swift}"
+            "GET",
+            f"/datos-generales-atlas/v1.5.0/exterior/bancos/"
+            f"{quote(codigo_swift.strip(), safe='')}",
         )
 
 
