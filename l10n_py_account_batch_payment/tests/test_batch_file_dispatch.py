@@ -78,7 +78,6 @@ class TestBatchFileDispatch(AccountTestInvoicingCommon):
         """The 'SIPAP Batch File' payment method is installed by data file."""
         self.assertTrue(self.sipap_method)
         self.assertEqual(self.sipap_method.payment_type, "outbound")
-        self.assertTrue(self.sipap_method.payment_order_ok)
         self.assertTrue(self.sipap_method.bank_account_required)
 
     def test_payment_method_selectable_on_a_bank_journal(self):

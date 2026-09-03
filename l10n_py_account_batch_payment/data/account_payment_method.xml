@@ -9,7 +9,6 @@
         <field name="name">SIPAP Batch File</field>
         <field name="code">l10n_py_sipap_batch</field>
         <field name="payment_type">outbound</field>
-        <field name="payment_order_ok" eval="True" />
         <field name="bank_account_required" eval="True" />
     </record>
 </odoo>
