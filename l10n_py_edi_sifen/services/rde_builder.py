@@ -475,7 +475,7 @@ class RDeBuilder:
             precio = Decimal(str(item_data.get("precioUnitario", 0)))
             cantidad = Decimal(str(item_data.get("cantidad", 1)))
             total_item = precio * cantidad
-            base_exenta = total_item if iva_tipo == 3 else Decimal("0")
+            base_exenta = total_item if iva_tipo in (2, 3) else Decimal("0")
 
             item = TgCamItem(
                 dCodInt=item_data.get("codigo", ""),
@@ -510,6 +510,7 @@ class RDeBuilder:
         totales = self.data.get("totales", {})
         return TgTotSub(
             dSubExe=Decimal(str(totales.get("totalExento", 0))),
+            dSubExo=Decimal(str(totales.get("totalExonerado", 0))),
             dSub5=Decimal(str(totales.get("totalGravado5", 0))),
             dSub10=Decimal(str(totales.get("totalGravado10", 0))),
             dTotOpe=Decimal(str(totales.get("totalOperacion", 0))),
