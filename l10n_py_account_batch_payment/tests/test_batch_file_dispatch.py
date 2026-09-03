@@ -8,7 +8,7 @@ from odoo.exceptions import UserError
 from odoo.tests import tagged
 
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.addons.account_payment_batch_oca.models.account_payment_order import (
+from odoo.addons.account_payment_order.models.account_payment_order import (
     AccountPaymentOrder,
 )
 
@@ -34,9 +34,7 @@ class TestBatchFileDispatch(AccountTestInvoicingCommon):
             {
                 "groups_id": [
                     Command.link(
-                        cls.env.ref(
-                            "account_payment_batch_oca.group_account_payment"
-                        ).id
+                        cls.env.ref("account_payment_order.group_account_payment").id
                     )
                 ]
             }

@@ -8,7 +8,7 @@ from odoo.exceptions import UserError
 # ``account.payment.method`` data record (see
 # ``data/account_payment_method.xml``), following the same pattern used
 # by every OCA payment-format module built on top of
-# ``account_payment_batch_oca`` (e.g. ``sepa_credit_transfer``).
+# ``account_payment_order`` (e.g. ``account_banking_sepa_credit_transfer``).
 L10N_PY_SIPAP_BATCH_CODE = "l10n_py_sipap_batch"
 
 

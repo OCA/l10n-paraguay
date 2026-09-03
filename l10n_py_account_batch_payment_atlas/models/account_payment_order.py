@@ -121,7 +121,7 @@ class AccountPaymentOrder(models.Model):
 
         Returns the same ``(False, False)`` "no file produced" tuple
         shape used elsewhere in this framework (see
-        ``account_payment_batch_oca.generate_payment_file``) -- this is
+        ``account_payment_order.generate_payment_file``) -- this is
         an API dispatch, not a file exporter, so there is never a file to
         attach.
         """

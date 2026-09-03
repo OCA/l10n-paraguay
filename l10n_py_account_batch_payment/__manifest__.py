@@ -9,7 +9,7 @@
     "license": "LGPL-3",
     "depends": [
         "l10n_py_base",
-        "account_payment_batch_oca",
+        "account_payment_order",
     ],
     "data": [
         "data/account_payment_method.xml",

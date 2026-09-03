@@ -18,9 +18,7 @@ class TestAtlasPolling(AccountTestInvoicingCommon):
             {
                 "groups_id": [
                     Command.link(
-                        cls.env.ref(
-                            "account_payment_batch_oca.group_account_payment"
-                        ).id
+                        cls.env.ref("account_payment_order.group_account_payment").id
                     )
                 ]
             }
@@ -40,7 +38,7 @@ class TestAtlasPolling(AccountTestInvoicingCommon):
 
         # NOTE: searching account.payment.method.line by journal_id alone
         # can pick up an *inbound* method line (this bit tasks 9-11 in
-        # this same plan) -- account_payment_batch_oca's own
+        # this same plan) -- account_payment_order's own
         # ValidationError then fires when creating the order. Filter for
         # an outbound method line explicitly, creating one if none exists
         # (mirrors the fix already applied in tests/test_dispatch.py).

@@ -22,9 +22,7 @@ class TestAtlasDispatch(AccountTestInvoicingCommon):
             {
                 "groups_id": [
                     Command.link(
-                        cls.env.ref(
-                            "account_payment_batch_oca.group_account_payment"
-                        ).id
+                        cls.env.ref("account_payment_order.group_account_payment").id
                     )
                 ]
             }
@@ -160,7 +158,7 @@ class TestAtlasDispatch(AccountTestInvoicingCommon):
         """C1: the dispatch method must return the same (False, False)
         'no file produced' tuple the base framework's generate_payment_file()
         expects everywhere else -- returning True broke the unpack in
-        account_payment_batch_oca.open2generated() AFTER the real HTTP
+        account_payment_order.open2generated() AFTER the real HTTP
         POST to the bank had already succeeded."""
         order = self._order_with_one_line()
         mock_call.return_value = {
@@ -201,7 +199,7 @@ class TestAtlasDispatch(AccountTestInvoicingCommon):
     def _order_with_sipap_atlas_method(self, amount=81000):
         """Build an order through the REAL production wiring: SIPAP Batch
         File payment method + res.bank configured for API/atlas export --
-        this is what account_payment_batch_oca.open2generated() actually
+        this is what account_payment_order.open2generated() actually
         sees, unlike the other tests in this file which call
         _l10n_py_dispatch_batch_api_atlas() directly and never exercise
         the generate_payment_file()/open2generated() unpack."""
@@ -257,7 +255,7 @@ class TestAtlasDispatch(AccountTestInvoicingCommon):
         self, mock_call
     ):
         """C1 regression: the REAL caller is
-        account_payment_batch_oca.open2generated(), which unpacks
+        account_payment_order.open2generated(), which unpacks
         generate_payment_file() as (payment_file_bytes, filename_ext).
         Before this fix, _l10n_py_dispatch_batch_api_atlas() returned
         True, so this unpack raised a TypeError AFTER the (mocked) HTTP
