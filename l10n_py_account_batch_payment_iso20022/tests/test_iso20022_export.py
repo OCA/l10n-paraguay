@@ -69,13 +69,16 @@ class TestIso20022Export(AccountTestInvoicingCommon):
             .sudo()
             .search([("code", "=", L10N_PY_SIPAP_BATCH_CODE)], limit=1)
         )
-        cls.method_line = cls.env["account.payment.method.line"].create(
+        # account_payment_order (the OCA batch-payment framework this
+        # module runs on) groups orders under an account.payment.mode,
+        # not a payment_method_line_id on the order/invoice.
+        cls.payment_mode = cls.env["account.payment.mode"].create(
             {
-                "name": "SIPAP Batch File - Test",
+                "name": "SIPAP Batch File - Test Mode",
                 "company_id": cls.company.id,
-                "journal_id": cls.bank_journal.id,
+                "bank_account_link": "fixed",
+                "fixed_journal_id": cls.bank_journal.id,
                 "payment_method_id": cls.sipap_method.id,
-                "selectable": True,
                 "group_lines": False,
             }
         )
@@ -86,7 +89,7 @@ class TestIso20022Export(AccountTestInvoicingCommon):
                 "move_type": "in_invoice",
                 "ref": "SIPAP-INV-001",
                 "invoice_date": fields.Date.today(),
-                "preferred_payment_method_line_id": cls.method_line.id,
+                "payment_mode_id": cls.payment_mode.id,
                 "invoice_line_ids": [
                     Command.create(
                         {
@@ -107,15 +110,14 @@ class TestIso20022Export(AccountTestInvoicingCommon):
     def _build_and_confirm_order(self):
         order = self.env["account.payment.order"].create(
             {
-                "payment_type": "outbound",
-                "payment_method_line_id": self.method_line.id,
+                "payment_mode_id": self.payment_mode.id,
             }
         )
         line_create = (
             self.env["account.payment.line.create"]
             .with_context(active_model="account.payment.order", active_id=order.id)
             .create(
-                {"date_type": "move", "move_date": datetime.now() + timedelta(days=1)}
+                {"date_type": "move", "filter_date": datetime.now() + timedelta(days=1)}
             )
         )
         line_create.payment_mode = "any"

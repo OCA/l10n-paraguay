@@ -45,37 +45,29 @@ class TestAtlasDispatch(AccountTestInvoicingCommon):
         cls.bank_journal.bank_account_id = cls.company_bank_account.id
 
     def _order_with_one_line(self, amount=81000):
-        method_line = self.env["account.payment.method.line"].search(
-            [
-                ("journal_id", "=", self.bank_journal.id),
-                ("payment_method_id.payment_type", "=", "outbound"),
-            ],
-            limit=1,
+        payment_method = self.env["account.payment.method"].search(
+            [("payment_type", "=", "outbound")], limit=1
         )
-        if not method_line:
-            payment_method = self.env["account.payment.method"].search(
-                [("payment_type", "=", "outbound")], limit=1
-            )
-            if not payment_method:
-                payment_method = self.env["account.payment.method"].create(
-                    {
-                        "name": "Test Outbound",
-                        "payment_type": "outbound",
-                        "code": "test_outbound",
-                    }
-                )
-            method_line = self.env["account.payment.method.line"].create(
+        if not payment_method:
+            payment_method = self.env["account.payment.method"].create(
                 {
-                    "name": "Test Outbound Line",
-                    "journal_id": self.bank_journal.id,
-                    "payment_method_id": payment_method.id,
+                    "name": "Test Outbound",
+                    "payment_type": "outbound",
+                    "code": "test_outbound",
                 }
             )
+        payment_mode = self.env["account.payment.mode"].create(
+            {
+                "name": "Test Outbound Mode",
+                "company_id": self.bank_journal.company_id.id,
+                "bank_account_link": "fixed",
+                "fixed_journal_id": self.bank_journal.id,
+                "payment_method_id": payment_method.id,
+            }
+        )
         order = self.env["account.payment.order"].create(
             {
-                "payment_type": "outbound",
-                "payment_method_line_id": method_line.id,
-                "journal_id": self.bank_journal.id,
+                "payment_mode_id": payment_mode.id,
             }
         )
         partner_bank = self.env["res.partner.bank"].create(
@@ -211,20 +203,18 @@ class TestAtlasDispatch(AccountTestInvoicingCommon):
             .sudo()
             .search([("code", "=", L10N_PY_SIPAP_BATCH_CODE)], limit=1)
         )
-        method_line = self.env["account.payment.method.line"].create(
+        payment_mode = self.env["account.payment.mode"].create(
             {
-                "name": "SIPAP Batch File - Atlas Test",
+                "name": "SIPAP Batch File - Atlas Test Mode",
                 "company_id": self.company.id,
-                "journal_id": self.bank_journal.id,
+                "bank_account_link": "fixed",
+                "fixed_journal_id": self.bank_journal.id,
                 "payment_method_id": sipap_method.id,
-                "selectable": True,
             }
         )
         order = self.env["account.payment.order"].create(
             {
-                "payment_type": "outbound",
-                "payment_method_line_id": method_line.id,
-                "journal_id": self.bank_journal.id,
+                "payment_mode_id": payment_mode.id,
             }
         )
         partner_bank = self.env["res.partner.bank"].create(

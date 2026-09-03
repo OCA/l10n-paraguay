@@ -36,46 +36,34 @@ class TestAtlasPolling(AccountTestInvoicingCommon):
         )
         cls.bank_journal.bank_account_id = cls.company_bank_account.id
 
-        # NOTE: searching account.payment.method.line by journal_id alone
-        # can pick up an *inbound* method line (this bit tasks 9-11 in
-        # this same plan) -- account_payment_order's own
-        # ValidationError then fires when creating the order. Filter for
-        # an outbound method line explicitly, creating one if none exists
-        # (mirrors the fix already applied in tests/test_dispatch.py).
-        method_line = cls.env["account.payment.method.line"].search(
-            [
-                ("journal_id", "=", cls.bank_journal.id),
-                ("payment_method_id.payment_type", "=", "outbound"),
-            ],
-            limit=1,
+        # account_payment_order (the OCA batch-payment framework this
+        # module runs on) groups orders under an account.payment.mode,
+        # not a payment_method_line_id on the order itself.
+        payment_method = cls.env["account.payment.method"].search(
+            [("payment_type", "=", "outbound")], limit=1
         )
-        if not method_line:
-            payment_method = cls.env["account.payment.method"].search(
-                [("payment_type", "=", "outbound")], limit=1
-            )
-            if not payment_method:
-                payment_method = cls.env["account.payment.method"].create(
-                    {
-                        "name": "Test Outbound",
-                        "payment_type": "outbound",
-                        "code": "test_outbound",
-                    }
-                )
-            method_line = cls.env["account.payment.method.line"].create(
+        if not payment_method:
+            payment_method = cls.env["account.payment.method"].create(
                 {
-                    "name": "Test Outbound Line",
-                    "journal_id": cls.bank_journal.id,
-                    "payment_method_id": payment_method.id,
+                    "name": "Test Outbound",
+                    "payment_type": "outbound",
+                    "code": "test_outbound",
                 }
             )
-        cls.method_line = method_line
+        cls.payment_mode = cls.env["account.payment.mode"].create(
+            {
+                "name": "Test Outbound Mode",
+                "company_id": cls.company_data["company"].id,
+                "bank_account_link": "fixed",
+                "fixed_journal_id": cls.bank_journal.id,
+                "payment_method_id": payment_method.id,
+            }
+        )
 
     def _pending_line(self, nro_orden=888853, atlas_estado=False):
         order = self.env["account.payment.order"].create(
             {
-                "payment_type": "outbound",
-                "payment_method_line_id": self.method_line.id,
-                "journal_id": self.bank_journal.id,
+                "payment_mode_id": self.payment_mode.id,
             }
         )
         currency = self.env.ref("base.PYG", raise_if_not_found=False) or self.env[

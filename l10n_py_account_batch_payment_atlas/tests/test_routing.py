@@ -28,39 +28,32 @@ class TestAtlasRouting(AccountTestInvoicingCommon):
 
     def _order_with_amount(self, amount, currency=None):
         bank_journal = self.company_data["default_journal_bank"]
-        # Find or create an outbound payment method line
-        method_line = self.env["account.payment.method.line"].search(
-            [
-                ("journal_id", "=", bank_journal.id),
-                ("payment_method_id.payment_type", "=", "outbound"),
-            ],
-            limit=1,
+        # account_payment_order (the OCA batch-payment framework this
+        # module runs on) groups orders under an account.payment.mode,
+        # not a payment_method_line_id on the order itself.
+        payment_method = self.env["account.payment.method"].search(
+            [("payment_type", "=", "outbound")], limit=1
         )
-        if not method_line:
-            # Create an outbound payment method if none exists
-            payment_method = self.env["account.payment.method"].search(
-                [("payment_type", "=", "outbound")], limit=1
-            )
-            if not payment_method:
-                payment_method = self.env["account.payment.method"].create(
-                    {
-                        "name": "Test Outbound",
-                        "payment_type": "outbound",
-                        "code": "test_outbound",
-                    }
-                )
-            method_line = self.env["account.payment.method.line"].create(
+        if not payment_method:
+            payment_method = self.env["account.payment.method"].create(
                 {
-                    "name": "Test Outbound Line",
-                    "journal_id": bank_journal.id,
-                    "payment_method_id": payment_method.id,
+                    "name": "Test Outbound",
+                    "payment_type": "outbound",
+                    "code": "test_outbound",
                 }
             )
+        payment_mode = self.env["account.payment.mode"].create(
+            {
+                "name": "Test Outbound Mode",
+                "company_id": bank_journal.company_id.id,
+                "bank_account_link": "fixed",
+                "fixed_journal_id": bank_journal.id,
+                "payment_method_id": payment_method.id,
+            }
+        )
         order = self.env["account.payment.order"].create(
             {
-                "payment_type": "outbound",
-                "payment_method_line_id": method_line.id,
-                "journal_id": bank_journal.id,
+                "payment_mode_id": payment_mode.id,
             }
         )
         partner = self.env["res.partner"].create({"name": "Proveedor Atlas Test"})

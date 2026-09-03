@@ -62,15 +62,30 @@ class TestBatchFileDispatch(AccountTestInvoicingCommon):
                 "company_id": cls.company.id,
                 "journal_id": cls.bank_journal.id,
                 "payment_method_id": cls.sipap_method.id,
-                "selectable": True,
+            }
+        )
+        # account_payment_order (the OCA batch-payment framework this
+        # module runs on) has no equivalent of payment_method_line_id on
+        # account.payment.order -- it groups orders under an
+        # account.payment.mode instead. This is unrelated to
+        # cls.method_line above, which stays: that one exercises Odoo
+        # core's own available_payment_method_ids/journal registry
+        # mechanism (test_payment_method_selectable_on_a_bank_journal),
+        # not account_payment_order's batch framework.
+        cls.payment_mode = cls.env["account.payment.mode"].create(
+            {
+                "name": "SIPAP Batch File - Test Mode",
+                "company_id": cls.company.id,
+                "bank_account_link": "fixed",
+                "fixed_journal_id": cls.bank_journal.id,
+                "payment_method_id": cls.sipap_method.id,
             }
         )
 
     def _create_order(self):
         return self.env["account.payment.order"].create(
             {
-                "payment_type": "outbound",
-                "payment_method_line_id": self.method_line.id,
+                "payment_mode_id": self.payment_mode.id,
             }
         )
 

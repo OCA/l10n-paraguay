@@ -37,6 +37,31 @@ class TestAtlasReversal(AccountTestInvoicingCommon):
             "default_journal_bank"
         ].bank_account_id = cls.company_bank_account
 
+    def _payment_mode(self, journal):
+        # account_payment_order (the OCA batch-payment framework this
+        # module runs on) groups orders under an account.payment.mode,
+        # not a payment_method_line_id on the order itself.
+        payment_method = self.env["account.payment.method"].search(
+            [("payment_type", "=", "outbound")], limit=1
+        )
+        if not payment_method:
+            payment_method = self.env["account.payment.method"].create(
+                {
+                    "name": "Test Outbound",
+                    "payment_type": "outbound",
+                    "code": "test_outbound",
+                }
+            )
+        return self.env["account.payment.mode"].create(
+            {
+                "name": "Test Outbound Mode",
+                "company_id": journal.company_id.id,
+                "bank_account_link": "fixed",
+                "fixed_journal_id": journal.id,
+                "payment_method_id": payment_method.id,
+            }
+        )
+
     @mock.patch(
         "odoo.addons.l10n_py_account_payment_atlas.models.atlas_api_client."
         "AtlasApiClient.call"
@@ -44,37 +69,9 @@ class TestAtlasReversal(AccountTestInvoicingCommon):
     def test_reversal_calls_the_reversar_pago_endpoint(self, mock_call):
         mock_call.return_value = {"numeroOperacion": "765313"}
         journal = self.company_data["default_journal_bank"]
-        method_line = self.env["account.payment.method.line"].search(
-            [
-                ("journal_id", "=", journal.id),
-                ("payment_method_id.payment_type", "=", "outbound"),
-            ],
-            limit=1,
-        )
-        if not method_line:
-            payment_method = self.env["account.payment.method"].search(
-                [("payment_type", "=", "outbound")], limit=1
-            )
-            if not payment_method:
-                payment_method = self.env["account.payment.method"].create(
-                    {
-                        "name": "Test Outbound",
-                        "payment_type": "outbound",
-                        "code": "test_outbound",
-                    }
-                )
-            method_line = self.env["account.payment.method.line"].create(
-                {
-                    "name": "Test Outbound Line",
-                    "journal_id": journal.id,
-                    "payment_method_id": payment_method.id,
-                }
-            )
         order = self.env["account.payment.order"].create(
             {
-                "payment_type": "outbound",
-                "payment_method_line_id": method_line.id,
-                "journal_id": journal.id,
+                "payment_mode_id": self._payment_mode(journal).id,
             }
         )
         line = self.env["account.payment.line"].create(
@@ -105,37 +102,9 @@ class TestAtlasReversal(AccountTestInvoicingCommon):
 
     def _line_for_bill(self, ref):
         journal = self.company_data["default_journal_bank"]
-        method_line = self.env["account.payment.method.line"].search(
-            [
-                ("journal_id", "=", journal.id),
-                ("payment_method_id.payment_type", "=", "outbound"),
-            ],
-            limit=1,
-        )
-        if not method_line:
-            payment_method = self.env["account.payment.method"].search(
-                [("payment_type", "=", "outbound")], limit=1
-            )
-            if not payment_method:
-                payment_method = self.env["account.payment.method"].create(
-                    {
-                        "name": "Test Outbound",
-                        "payment_type": "outbound",
-                        "code": "test_outbound",
-                    }
-                )
-            method_line = self.env["account.payment.method.line"].create(
-                {
-                    "name": "Test Outbound Line",
-                    "journal_id": journal.id,
-                    "payment_method_id": payment_method.id,
-                }
-            )
         order = self.env["account.payment.order"].create(
             {
-                "payment_type": "outbound",
-                "payment_method_line_id": method_line.id,
-                "journal_id": journal.id,
+                "payment_mode_id": self._payment_mode(journal).id,
             }
         )
         partner = self.env["res.partner"].create({"name": "Proveedor Factura"})
