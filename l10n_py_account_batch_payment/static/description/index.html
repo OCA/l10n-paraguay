@@ -408,12 +408,15 @@ worth knowing about the dependency chain.</p>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><a class="reference internal" href="#configuration" id="toc-entry-1">Configuration</a></li>
-<li><a class="reference internal" href="#usage" id="toc-entry-2">Usage</a></li>
-<li><a class="reference internal" href="#bug-tracker" id="toc-entry-3">Bug Tracker</a></li>
-<li><a class="reference internal" href="#credits" id="toc-entry-4">Credits</a><ul>
-<li><a class="reference internal" href="#authors" id="toc-entry-5">Authors</a></li>
-<li><a class="reference internal" href="#maintainers" id="toc-entry-6">Maintainers</a></li>
+<li><a class="reference internal" href="#configuration" id="toc-entry-1">Configuration</a><ul>
+<li><a class="reference internal" href="#access-rights-on-rollout" id="toc-entry-2">Access rights on rollout</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage" id="toc-entry-3">Usage</a></li>
+<li><a class="reference internal" href="#bug-tracker" id="toc-entry-4">Bug Tracker</a></li>
+<li><a class="reference internal" href="#credits" id="toc-entry-5">Credits</a><ul>
+<li><a class="reference internal" href="#authors" id="toc-entry-6">Authors</a></li>
+<li><a class="reference internal" href="#maintainers" id="toc-entry-7">Maintainers</a></li>
 </ul>
 </li>
 </ul>
@@ -433,9 +436,25 @@ number.</li>
 journal using the <strong>SIPAP Batch File</strong> payment method (Accounting &gt;
 Configuration &gt; Payment Methods).</li>
 </ol>
+<div class="section" id="access-rights-on-rollout">
+<h2><a class="toc-backref" href="#toc-entry-2">Access rights on rollout</a></h2>
+<p><tt class="docutils literal">account_payment_order</tt> (a dependency of this module) overrides the
+core Odoo access rule for bank accounts (<tt class="docutils literal">res.partner.bank</tt>) and banks
+(<tt class="docutils literal">res.bank</tt>): creating either now requires the <strong>Accounting /
+Payments</strong> group (<tt class="docutils literal">account_payment_order.group_account_payment</tt>)
+instead of the generic <strong>Contact Creation</strong> group. By default only
+administrators belong to this group.</p>
+<p><strong>This means any accounting user who could previously register a
+supplier/customer bank account, or add a new bank, loses that ability as
+soon as this module is installed</strong>, until explicitly added to
+<strong>Accounting / Payments</strong>. When rolling this module out to a client, add
+the relevant accounting users to that group as part of the go-live
+checklist — do not assume the existing “Contact Creation” group still
+covers it.</p>
+</div>
 </div>
 <div class="section" id="usage">
-<h1><a class="toc-backref" href="#toc-entry-2">Usage</a></h1>
+<h1><a class="toc-backref" href="#toc-entry-3">Usage</a></h1>
 <p>Create a payment/debit order (<tt class="docutils literal">account.payment.order</tt>) using the
 <strong>SIPAP Batch File</strong> payment method, add payment lines, confirm it, and
 click <strong>Generate File</strong>. If a bank on the company’s account has an
@@ -445,7 +464,7 @@ otherwise, an explicit error explains that no exporter is registered for
 that bank instead of producing an unverified file.</p>
 </div>
 <div class="section" id="bug-tracker">
-<h1><a class="toc-backref" href="#toc-entry-3">Bug Tracker</a></h1>
+<h1><a class="toc-backref" href="#toc-entry-4">Bug Tracker</a></h1>
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/OCA/l10n-paraguay/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
@@ -453,15 +472,15 @@ If you spotted it first, help us to smash it by providing a detailed and welcome
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
-<h1><a class="toc-backref" href="#toc-entry-4">Credits</a></h1>
+<h1><a class="toc-backref" href="#toc-entry-5">Credits</a></h1>
 <div class="section" id="authors">
-<h2><a class="toc-backref" href="#toc-entry-5">Authors</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-6">Authors</a></h2>
 <ul class="simple">
 <li>KMEE</li>
 </ul>
 </div>
 <div class="section" id="maintainers">
-<h2><a class="toc-backref" href="#toc-entry-6">Maintainers</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-7">Maintainers</a></h2>
 <p>This module is maintained by the OCA.</p>
 <a class="reference external image-reference" href="https://odoo-community.org">
 <img alt="Odoo Community Association" src="https://odoo-community.org/logo.png" />
