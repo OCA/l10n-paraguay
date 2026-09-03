@@ -45,12 +45,12 @@ class AccountPaymentOrder(models.Model):
                     company=self.company_id.display_name,
                 )
             )
-        if not self.payment_lot_ids:
+        if not self.payment_ids:
             raise UserError(
                 _(
                     "No se puede generar el archivo ISO 20022: la orden "
-                    "de pago '%(order)s' no tiene lotes de pago "
-                    "confirmados todavía.",
+                    "de pago '%(order)s' no tiene pagos confirmados "
+                    "todavía.",
                     order=self.display_name,
                 )
             )
@@ -66,8 +66,11 @@ class AccountPaymentOrder(models.Model):
         document = etree.Element("Document", nsmap=nsmap)
         cstmr = etree.SubElement(document, "CstmrCdtTrfInitn")
         self._l10n_py_iso20022_add_group_header(cstmr)
-        for lot in self.payment_lot_ids:
-            self._l10n_py_iso20022_add_payment_info(cstmr, lot, threshold)
+        # account_payment_order has no "lot" grouping (that concept only
+        # existed in account_payment_batch_oca): one order already means
+        # one journal + one requested execution date, so the whole order
+        # maps to exactly one <PmtInf> block.
+        self._l10n_py_iso20022_add_payment_info(cstmr, threshold)
         return document
 
     def _l10n_py_iso20022_add_group_header(self, cstmr):
@@ -86,15 +89,22 @@ class AccountPaymentOrder(models.Model):
         self.ensure_one()
         return f"{self.name or 'SIPAP'}-{uuid.uuid4().hex[:12]}".replace(" ", "")[:35]
 
-    def _l10n_py_iso20022_add_payment_info(self, cstmr, lot, threshold):
+    def _l10n_py_iso20022_add_payment_info(self, cstmr, threshold):
         self.ensure_one()
         pmt_inf = etree.SubElement(cstmr, "PmtInf")
-        etree.SubElement(pmt_inf, "PmtInfId").text = (lot.name or "LOT")[:35]
+        etree.SubElement(pmt_inf, "PmtInfId").text = (self.name or "PMTINF")[:35]
         etree.SubElement(pmt_inf, "PmtMtd").text = "TRF"
-        etree.SubElement(pmt_inf, "NbOfTxs").text = str(len(lot.payment_ids))
-        etree.SubElement(pmt_inf, "CtrlSum").text = f"{lot.amount:.2f}"
+        etree.SubElement(pmt_inf, "NbOfTxs").text = str(len(self.payment_ids))
+        etree.SubElement(pmt_inf, "CtrlSum").text = f"{self.total_company_currency:.2f}"
         reqd_exctn_dt = etree.SubElement(pmt_inf, "ReqdExctnDt")
-        etree.SubElement(reqd_exctn_dt, "Dt").text = fields.Date.to_string(lot.date)
+        # date_scheduled is optional on account.payment.order (only
+        # validated -- not required -- when set); fall back to today,
+        # same default the framework itself uses for "fixed" date orders
+        # (see payment_mode_id_change()/_prepare_payment_line_vals()).
+        execution_date = self.date_scheduled or fields.Date.context_today(self)
+        etree.SubElement(reqd_exctn_dt, "Dt").text = fields.Date.to_string(
+            execution_date
+        )
         dbtr = etree.SubElement(pmt_inf, "Dbtr")
         etree.SubElement(dbtr, "Nm").text = self.company_id.display_name[:140]
         company_bank = self.company_partner_bank_id
@@ -105,7 +115,7 @@ class AccountPaymentOrder(models.Model):
         )
         dbtr_agt = etree.SubElement(pmt_inf, "DbtrAgt")
         self._l10n_py_iso20022_add_fin_instn_id(dbtr_agt, company_bank.bank_id)
-        for payment in lot.payment_ids:
+        for payment in self.payment_ids:
             self._l10n_py_iso20022_add_credit_transfer(pmt_inf, payment, threshold)
 
     def _l10n_py_iso20022_add_fin_instn_id(self, parent, bank):
