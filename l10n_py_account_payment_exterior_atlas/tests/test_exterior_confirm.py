@@ -13,6 +13,11 @@ from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 class TestExteriorConfirm(AccountTestInvoicingCommon):
     def setUp(self):
         super().setUp()
+        # account_payment_order overrides base's res.partner.bank access
+        # rule to require this group instead of group_partner_manager.
+        self.env.user.groups_id |= self.env.ref(
+            "account_payment_order.group_account_payment"
+        )
         self.company_bank_account = self.env["res.partner.bank"].create(
             {
                 "acc_number": "ATLAS-EXT-0002",

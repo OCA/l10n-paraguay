@@ -7,6 +7,14 @@ from odoo.tests.common import TransactionCase
 
 @tagged("post_install", "-at_install", "l10n_py")
 class TestResPartnerBankAtlas(TransactionCase):
+    def setUp(self):
+        super().setUp()
+        # account_payment_order overrides base's res.partner.bank access
+        # rule to require this group instead of group_partner_manager.
+        self.env.user.groups_id |= self.env.ref(
+            "account_payment_order.group_account_payment"
+        )
+
     def test_atlas_fields_exist_and_default_to_disabled(self):
         partner = self.env["res.partner"].create({"name": "Test Partner"})
         partner_bank = self.env["res.partner.bank"].create(

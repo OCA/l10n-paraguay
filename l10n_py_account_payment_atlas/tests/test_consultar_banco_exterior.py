@@ -14,6 +14,11 @@ from odoo.addons.l10n_py_account_payment_atlas.models.atlas_api_client import (
 class TestConsultarBancoExterior(TransactionCase):
     def setUp(self):
         super().setUp()
+        # account_payment_order overrides base's res.partner.bank access
+        # rule to require this group instead of group_partner_manager.
+        self.env.user.groups_id |= self.env.ref(
+            "account_payment_order.group_account_payment"
+        )
         self.bank_account = self.env["res.partner.bank"].create(
             {
                 "acc_number": "ATLAS-EXT-SWIFT-0001",

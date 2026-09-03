@@ -16,6 +16,14 @@ class TestAtlasApiClientFromBankAccount(TransactionCase):
     misconfiguration, instead of an opaque KeyError/MissingSchema deep
     inside call()."""
 
+    def setUp(self):
+        super().setUp()
+        # account_payment_order overrides base's res.partner.bank access
+        # rule to require this group instead of group_partner_manager.
+        self.env.user.groups_id |= self.env.ref(
+            "account_payment_order.group_account_payment"
+        )
+
     def test_not_atlas_enabled_raises_clear_user_error(self):
         partner = self.env["res.partner"].create({"name": "Not Atlas Partner"})
         bank_account = self.env["res.partner.bank"].create(

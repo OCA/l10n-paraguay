@@ -11,6 +11,11 @@ from odoo.tests.common import TransactionCase
 class TestConsultarSaldo(TransactionCase):
     def setUp(self):
         super().setUp()
+        # account_payment_order overrides base's res.partner.bank access
+        # rule to require this group instead of group_partner_manager.
+        self.env.user.groups_id |= self.env.ref(
+            "account_payment_order.group_account_payment"
+        )
         partner = self.env["res.partner"].create({"name": "Test Partner"})
         self.bank_account = self.env["res.partner.bank"].create(
             {

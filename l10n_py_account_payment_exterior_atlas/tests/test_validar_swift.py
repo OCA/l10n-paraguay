@@ -16,6 +16,11 @@ from odoo.addons.l10n_py_account_payment_atlas.models.atlas_api_client import (
 class TestValidarSwift(AccountTestInvoicingCommon):
     def setUp(self):
         super().setUp()
+        # account_payment_order overrides base's res.partner.bank access
+        # rule to require this group instead of group_partner_manager.
+        self.env.user.groups_id |= self.env.ref(
+            "account_payment_order.group_account_payment"
+        )
         self.company_bank_account = self.env["res.partner.bank"].create(
             {
                 "acc_number": "ATLAS-EXT-SWIFT-0002",
@@ -70,9 +75,15 @@ class TestValidarSwift(AccountTestInvoicingCommon):
         self.assertFalse(self.transfer.beneficiario_banco_nombre)
 
     def test_validar_swift_without_code_raises_user_error(self):
-        self.transfer.beneficiario_swift = False
+        # beneficiario_swift is required=True on the persisted model, so
+        # writing False to a saved record would hit the DB's NOT NULL
+        # constraint before action_validar_swift()'s own guard even
+        # runs. Use an unsaved .new() record instead -- in-memory only,
+        # no SQL constraint -- so the Python-level guard is what's
+        # actually exercised.
+        transfer = self.transfer.new({"beneficiario_swift": False})
         with self.assertRaises(UserError):
-            self.transfer.action_validar_swift()
+            transfer.action_validar_swift()
 
     @mock.patch(
         "odoo.addons.l10n_py_account_payment_atlas.models.atlas_api_client."
