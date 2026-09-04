@@ -9,3 +9,4 @@ from . import test_edi_demo_scenarios
 from . import test_kude_generation
 from . import test_export_invoice_lines
 from . import test_export_validation
+from . import test_gravado_parcial_guard
