@@ -332,56 +332,255 @@ class AccountMove(models.Model):
     # publicados pela ISO 3166-1). Usada por _get_country_alpha3 para o
     # cPaisRec/dDesPaisRe do SIFEN; qualquer country.code ISO válido resolve aqui.
     _ALPHA2_TO_3 = {
-        "AD": "AND", "AE": "ARE", "AF": "AFG", "AG": "ATG", "AI": "AIA",
-        "AL": "ALB", "AM": "ARM", "AO": "AGO", "AQ": "ATA", "AR": "ARG",
-        "AS": "ASM", "AT": "AUT", "AU": "AUS", "AW": "ABW", "AX": "ALA",
-        "AZ": "AZE", "BA": "BIH", "BB": "BRB", "BD": "BGD", "BE": "BEL",
-        "BF": "BFA", "BG": "BGR", "BH": "BHR", "BI": "BDI", "BJ": "BEN",
-        "BL": "BLM", "BM": "BMU", "BN": "BRN", "BO": "BOL", "BQ": "BES",
-        "BR": "BRA", "BS": "BHS", "BT": "BTN", "BV": "BVT", "BW": "BWA",
-        "BY": "BLR", "BZ": "BLZ", "CA": "CAN", "CC": "CCK", "CD": "COD",
-        "CF": "CAF", "CG": "COG", "CH": "CHE", "CI": "CIV", "CK": "COK",
-        "CL": "CHL", "CM": "CMR", "CN": "CHN", "CO": "COL", "CR": "CRI",
-        "CU": "CUB", "CV": "CPV", "CW": "CUW", "CX": "CXR", "CY": "CYP",
-        "CZ": "CZE", "DE": "DEU", "DJ": "DJI", "DK": "DNK", "DM": "DMA",
-        "DO": "DOM", "DZ": "DZA", "EC": "ECU", "EE": "EST", "EG": "EGY",
-        "EH": "ESH", "ER": "ERI", "ES": "ESP", "ET": "ETH", "FI": "FIN",
-        "FJ": "FJI", "FK": "FLK", "FM": "FSM", "FO": "FRO", "FR": "FRA",
-        "GA": "GAB", "GB": "GBR", "GD": "GRD", "GE": "GEO", "GF": "GUF",
-        "GG": "GGY", "GH": "GHA", "GI": "GIB", "GL": "GRL", "GM": "GMB",
-        "GN": "GIN", "GP": "GLP", "GQ": "GNQ", "GR": "GRC", "GS": "SGS",
-        "GT": "GTM", "GU": "GUM", "GW": "GNB", "GY": "GUY", "HK": "HKG",
-        "HM": "HMD", "HN": "HND", "HR": "HRV", "HT": "HTI", "HU": "HUN",
-        "ID": "IDN", "IE": "IRL", "IL": "ISR", "IM": "IMN", "IN": "IND",
-        "IO": "IOT", "IQ": "IRQ", "IR": "IRN", "IS": "ISL", "IT": "ITA",
-        "JE": "JEY", "JM": "JAM", "JO": "JOR", "JP": "JPN", "KE": "KEN",
-        "KG": "KGZ", "KH": "KHM", "KI": "KIR", "KM": "COM", "KN": "KNA",
-        "KP": "PRK", "KR": "KOR", "KW": "KWT", "KY": "CYM", "KZ": "KAZ",
-        "LA": "LAO", "LB": "LBN", "LC": "LCA", "LI": "LIE", "LK": "LKA",
-        "LR": "LBR", "LS": "LSO", "LT": "LTU", "LU": "LUX", "LV": "LVA",
-        "LY": "LBY", "MA": "MAR", "MC": "MCO", "MD": "MDA", "ME": "MNE",
-        "MF": "MAF", "MG": "MDG", "MH": "MHL", "MK": "MKD", "ML": "MLI",
-        "MM": "MMR", "MN": "MNG", "MO": "MAC", "MP": "MNP", "MQ": "MTQ",
-        "MR": "MRT", "MS": "MSR", "MT": "MLT", "MU": "MUS", "MV": "MDV",
-        "MW": "MWI", "MX": "MEX", "MY": "MYS", "MZ": "MOZ", "NA": "NAM",
-        "NC": "NCL", "NE": "NER", "NF": "NFK", "NG": "NGA", "NI": "NIC",
-        "NL": "NLD", "NO": "NOR", "NP": "NPL", "NR": "NRU", "NU": "NIU",
-        "NZ": "NZL", "OM": "OMN", "PA": "PAN", "PE": "PER", "PF": "PYF",
-        "PG": "PNG", "PH": "PHL", "PK": "PAK", "PL": "POL", "PM": "SPM",
-        "PN": "PCN", "PR": "PRI", "PS": "PSE", "PT": "PRT", "PW": "PLW",
-        "PY": "PRY", "QA": "QAT", "RE": "REU", "RO": "ROU", "RS": "SRB",
-        "RU": "RUS", "RW": "RWA", "SA": "SAU", "SB": "SLB", "SC": "SYC",
-        "SD": "SDN", "SE": "SWE", "SG": "SGP", "SH": "SHN", "SI": "SVN",
-        "SJ": "SJM", "SK": "SVK", "SL": "SLE", "SM": "SMR", "SN": "SEN",
-        "SO": "SOM", "SR": "SUR", "SS": "SSD", "ST": "STP", "SV": "SLV",
-        "SX": "SXM", "SY": "SYR", "SZ": "SWZ", "TC": "TCA", "TD": "TCD",
-        "TF": "ATF", "TG": "TGO", "TH": "THA", "TJ": "TJK", "TK": "TKL",
-        "TL": "TLS", "TM": "TKM", "TN": "TUN", "TO": "TON", "TR": "TUR",
-        "TT": "TTO", "TV": "TUV", "TW": "TWN", "TZ": "TZA", "UA": "UKR",
-        "UG": "UGA", "UM": "UMI", "US": "USA", "UY": "URY", "UZ": "UZB",
-        "VA": "VAT", "VC": "VCT", "VE": "VEN", "VG": "VGB", "VI": "VIR",
-        "VN": "VNM", "VU": "VUT", "WF": "WLF", "WS": "WSM", "YE": "YEM",
-        "YT": "MYT", "ZA": "ZAF", "ZM": "ZMB", "ZW": "ZWE",
+        "AD": "AND",
+        "AE": "ARE",
+        "AF": "AFG",
+        "AG": "ATG",
+        "AI": "AIA",
+        "AL": "ALB",
+        "AM": "ARM",
+        "AO": "AGO",
+        "AQ": "ATA",
+        "AR": "ARG",
+        "AS": "ASM",
+        "AT": "AUT",
+        "AU": "AUS",
+        "AW": "ABW",
+        "AX": "ALA",
+        "AZ": "AZE",
+        "BA": "BIH",
+        "BB": "BRB",
+        "BD": "BGD",
+        "BE": "BEL",
+        "BF": "BFA",
+        "BG": "BGR",
+        "BH": "BHR",
+        "BI": "BDI",
+        "BJ": "BEN",
+        "BL": "BLM",
+        "BM": "BMU",
+        "BN": "BRN",
+        "BO": "BOL",
+        "BQ": "BES",
+        "BR": "BRA",
+        "BS": "BHS",
+        "BT": "BTN",
+        "BV": "BVT",
+        "BW": "BWA",
+        "BY": "BLR",
+        "BZ": "BLZ",
+        "CA": "CAN",
+        "CC": "CCK",
+        "CD": "COD",
+        "CF": "CAF",
+        "CG": "COG",
+        "CH": "CHE",
+        "CI": "CIV",
+        "CK": "COK",
+        "CL": "CHL",
+        "CM": "CMR",
+        "CN": "CHN",
+        "CO": "COL",
+        "CR": "CRI",
+        "CU": "CUB",
+        "CV": "CPV",
+        "CW": "CUW",
+        "CX": "CXR",
+        "CY": "CYP",
+        "CZ": "CZE",
+        "DE": "DEU",
+        "DJ": "DJI",
+        "DK": "DNK",
+        "DM": "DMA",
+        "DO": "DOM",
+        "DZ": "DZA",
+        "EC": "ECU",
+        "EE": "EST",
+        "EG": "EGY",
+        "EH": "ESH",
+        "ER": "ERI",
+        "ES": "ESP",
+        "ET": "ETH",
+        "FI": "FIN",
+        "FJ": "FJI",
+        "FK": "FLK",
+        "FM": "FSM",
+        "FO": "FRO",
+        "FR": "FRA",
+        "GA": "GAB",
+        "GB": "GBR",
+        "GD": "GRD",
+        "GE": "GEO",
+        "GF": "GUF",
+        "GG": "GGY",
+        "GH": "GHA",
+        "GI": "GIB",
+        "GL": "GRL",
+        "GM": "GMB",
+        "GN": "GIN",
+        "GP": "GLP",
+        "GQ": "GNQ",
+        "GR": "GRC",
+        "GS": "SGS",
+        "GT": "GTM",
+        "GU": "GUM",
+        "GW": "GNB",
+        "GY": "GUY",
+        "HK": "HKG",
+        "HM": "HMD",
+        "HN": "HND",
+        "HR": "HRV",
+        "HT": "HTI",
+        "HU": "HUN",
+        "ID": "IDN",
+        "IE": "IRL",
+        "IL": "ISR",
+        "IM": "IMN",
+        "IN": "IND",
+        "IO": "IOT",
+        "IQ": "IRQ",
+        "IR": "IRN",
+        "IS": "ISL",
+        "IT": "ITA",
+        "JE": "JEY",
+        "JM": "JAM",
+        "JO": "JOR",
+        "JP": "JPN",
+        "KE": "KEN",
+        "KG": "KGZ",
+        "KH": "KHM",
+        "KI": "KIR",
+        "KM": "COM",
+        "KN": "KNA",
+        "KP": "PRK",
+        "KR": "KOR",
+        "KW": "KWT",
+        "KY": "CYM",
+        "KZ": "KAZ",
+        "LA": "LAO",
+        "LB": "LBN",
+        "LC": "LCA",
+        "LI": "LIE",
+        "LK": "LKA",
+        "LR": "LBR",
+        "LS": "LSO",
+        "LT": "LTU",
+        "LU": "LUX",
+        "LV": "LVA",
+        "LY": "LBY",
+        "MA": "MAR",
+        "MC": "MCO",
+        "MD": "MDA",
+        "ME": "MNE",
+        "MF": "MAF",
+        "MG": "MDG",
+        "MH": "MHL",
+        "MK": "MKD",
+        "ML": "MLI",
+        "MM": "MMR",
+        "MN": "MNG",
+        "MO": "MAC",
+        "MP": "MNP",
+        "MQ": "MTQ",
+        "MR": "MRT",
+        "MS": "MSR",
+        "MT": "MLT",
+        "MU": "MUS",
+        "MV": "MDV",
+        "MW": "MWI",
+        "MX": "MEX",
+        "MY": "MYS",
+        "MZ": "MOZ",
+        "NA": "NAM",
+        "NC": "NCL",
+        "NE": "NER",
+        "NF": "NFK",
+        "NG": "NGA",
+        "NI": "NIC",
+        "NL": "NLD",
+        "NO": "NOR",
+        "NP": "NPL",
+        "NR": "NRU",
+        "NU": "NIU",
+        "NZ": "NZL",
+        "OM": "OMN",
+        "PA": "PAN",
+        "PE": "PER",
+        "PF": "PYF",
+        "PG": "PNG",
+        "PH": "PHL",
+        "PK": "PAK",
+        "PL": "POL",
+        "PM": "SPM",
+        "PN": "PCN",
+        "PR": "PRI",
+        "PS": "PSE",
+        "PT": "PRT",
+        "PW": "PLW",
+        "PY": "PRY",
+        "QA": "QAT",
+        "RE": "REU",
+        "RO": "ROU",
+        "RS": "SRB",
+        "RU": "RUS",
+        "RW": "RWA",
+        "SA": "SAU",
+        "SB": "SLB",
+        "SC": "SYC",
+        "SD": "SDN",
+        "SE": "SWE",
+        "SG": "SGP",
+        "SH": "SHN",
+        "SI": "SVN",
+        "SJ": "SJM",
+        "SK": "SVK",
+        "SL": "SLE",
+        "SM": "SMR",
+        "SN": "SEN",
+        "SO": "SOM",
+        "SR": "SUR",
+        "SS": "SSD",
+        "ST": "STP",
+        "SV": "SLV",
+        "SX": "SXM",
+        "SY": "SYR",
+        "SZ": "SWZ",
+        "TC": "TCA",
+        "TD": "TCD",
+        "TF": "ATF",
+        "TG": "TGO",
+        "TH": "THA",
+        "TJ": "TJK",
+        "TK": "TKL",
+        "TL": "TLS",
+        "TM": "TKM",
+        "TN": "TUN",
+        "TO": "TON",
+        "TR": "TUR",
+        "TT": "TTO",
+        "TV": "TUV",
+        "TW": "TWN",
+        "TZ": "TZA",
+        "UA": "UKR",
+        "UG": "UGA",
+        "UM": "UMI",
+        "US": "USA",
+        "UY": "URY",
+        "UZ": "UZB",
+        "VA": "VAT",
+        "VC": "VCT",
+        "VE": "VEN",
+        "VG": "VGB",
+        "VI": "VIR",
+        "VN": "VNM",
+        "VU": "VUT",
+        "WF": "WLF",
+        "WS": "WSM",
+        "YE": "YEM",
+        "YT": "MYT",
+        "ZA": "ZAF",
+        "ZM": "ZMB",
+        "ZW": "ZWE",
     }
 
     @staticmethod
@@ -674,8 +873,7 @@ class AccountMove(models.Model):
 
             for tax in line.tax_ids:
                 affectation = (
-                    tax.l10n_py_iva_affectation
-                    or self._l10n_py_infer_affectation(tax)
+                    tax.l10n_py_iva_affectation or self._l10n_py_infer_affectation(tax)
                 )
                 iva_type = int(affectation)
                 if tax.amount in (0, 5, 10):
@@ -852,6 +1050,54 @@ class AccountMove(models.Model):
                 errors.append(_("Autofactura: %s es obligatorio.") % desc)
         return errors
 
+    def _validate_nre_data(self, docs):
+        """Validar datos específicos de Nota de Remisión Electrónica
+        (código 7). Extraído de ``_validate_edi_document_type`` para
+        mantener la complejidad ciclomática de ese método bajo control."""
+        errors = []
+        if not self.l10n_py_nre_motive:
+            errors.append(_("Nota de Remisión: el motivo es obligatorio."))
+        # Motivo "1" (traslado por venta) sin doc asociado → requer data estimada
+        if (
+            self.l10n_py_nre_motive == "1"
+            and not docs
+            and not self.l10n_py_nre_estimated_invoice_date
+        ):
+            errors.append(
+                _(
+                    "NRE traslado por venta sin documento "
+                    "asociado: debe indicar fecha estimada "
+                    "de facturación."
+                )
+            )
+        # Data estimada no puede exceder el mes de emisión
+        if self.l10n_py_nre_estimated_invoice_date and self.invoice_date:
+            est_date = self.l10n_py_nre_estimated_invoice_date
+            inv_date = self.invoice_date
+            # La fecha estimada no debe superar el mes siguiente
+            if est_date.month > inv_date.month + 1 or (
+                est_date.year > inv_date.year
+                and not (inv_date.month == 12 and est_date.month == 1)
+            ):
+                errors.append(
+                    _(
+                        "La fecha estimada de facturación no puede "
+                        "exceder el mes siguiente al de emisión."
+                    )
+                )
+        # Motivo "5" (entre locales) → RUC receptor = RUC emissor
+        if self.l10n_py_nre_motive == "5":
+            partner_ruc = self.partner_id.l10n_py_ruc or ""
+            company_ruc = self.company_id.l10n_py_ruc or ""
+            if partner_ruc != company_ruc:
+                errors.append(
+                    _(
+                        "Traslado entre locales: el RUC del "
+                        "receptor debe coincidir con el del emisor."
+                    )
+                )
+        return errors
+
     def _validate_edi_document_type(self):
         """Validar requisitos específicos por tipo de DTE.
 
@@ -891,44 +1137,7 @@ class AccountMove(models.Model):
 
         # NRE (code=7): validações NRE
         elif code == "7":
-            if not self.l10n_py_nre_motive:
-                errors.append(_("Nota de Remisión: el motivo es obligatorio."))
-            # Motivo "1" (traslado por venta) sin doc asociado → requer data estimada
-            if self.l10n_py_nre_motive == "1" and not docs:
-                if not self.l10n_py_nre_estimated_invoice_date:
-                    errors.append(
-                        _(
-                            "NRE traslado por venta sin documento "
-                            "asociado: debe indicar fecha estimada "
-                            "de facturación."
-                        )
-                    )
-            # Data estimada no puede exceder el mes de emisión
-            if self.l10n_py_nre_estimated_invoice_date and self.invoice_date:
-                est_date = self.l10n_py_nre_estimated_invoice_date
-                inv_date = self.invoice_date
-                # La fecha estimada no debe superar el mes siguiente
-                if est_date.month > inv_date.month + 1 or (
-                    est_date.year > inv_date.year
-                    and not (inv_date.month == 12 and est_date.month == 1)
-                ):
-                    errors.append(
-                        _(
-                            "La fecha estimada de facturación no puede "
-                            "exceder el mes siguiente al de emisión."
-                        )
-                    )
-            # Motivo "5" (entre locales) → RUC receptor = RUC emissor
-            if self.l10n_py_nre_motive == "5":
-                partner_ruc = self.partner_id.l10n_py_ruc or ""
-                company_ruc = self.company_id.l10n_py_ruc or ""
-                if partner_ruc != company_ruc:
-                    errors.append(
-                        _(
-                            "Traslado entre locales: el RUC del "
-                            "receptor debe coincidir con el del emisor."
-                        )
-                    )
+            errors.extend(self._validate_nre_data(docs))
 
         # Exportación (Factura de Exportación): validaciones adicionales
         # exigidas en la práctica por la SET aunque el XSD los marque
@@ -998,6 +1207,26 @@ class AccountMove(models.Model):
                 if not line.product_id.l10n_py_ncm_code:
                     errors.append(
                         _("El producto %s no tiene código NCM") % line.product_id.name
+                    )
+            # "Gravado parcial" (iAfecIVA=4) no tiene, hoy, ningún cálculo
+            # real de la proporción gravada/exenta (dPropIVA) -- generar
+            # el DE con este tipo emitiría un dPropIVA incorrecto de forma
+            # silenciosa. Falla alto en vez de emitir un dato fiscal
+            # incorrecto: ver _prepare_invoice_lines/dPropIVA.
+            for tax in line.tax_ids:
+                if tax.l10n_py_iva_affectation == "4":
+                    errors.append(
+                        _(
+                            "El producto %(product)s usa el impuesto "
+                            "'%(tax)s' con afectación IVA 'Gravado "
+                            "parcial', que este módulo todavía no sabe "
+                            "calcular (no existe cálculo real de la "
+                            "proporción gravada/exenta). Use otro tipo de "
+                            "afectación o configure el cálculo antes de "
+                            "generar el documento electrónico.",
+                            product=line.product_id.name,
+                            tax=tax.name,
+                        )
                     )
 
         # Validar requisitos por tipo de documento (F03-F07)
