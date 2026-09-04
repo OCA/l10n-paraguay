@@ -67,22 +67,41 @@ Falta especificar o comportamento esperado quando um QR dinâmico gerado expira 
 pagamento, e o fluxo de estorno de um QR pago indevidamente. Depende do item 1 (não há
 documentação do produto real para basear esse fluxo).
 
-## 7. Dependência transitiva de módulo Enterprise (achado durante a implementação, fora da lista original)
+## 7. ~~Dependência transitiva de módulo Enterprise~~ — RESOLVIDO
 
-Durante a implementação do Módulo 1 foi confirmado (via inspeção direta do código-fonte
-nos checkouts locais do erplivre-odoo/doodba-express) que `account_batch_payment` é um
-módulo **Enterprise** no Odoo 18 (`license: OEEL-1`, localizado em
-`odoo/custom/src/enterprise/`), não Community. `l10n_py_account_batch_payment` depende
-diretamente dele, e `l10n_py_account_batch_payment_iso20022` depende transitivamente.
-Isso:
+~~Durante a implementação do Módulo 1 foi confirmado que `account_batch_payment` é um
+módulo Enterprise, do qual `l10n_py_account_batch_payment` dependia diretamente.~~
 
-- Funciona normalmente no ambiente KMEE, porque o `erplivre-odoo` já embarca Enterprise
-  (gate `ENTERPRISE_ENABLE`).
-- É uma barreira real para um PR público em `OCA/l10n-paraguay` nos termos usuais da
-  política da OCA, que evita que módulos community dependam de addons Enterprise.
+**Resolvido** (commit `35e7915`): `l10n_py_account_batch_payment` foi migrado para
+depender de `account_payment_order` (OCA, repo `bank-payment`), não mais do
+`account_batch_payment` Enterprise. Confirmado no manifest e no README do módulo — a
+barreira para um PR público em `OCA/l10n-paraguay` está removida. Isso também obrigou a
+revisão do ACL de `res.partner.bank`/`res.bank` (ver histórico do módulo) e foi a origem
+da migração do dispatch Atlas para o novo framework.
 
-Isso precisa de uma decisão explícita antes de qualquer submissão de PR real: manter
-como está (uso interno KMEE / fork privado), buscar uma alternativa Community para o
-conceito de "lote de pagamentos" (reimplementar uma versão mínima própria, fora do
-escopo desta rodada), ou confirmar com a comunidade OCA se há precedente aceito para
-esse tipo de dependência opcional.
+## 8. Módulos Banco Atlas (`l10n_py_account_payment_atlas`, `l10n_py_account_batch_payment_atlas`, `l10n_py_account_payment_exterior_atlas`) — gaps conhecidos não cobertos por este documento
+
+Este documento nasceu antes dos módulos Atlas existirem (o Módulo 1 original era só
+SIPAP genérico/Bancard). Os gaps abaixo já estão documentados nos READMEs de cada
+módulo, mas ficavam sem referência cruzada aqui — registrando para quem só consulta este
+arquivo:
+
+- **Verificação de assinatura da resposta do banco não implementada**
+  (`l10n_py_account_payment_atlas`, `AtlasApiClient`): a chave pública do banco
+  (`atlas_bank_public_key_pem`) é coletada e armazenada, mas nenhum método verifica a
+  assinatura JWT da resposta contra ela — gap documentado no próprio docstring da classe
+  e no README do módulo. O esquema de assinatura da resposta (`X-Atl-Auth` no retorno,
+  JWT com `content-hash` = SHA256 do corpo, assinado pela chave privada do banco) **está
+  documentado** nos PDFs de spec do banco (`docs/backlog/SIPAP/bancoAtlas/` no repo
+  `elm-template`) — não é mais um gap "sem informação disponível", é trabalho pendente
+  com especificação completa na mão.
+- **Estado "Liquidado" (`settled`) do wizard de transferência ao exterior nunca é
+  atingido** (`l10n_py_account_payment_exterior_atlas`): não existe endpoint documentado
+  de consulta de liquidação para transferências ao exterior (diferente do
+  `consultar-pago` que existe para Pago a Proveedores) — confirmado tanto no README do
+  módulo quanto nos PDFs de spec do banco. Estado fica só como opção do Selection, sem
+  mecanismo de transição.
+
+Nenhum dos dois bloqueia o uso em produção do que já está implementado (dispatch,
+reversão, saldo, cron de polling, transferência exterior cotizar/confirmar) — são
+lacunas de escopo, não bugs.
