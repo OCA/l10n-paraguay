@@ -73,7 +73,12 @@ class TestExportValidation(TransactionCase):
             }
         )
 
-    def _export_invoice(self, currency="USD", exchange_rate=1.0, partner_street="Av. Exterior 123"):
+    def _export_invoice(
+        self,
+        currency="USD",
+        exchange_rate=1.0,
+        partner_street="Av. Exterior 123",
+    ):
         partner = self._export_partner(street=partner_street)
         vals = {
             "move_type": "out_invoice",
