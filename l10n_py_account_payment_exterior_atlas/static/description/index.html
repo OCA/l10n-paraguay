@@ -378,10 +378,6 @@ webhook – settlement status requires polling, not yet implemented in
 this module).</p>
 <p>Known limitations / documented gaps (not implemented in this module):</p>
 <ul class="simple">
-<li>No menu item or list view is wired up beyond the
-<tt class="docutils literal">ir.actions.act_window</tt> for <tt class="docutils literal">l10n_py.atlas.exterior.transfer</tt>. A
-consultant needs to add a menu item manually, or it is left for a
-future task.</li>
 <li><tt class="docutils literal">beneficiario_pais</tt> and <tt class="docutils literal">beneficiario_ciudad</tt> are plain
 <tt class="docutils literal">Integer</tt> fields: the user must fill in the correct bank-side
 numeric code by hand, there is no friendly dropdown yet. This module
@@ -437,9 +433,8 @@ fields.</li>
 modo C) to actually debit the account. This can only be done once the
 transfer is in the “Cotizado” state.</li>
 </ol>
-<p>There is no menu item wired up by this module yet (see DESCRIPTION.md)
-– access the model via Settings &gt; Technical &gt; Actions, or add a menu
-item manually.</p>
+<p>Accessible via Accounting &gt; Vendors &gt; Transferencias al Exterior
+(Atlas).</p>
 </div>
 <div class="section" id="bug-tracker">
 <h1><a class="toc-backref" href="#toc-entry-3">Bug Tracker</a></h1>

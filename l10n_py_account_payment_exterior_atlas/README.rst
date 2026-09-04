@@ -37,10 +37,6 @@ this module).
 
 Known limitations / documented gaps (not implemented in this module):
 
--  No menu item or list view is wired up beyond the
-   ``ir.actions.act_window`` for ``l10n_py.atlas.exterior.transfer``. A
-   consultant needs to add a menu item manually, or it is left for a
-   future task.
 -  ``beneficiario_pais`` and ``beneficiario_ciudad`` are plain
    ``Integer`` fields: the user must fill in the correct bank-side
    numeric code by hand, there is no friendly dropdown yet. This module
@@ -92,9 +88,8 @@ beneficiary and transfer data, then:
    modo C) to actually debit the account. This can only be done once the
    transfer is in the "Cotizado" state.
 
-There is no menu item wired up by this module yet (see DESCRIPTION.md)
--- access the model via Settings > Technical > Actions, or add a menu
-item manually.
+Accessible via Accounting > Vendors > Transferencias al Exterior
+(Atlas).
 
 Bug Tracker
 ===========

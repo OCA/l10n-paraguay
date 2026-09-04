@@ -9,6 +9,5 @@ and transfer data, then:
    (``action_atlas_confirmar``, modo C) to actually debit the account.
    This can only be done once the transfer is in the "Cotizado" state.
 
-There is no menu item wired up by this module yet (see DESCRIPTION.md) --
-access the model via Settings > Technical > Actions, or add a menu item
-manually.
+Accessible via Accounting > Vendors > Transferencias al Exterior
+(Atlas).

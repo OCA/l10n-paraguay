@@ -8,6 +8,7 @@
     "website": "https://github.com/OCA/l10n-paraguay",
     "license": "LGPL-3",
     "depends": [
+        "account",
         "l10n_py_account_payment_atlas",
     ],
     "data": [
