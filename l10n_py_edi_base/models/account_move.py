@@ -1058,6 +1058,54 @@ class AccountMove(models.Model):
                 errors.append(_("Autofactura: %s es obligatorio.") % desc)
         return errors
 
+    def _validate_nre_data(self, docs):
+        """Validar datos específicos de Nota de Remisión Electrónica
+        (código 7). Extraído de ``_validate_edi_document_type`` para
+        mantener la complejidad ciclomática de ese método bajo control."""
+        errors = []
+        if not self.l10n_py_nre_motive:
+            errors.append(_("Nota de Remisión: el motivo es obligatorio."))
+        # Motivo "1" (traslado por venta) sin doc asociado → requer data estimada
+        if (
+            self.l10n_py_nre_motive == "1"
+            and not docs
+            and not self.l10n_py_nre_estimated_invoice_date
+        ):
+            errors.append(
+                _(
+                    "NRE traslado por venta sin documento "
+                    "asociado: debe indicar fecha estimada "
+                    "de facturación."
+                )
+            )
+        # Data estimada no puede exceder el mes de emisión
+        if self.l10n_py_nre_estimated_invoice_date and self.invoice_date:
+            est_date = self.l10n_py_nre_estimated_invoice_date
+            inv_date = self.invoice_date
+            # La fecha estimada no debe superar el mes siguiente
+            if est_date.month > inv_date.month + 1 or (
+                est_date.year > inv_date.year
+                and not (inv_date.month == 12 and est_date.month == 1)
+            ):
+                errors.append(
+                    _(
+                        "La fecha estimada de facturación no puede "
+                        "exceder el mes siguiente al de emisión."
+                    )
+                )
+        # Motivo "5" (entre locales) → RUC receptor = RUC emissor
+        if self.l10n_py_nre_motive == "5":
+            partner_ruc = self.partner_id.l10n_py_ruc or ""
+            company_ruc = self.company_id.l10n_py_ruc or ""
+            if partner_ruc != company_ruc:
+                errors.append(
+                    _(
+                        "Traslado entre locales: el RUC del "
+                        "receptor debe coincidir con el del emisor."
+                    )
+                )
+        return errors
+
     def _validate_edi_document_type(self):
         """Validar requisitos específicos por tipo de DTE.
 
@@ -1217,6 +1265,26 @@ class AccountMove(models.Model):
                 if not line.product_id.l10n_py_ncm_code:
                     errors.append(
                         _("El producto %s no tiene código NCM") % line.product_id.name
+                    )
+            # "Gravado parcial" (iAfecIVA=4) no tiene, hoy, ningún cálculo
+            # real de la proporción gravada/exenta (dPropIVA) -- generar
+            # el DE con este tipo emitiría un dPropIVA incorrecto de forma
+            # silenciosa. Falla alto en vez de emitir un dato fiscal
+            # incorrecto: ver _prepare_invoice_lines/dPropIVA.
+            for tax in line.tax_ids:
+                if tax.l10n_py_iva_affectation == "4":
+                    errors.append(
+                        _(
+                            "El producto %(product)s usa el impuesto "
+                            "'%(tax)s' con afectación IVA 'Gravado "
+                            "parcial', que este módulo todavía no sabe "
+                            "calcular (no existe cálculo real de la "
+                            "proporción gravada/exenta). Use otro tipo de "
+                            "afectación o configure el cálculo antes de "
+                            "generar el documento electrónico.",
+                            product=line.product_id.name,
+                            tax=tax.name,
+                        )
                     )
 
         # Validar requisitos por tipo de documento (F03-F07)
