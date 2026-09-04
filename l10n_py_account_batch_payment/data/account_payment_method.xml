@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- Registers the payment method used to trigger SIPAP batch file
+         generation on account.payment.order. This module implements no
+         concrete file layout: see
+         AccountPaymentOrder._l10n_py_generate_batch_file for the
+         dispatch to an installed exporter module. -->
+    <record id="l10n_py_sipap_batch" model="account.payment.method">
+        <field name="name">SIPAP Batch File</field>
+        <field name="code">l10n_py_sipap_batch</field>
+        <field name="payment_type">outbound</field>
+        <field name="bank_account_required" eval="True" />
+    </record>
+</odoo>

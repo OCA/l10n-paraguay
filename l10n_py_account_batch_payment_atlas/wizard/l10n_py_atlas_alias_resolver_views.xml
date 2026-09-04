@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_l10n_py_atlas_alias_resolver_form" model="ir.ui.view">
+        <field name="name">l10n_py.atlas.alias.resolver.form</field>
+        <field name="model">l10n_py.atlas.alias.resolver</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button
+                        name="action_buscar"
+                        type="object"
+                        string="Buscar"
+                        class="btn-primary"
+                        invisible="state != 'draft'"
+                    />
+                    <button
+                        name="action_confirmar"
+                        type="object"
+                        string="Confirmar"
+                        class="btn-primary"
+                        invisible="state != 'resolved'"
+                    />
+                    <button string="Cancelar" special="cancel" type="object" />
+                    <field name="state" widget="statusbar" />
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Búsqueda">
+                            <field
+                                name="company_id"
+                                readonly="state != 'draft'"
+                                groups="base.group_multi_company"
+                            />
+                            <field
+                                name="company_bank_account_id"
+                                readonly="state != 'draft'"
+                            />
+                            <field name="partner_id" readonly="state != 'draft'" />
+                            <field name="alias_tipo" readonly="state != 'draft'" />
+                            <field name="alias_valor" readonly="state != 'draft'" />
+                        </group>
+                        <group string="Resultado" invisible="state != 'resolved'">
+                            <field name="resolved_nro_cuenta" />
+                            <field name="resolved_denominacion" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_l10n_py_atlas_alias_resolver" model="ir.actions.act_window">
+        <field name="name">Resolver Alias CAS (Banco Atlas)</field>
+        <field name="res_model">l10n_py.atlas.alias.resolver</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    <menuitem
+        id="menu_l10n_py_atlas_alias_resolver"
+        action="action_l10n_py_atlas_alias_resolver"
+        parent="account.menu_finance_payables"
+        sequence="23"
+    />
+</odoo>

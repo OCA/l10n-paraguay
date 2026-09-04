@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_res_bank_form_l10n_py_sipap" model="ir.ui.view">
+        <field name="name">res.bank.form.l10n.py.sipap</field>
+        <field name="model">res.bank</field>
+        <field name="inherit_id" ref="base.view_res_bank_form" />
+        <field name="arch" type="xml">
+            <group name="bank_details" position="inside">
+                <field name="l10n_py_sipap_bank_code" />
+                <field name="l10n_py_sipap_export_code" />
+                <field
+                    name="l10n_py_sipap_export_mode"
+                    invisible="not l10n_py_sipap_export_code"
+                />
+            </group>
+        </field>
+    </record>
+</odoo>

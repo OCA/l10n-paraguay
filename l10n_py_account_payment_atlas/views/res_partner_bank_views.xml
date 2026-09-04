@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_partner_bank_form_atlas" model="ir.ui.view">
+        <field name="name">res.partner.bank.form.atlas</field>
+        <field name="model">res.partner.bank</field>
+        <field name="inherit_id" ref="base.view_partner_bank_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="Banco Atlas" name="atlas_group">
+                    <field name="atlas_enabled" />
+                    <group invisible="not atlas_enabled">
+                        <field name="atlas_environment" />
+                        <field
+                            name="atlas_production_url"
+                            invisible="atlas_environment != 'production'"
+                        />
+                        <field name="atlas_numero_cuenta" />
+                        <field name="atlas_api_key" password="True" />
+                        <field name="atlas_private_key_pem" />
+                        <field name="atlas_bank_public_key_pem" />
+                        <field name="atlas_auth_token" password="True" />
+                        <button
+                            name="action_atlas_consultar_saldo"
+                            type="object"
+                            string="Consultar saldo"
+                            class="btn-secondary"
+                        />
+                        <field name="atlas_saldo" readonly="1" />
+                        <field name="atlas_saldo_disponible" readonly="1" />
+                        <field name="atlas_saldo_consulta_fecha" readonly="1" />
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

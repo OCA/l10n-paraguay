@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- Registers the provider record disabled by default. It only becomes
+         reachable/configurable through Accounting > Payment Providers; it
+         is never auto-enabled, since there is no working integration
+         behind it yet. -->
+    <record id="payment_provider_bancard_qr" model="payment.provider">
+        <field name="name">Bancard QR SPI</field>
+        <field name="code">bancard_qr</field>
+        <field name="state">disabled</field>
+        <field name="bancard_qr_environment">sandbox</field>
+    </record>
+</odoo>

@@ -1,0 +1,153 @@
+# Copyright 2026 KMEE
+# License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
+
+from odoo import Command
+from odoo.tests import tagged
+
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+
+
+@tagged("post_install", "-at_install", "l10n_py")
+class TestAtlasRouting(AccountTestInvoicingCommon):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.env.user.write(
+            {
+                "groups_id": [
+                    Command.link(
+                        cls.env.ref("account_payment_order.group_account_payment").id
+                    )
+                ]
+            }
+        )
+        cls.company = cls.company_data["company"]
+        cls.pyg = cls.env.ref("base.PYG", raise_if_not_found=False) or cls.env[
+            "res.currency"
+        ].create({"name": "PYG_TEST", "symbol": "Gs"})
+
+    def _order_with_amount(self, amount, currency=None):
+        bank_journal = self.company_data["default_journal_bank"]
+        # account_payment_order (the OCA batch-payment framework this
+        # module runs on) groups orders under an account.payment.mode,
+        # not a payment_method_line_id on the order itself.
+        payment_method = self.env["account.payment.method"].search(
+            [("payment_type", "=", "outbound")], limit=1
+        )
+        if not payment_method:
+            payment_method = self.env["account.payment.method"].create(
+                {
+                    "name": "Test Outbound",
+                    "payment_type": "outbound",
+                    "code": "test_outbound",
+                }
+            )
+        payment_mode = self.env["account.payment.mode"].create(
+            {
+                "name": "Test Outbound Mode",
+                "company_id": bank_journal.company_id.id,
+                "bank_account_link": "fixed",
+                "fixed_journal_id": bank_journal.id,
+                "payment_method_id": payment_method.id,
+            }
+        )
+        order = self.env["account.payment.order"].create(
+            {
+                "payment_mode_id": payment_mode.id,
+            }
+        )
+        partner = self.env["res.partner"].create({"name": "Proveedor Atlas Test"})
+        self.env["account.payment.line"].create(
+            {
+                "order_id": order.id,
+                "partner_id": partner.id,
+                "amount_currency": amount,
+                "currency_id": (currency or self.pyg).id,
+            }
+        )
+        return order
+
+    def test_pyg_below_spi_limit_routes_to_spi(self):
+        order = self._order_with_amount(10_000_000)
+        self.assertEqual(order.l10n_py_atlas_tipo_transferencia, "SPI")
+
+    def test_pyg_above_spi_limit_routes_to_lbtr(self):
+        order = self._order_with_amount(10_000_001)
+        self.assertEqual(order.l10n_py_atlas_tipo_transferencia, "LBTR")
+
+    def test_non_pyg_currency_always_routes_to_lbtr(self):
+        usd = self.env.ref("base.USD")
+        order = self._order_with_amount(100, currency=usd)
+        self.assertEqual(order.l10n_py_atlas_tipo_transferencia, "LBTR")
+
+    def test_manual_override_is_respected(self):
+        order = self._order_with_amount(1000)
+        order.l10n_py_atlas_tipo_transferencia = "ACH"
+        # A manual write must survive: re-triggering the compute (by
+        # touching a dependency to the SAME value) must not clobber it
+        # because `readonly=False` computed fields only recompute when a
+        # real dependency change invalidates the cache -- here we assert
+        # the value simply stays ACH after being set by hand.
+        self.assertEqual(order.l10n_py_atlas_tipo_transferencia, "ACH")
+
+    def test_forcing_spi_above_limit_raises_on_confirm(self):
+        from odoo.exceptions import UserError
+
+        order = self._order_with_amount(10_000_001)
+        order.l10n_py_atlas_tipo_transferencia = "SPI"
+        with self.assertRaises(UserError):
+            order._check_l10n_py_atlas_routing()
+
+    def test_many_small_pyg_lines_summing_above_limit_still_route_to_spi(self):
+        """Per Banco Atlas's 2026-09-02 confirmation, the Gs. 10.000.000
+        limit is PER TRANSFER, not per batch total. Ten lines of Gs.
+        2.000.000 each (sum: Gs. 20.000.000, well above the limit) must
+        still be allowed to route to SPI, because every INDIVIDUAL line
+        is well within the limit."""
+        order = self._order_with_amount(2_000_000)
+        for i in range(9):
+            partner = self.env["res.partner"].create({"name": f"Proveedor {i}"})
+            self.env["account.payment.line"].create(
+                {
+                    "order_id": order.id,
+                    "partner_id": partner.id,
+                    "amount_currency": 2_000_000,
+                    "currency_id": self.pyg.id,
+                }
+            )
+        self.assertEqual(len(order.payment_line_ids), 10)
+        self.assertEqual(order.l10n_py_atlas_tipo_transferencia, "SPI")
+        # And the pre-flight guard must accept it too.
+        order._check_l10n_py_atlas_routing()
+
+    def test_one_line_individually_over_limit_forces_lbtr_even_if_only_line(self):
+        """The inverse case: a single line over the per-transfer limit
+        must force LBTR even though there's only one line (sum == that
+        one line's amount, so this also passes under the old, wrong
+        sum-based check -- included as a regression guard so the fix
+        doesn't accidentally flip this case)."""
+        from odoo.exceptions import UserError
+
+        order = self._order_with_amount(10_000_001)
+        self.assertEqual(order.l10n_py_atlas_tipo_transferencia, "LBTR")
+        order.l10n_py_atlas_tipo_transferencia = "SPI"
+        with self.assertRaises(UserError):
+            order._check_l10n_py_atlas_routing()
+
+    def test_mixed_currency_batch_raises(self):
+        from odoo.exceptions import UserError
+
+        order = self._order_with_amount(1000)
+        usd = self.env.ref("base.USD")
+        self.env["account.payment.line"].create(
+            {
+                "order_id": order.id,
+                "partner_id": self.env["res.partner"]
+                .create({"name": "Segundo Proveedor"})
+                .id,
+                "amount_currency": 50,
+                "currency_id": usd.id,
+            }
+        )
+        with self.assertRaises(UserError):
+            order._check_l10n_py_atlas_routing()

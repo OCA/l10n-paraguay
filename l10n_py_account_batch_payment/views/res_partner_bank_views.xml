@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_partner_bank_form_l10n_py_sipap" model="ir.ui.view">
+        <field name="name">res.partner.bank.form.l10n.py.sipap</field>
+        <field name="model">res.partner.bank</field>
+        <field name="inherit_id" ref="base.view_partner_bank_form" />
+        <field name="arch" type="xml">
+            <field name="acc_holder_name" position="after">
+                <field name="l10n_py_cas_alias_type" />
+                <field name="l10n_py_cas_alias_value" />
+                <field name="l10n_py_sipap_bank_code" />
+            </field>
+        </field>
+    </record>
+</odoo>
