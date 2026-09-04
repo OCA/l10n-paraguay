@@ -1,6 +1,6 @@
 {
     "name": "Paraguay - SIPAP Batch Payment: Banco Atlas Exporter",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.1.0",
     "category": "Accounting/Localizations",
     "summary": "Direct-API SIPAP batch payment exporter for Banco Atlas "
     "(Pago a Proveedores), with automatic SPI/LBTR routing",
@@ -12,8 +12,10 @@
         "l10n_py_account_payment_atlas",
     ],
     "data": [
+        "security/ir.model.access.csv",
         "data/ir_cron_data.xml",
         "views/account_payment_order_views.xml",
+        "wizard/l10n_py_atlas_alias_resolver_views.xml",
     ],
     "installable": True,
     "application": False,

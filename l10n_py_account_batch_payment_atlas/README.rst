@@ -52,18 +52,52 @@ Known limitations / documented gaps (not implemented in this module):
    not specify a field for communicating that choice, so no such field
    is sent in the payload. If/when the bank documents one, this module
    should be updated to actually pass the chosen route through.
+
 -  ``formaPago`` is always hardcoded to ``"C"`` (credit to account) in
    the batch dispatch payload. It is never derived from the
-   beneficiary's account type, and ``AtlasApiClient.consultar_alias``
-   (which exists and could resolve a beneficiary via alias) is never
-   called from this dispatch path.
+   beneficiary's account type, and ``AtlasApiClient.consultar_alias`` is
+   never called from this dispatch path.
+
+-  Beneficiary bank accounts that need to be identified only by a CAS
+   alias (phone/email/RUC/CI) instead of a full account number can no
+   longer be resolved at dispatch time: a previous version of this
+   module attempted that (a ``_l10n_py_resolver_alias_atlas`` helper
+   called from ``_l10n_py_dispatch_batch_api_atlas``), but a live test
+   against a real Odoo 18 instance proved that branch to be dead code --
+   ``res.partner.bank.acc_number`` is ``required=True`` in Odoo's own
+   core (``odoo/addons/base/models/res_bank.py``, no override anywhere
+   in this repo), so a beneficiary bank account without an account
+   number can never be persisted in the first place, and the
+   alias-resolution branch could never actually be reached. That code
+   (helper, dispatch branch, and its isolated unit tests) has been
+   removed.
+
+   Instead, alias resolution now happens once, at REGISTRATION time, via
+   the new **"Resolver Alias CAS (Banco Atlas)"** wizard
+   (``l10n_py.atlas.alias.resolver``, Accounting > Payables menu). Given
+   the company's own Atlas-enabled bank account (used to authenticate
+   the lookup), the beneficiary partner, and the alias type/value, the
+   wizard calls ``AtlasApiClient.consultar_alias`` once, shows the
+   account holder's name returned by the bank (``denominacion``) for a
+   human to visually confirm it matches the expected beneficiary, and
+   only then creates (or, if one with the same resolved account number
+   already exists for that partner, opens the existing)
+   ``res.partner.bank`` record with a proper ``acc_number`` (the one the
+   bank resolved, ``nroCuenta``) plus the alias type/value kept for
+   reference. From that point on, every downstream flow (dispatch
+   included) only ever deals with a normal, fully-numbered bank account
+   -- no alias-only branch exists anywhere in the dispatch path any
+   more.
+
 -  No per-line/aggregate ``sent``/``rejected``/``partially_rejected``
    order-level state is surfaced distinctly in the UI beyond what
    already exists (``account.payment.line.atlas_estado`` per line).
+
 -  No handling exists for a non-null ``metodoAprobacion`` in the bank's
    response (a 2FA/manual-approval flow on the bank's side): this module
    assumes every dispatch either fully succeeds or fully fails per line,
    synchronously.
+
 -  Non-manager users (e.g. ``account.group_account_invoice``) may hit an
    ``AccessError`` reading Atlas credentials (``atlas_api_key``,
    ``atlas_private_key_pem``, ``atlas_auth_token``) when triggering
@@ -120,6 +154,13 @@ is a known limitation, not a bug fixed in this module: granting broader
 access via ``sudo()`` is a security-relevant decision left for a
 deliberate follow-up, not bundled into this fix wave.
 
+For the same reason, the new "Resolver Alias CAS (Banco Atlas)" wizard
+is restricted to ``account.group_account_manager`` only (not also
+``account_payment_order.group_account_payment``): its "Buscar" button
+authenticates against the company's Atlas bank account the same way
+dispatch/reversal/polling do, so a user without manager access would
+only hit an ``AccessError`` reading the credentials anyway.
+
 Usage
 =====
 
@@ -128,6 +169,12 @@ method on an Atlas-configured bank as usual. This module intercepts the
 export and calls Banco Atlas directly instead of producing a file. Use
 the "Reversar pago" action on an ``account.payment.line`` to request a
 reversal from the bank.
+
+To register a beneficiary bank account known only by a CAS alias
+(phone/email/RUC/CI), use the "Resolver Alias CAS (Banco Atlas)" wizard
+(Accounting > Payables) instead of creating the ``res.partner.bank`` by
+hand. If an account with the same resolved number already exists for
+that partner, the wizard opens it instead of creating a duplicate.
 
 Bug Tracker
 ===========

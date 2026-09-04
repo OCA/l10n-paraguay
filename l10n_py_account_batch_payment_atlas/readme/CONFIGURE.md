@@ -31,3 +31,10 @@ the polling cron may hit an ``AccessError`` reading those fields. This is
 a known limitation, not a bug fixed in this module: granting broader
 access via ``sudo()`` is a security-relevant decision left for a
 deliberate follow-up, not bundled into this fix wave.
+
+For the same reason, the new "Resolver Alias CAS (Banco Atlas)" wizard
+is restricted to ``account.group_account_manager`` only (not also
+``account_payment_order.group_account_payment``): its "Buscar" button
+authenticates against the company's Atlas bank account the same way
+dispatch/reversal/polling do, so a user without manager access would
+only hit an ``AccessError`` reading the credentials anyway.

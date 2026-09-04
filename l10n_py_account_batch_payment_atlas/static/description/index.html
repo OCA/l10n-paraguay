@@ -384,34 +384,68 @@ sum).</p>
 <p>No webhook exists on this API: confirmation of a pending payment relies
 on a scheduled polling job.</p>
 <p>Known limitations / documented gaps (not implemented in this module):</p>
-<ul class="simple">
-<li><tt class="docutils literal">l10n_py_atlas_tipo_transferencia</tt> (SPI/LBTR/ACH/Atlas) only
+<ul>
+<li><p class="first"><tt class="docutils literal">l10n_py_atlas_tipo_transferencia</tt> (SPI/LBTR/ACH/Atlas) only
 enforces the legal SPI limit as a PRE-FLIGHT check before dispatch.
 It does NOT control which trilho (rail) Banco Atlas actually uses for
 the transfer: the bank’s Pago a Proveedores API documentation does
 not specify a field for communicating that choice, so no such field
 is sent in the payload. If/when the bank documents one, this module
-should be updated to actually pass the chosen route through.</li>
-<li><tt class="docutils literal">formaPago</tt> is always hardcoded to <tt class="docutils literal">&quot;C&quot;</tt> (credit to account) in
+should be updated to actually pass the chosen route through.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">formaPago</tt> is always hardcoded to <tt class="docutils literal">&quot;C&quot;</tt> (credit to account) in
 the batch dispatch payload. It is never derived from the
-beneficiary’s account type, and <tt class="docutils literal">AtlasApiClient.consultar_alias</tt>
-(which exists and could resolve a beneficiary via alias) is never
-called from this dispatch path.</li>
-<li>No per-line/aggregate <tt class="docutils literal">sent</tt>/<tt class="docutils literal">rejected</tt>/<tt class="docutils literal">partially_rejected</tt>
+beneficiary’s account type, and <tt class="docutils literal">AtlasApiClient.consultar_alias</tt> is
+never called from this dispatch path.</p>
+</li>
+<li><p class="first">Beneficiary bank accounts that need to be identified only by a CAS
+alias (phone/email/RUC/CI) instead of a full account number can no
+longer be resolved at dispatch time: a previous version of this
+module attempted that (a <tt class="docutils literal">_l10n_py_resolver_alias_atlas</tt> helper
+called from <tt class="docutils literal">_l10n_py_dispatch_batch_api_atlas</tt>), but a live test
+against a real Odoo 18 instance proved that branch to be dead code –
+<tt class="docutils literal">res.partner.bank.acc_number</tt> is <tt class="docutils literal">required=True</tt> in Odoo’s own
+core (<tt class="docutils literal">odoo/addons/base/models/res_bank.py</tt>, no override anywhere
+in this repo), so a beneficiary bank account without an account
+number can never be persisted in the first place, and the
+alias-resolution branch could never actually be reached. That code
+(helper, dispatch branch, and its isolated unit tests) has been
+removed.</p>
+<p>Instead, alias resolution now happens once, at REGISTRATION time, via
+the new <strong>“Resolver Alias CAS (Banco Atlas)”</strong> wizard
+(<tt class="docutils literal">l10n_py.atlas.alias.resolver</tt>, Accounting &gt; Payables menu). Given
+the company’s own Atlas-enabled bank account (used to authenticate
+the lookup), the beneficiary partner, and the alias type/value, the
+wizard calls <tt class="docutils literal">AtlasApiClient.consultar_alias</tt> once, shows the
+account holder’s name returned by the bank (<tt class="docutils literal">denominacion</tt>) for a
+human to visually confirm it matches the expected beneficiary, and
+only then creates (or, if one with the same resolved account number
+already exists for that partner, opens the existing)
+<tt class="docutils literal">res.partner.bank</tt> record with a proper <tt class="docutils literal">acc_number</tt> (the one the
+bank resolved, <tt class="docutils literal">nroCuenta</tt>) plus the alias type/value kept for
+reference. From that point on, every downstream flow (dispatch
+included) only ever deals with a normal, fully-numbered bank account
+– no alias-only branch exists anywhere in the dispatch path any
+more.</p>
+</li>
+<li><p class="first">No per-line/aggregate <tt class="docutils literal">sent</tt>/<tt class="docutils literal">rejected</tt>/<tt class="docutils literal">partially_rejected</tt>
 order-level state is surfaced distinctly in the UI beyond what
-already exists (<tt class="docutils literal">account.payment.line.atlas_estado</tt> per line).</li>
-<li>No handling exists for a non-null <tt class="docutils literal">metodoAprobacion</tt> in the bank’s
+already exists (<tt class="docutils literal">account.payment.line.atlas_estado</tt> per line).</p>
+</li>
+<li><p class="first">No handling exists for a non-null <tt class="docutils literal">metodoAprobacion</tt> in the bank’s
 response (a 2FA/manual-approval flow on the bank’s side): this module
 assumes every dispatch either fully succeeds or fully fails per line,
-synchronously.</li>
-<li>Non-manager users (e.g. <tt class="docutils literal">account.group_account_invoice</tt>) may hit an
+synchronously.</p>
+</li>
+<li><p class="first">Non-manager users (e.g. <tt class="docutils literal">account.group_account_invoice</tt>) may hit an
 <tt class="docutils literal">AccessError</tt> reading Atlas credentials (<tt class="docutils literal">atlas_api_key</tt>,
 <tt class="docutils literal">atlas_private_key_pem</tt>, <tt class="docutils literal">atlas_auth_token</tt>) when triggering
 dispatch/reversal/polling actions, since those fields are restricted
 to <tt class="docutils literal">account.group_account_manager</tt>. This is intentional and NOT
 worked around with <tt class="docutils literal">sudo()</tt> in this fix wave (that would be a
 security-relevant change better made deliberately) – see this
-module’s CONFIGURE.md.</li>
+module’s CONFIGURE.md.</p>
+</li>
 </ul>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
@@ -468,6 +502,12 @@ the polling cron may hit an <tt class="docutils literal">AccessError</tt> readin
 is a known limitation, not a bug fixed in this module: granting broader
 access via <tt class="docutils literal">sudo()</tt> is a security-relevant decision left for a
 deliberate follow-up, not bundled into this fix wave.</p>
+<p>For the same reason, the new “Resolver Alias CAS (Banco Atlas)” wizard
+is restricted to <tt class="docutils literal">account.group_account_manager</tt> only (not also
+<tt class="docutils literal">account_payment_order.group_account_payment</tt>): its “Buscar” button
+authenticates against the company’s Atlas bank account the same way
+dispatch/reversal/polling do, so a user without manager access would
+only hit an <tt class="docutils literal">AccessError</tt> reading the credentials anyway.</p>
 </div>
 <div class="section" id="usage">
 <h1><a class="toc-backref" href="#toc-entry-2">Usage</a></h1>
@@ -476,6 +516,11 @@ method on an Atlas-configured bank as usual. This module intercepts the
 export and calls Banco Atlas directly instead of producing a file. Use
 the “Reversar pago” action on an <tt class="docutils literal">account.payment.line</tt> to request a
 reversal from the bank.</p>
+<p>To register a beneficiary bank account known only by a CAS alias
+(phone/email/RUC/CI), use the “Resolver Alias CAS (Banco Atlas)” wizard
+(Accounting &gt; Payables) instead of creating the <tt class="docutils literal">res.partner.bank</tt> by
+hand. If an account with the same resolved number already exists for
+that partner, the wizard opens it instead of creating a duplicate.</p>
 </div>
 <div class="section" id="bug-tracker">
 <h1><a class="toc-backref" href="#toc-entry-3">Bug Tracker</a></h1>

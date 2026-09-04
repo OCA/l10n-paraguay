@@ -24,9 +24,36 @@ Known limitations / documented gaps (not implemented in this module):
   to actually pass the chosen route through.
 - ``formaPago`` is always hardcoded to ``"C"`` (credit to account) in the
   batch dispatch payload. It is never derived from the beneficiary's
-  account type, and ``AtlasApiClient.consultar_alias`` (which exists and
-  could resolve a beneficiary via alias) is never called from this
-  dispatch path.
+  account type, and ``AtlasApiClient.consultar_alias`` is never called
+  from this dispatch path.
+- Beneficiary bank accounts that need to be identified only by a CAS
+  alias (phone/email/RUC/CI) instead of a full account number can no
+  longer be resolved at dispatch time: a previous version of this
+  module attempted that (a ``_l10n_py_resolver_alias_atlas`` helper
+  called from ``_l10n_py_dispatch_batch_api_atlas``), but a live test
+  against a real Odoo 18 instance proved that branch to be dead code --
+  ``res.partner.bank.acc_number`` is ``required=True`` in Odoo's own
+  core (``odoo/addons/base/models/res_bank.py``, no override anywhere in
+  this repo), so a beneficiary bank account without an account number
+  can never be persisted in the first place, and the alias-resolution
+  branch could never actually be reached. That code (helper, dispatch
+  branch, and its isolated unit tests) has been removed.
+
+  Instead, alias resolution now happens once, at REGISTRATION time, via
+  the new **"Resolver Alias CAS (Banco Atlas)"** wizard
+  (``l10n_py.atlas.alias.resolver``, Accounting > Payables menu). Given
+  the company's own Atlas-enabled bank account (used to authenticate the
+  lookup), the beneficiary partner, and the alias type/value, the wizard
+  calls ``AtlasApiClient.consultar_alias`` once, shows the account
+  holder's name returned by the bank (``denominacion``) for a human to
+  visually confirm it matches the expected beneficiary, and only then
+  creates (or, if one with the same resolved account number already
+  exists for that partner, opens the existing) ``res.partner.bank``
+  record with a proper ``acc_number`` (the one the bank resolved,
+  ``nroCuenta``) plus the alias type/value kept for reference. From that
+  point on, every downstream flow (dispatch included) only ever deals
+  with a normal, fully-numbered bank account -- no alias-only branch
+  exists anywhere in the dispatch path any more.
 - No per-line/aggregate ``sent``/``rejected``/``partially_rejected``
   order-level state is surfaced distinctly in the UI beyond what already
   exists (``account.payment.line.atlas_estado`` per line).
