@@ -1,6 +1,6 @@
 {
     "name": "Paraguay - SIPAP Batch Payment ISO 20022 Export",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.1.0",
     "category": "Accounting/Localizations",
     "summary": "Generic ISO 20022 pain.001.001.09 exporter for the SIPAP "
     "batch payment framework",

@@ -58,7 +58,13 @@ class AccountPaymentOrder(models.Model):
         xml_bytes = etree.tostring(
             xml_root, pretty_print=True, xml_declaration=True, encoding="UTF-8"
         )
-        return (xml_bytes, "xml")
+        # account_payment_order's own generate_payment_file() contract is
+        # (payment_file_str, filename) -- filename is the FULL file name
+        # used for the ir.attachment, not a bare extension. Follow the
+        # same "{name}.xml" convention account_banking_pain_base uses for
+        # its own pain.001 exporters.
+        filename = f"{self.name}.xml"
+        return (xml_bytes, filename)
 
     def _l10n_py_iso20022_build_document(self, threshold):
         self.ensure_one()

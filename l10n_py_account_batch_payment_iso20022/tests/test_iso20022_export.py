@@ -83,6 +83,21 @@ class TestIso20022Export(AccountTestInvoicingCommon):
             }
         )
 
+        # This module tests SIPAP/ISO20022 batch dispatch only -- it has
+        # no dependency on l10n_py_account/l10n_py_edi_base and no
+        # opinion on LATAM document-type numbering. But when this module
+        # is installed alongside l10n_py_account in the same database
+        # (as OCA CI does for the whole repo), the ambient test
+        # company's chart template is guessed from its country_id, and
+        # if that resolves to Paraguay, l10n_py_account's own
+        # _localization_use_documents() override turns
+        # "l10n_latam_use_documents" on for this company's purchase
+        # journal -- which then requires a document type/number this
+        # test never sets, breaking action_post() with an unrelated
+        # ValidationError. Force it off explicitly so this test's result
+        # never depends on which other l10n_py_* modules happen to be
+        # installed in the same database.
+        cls.company_data["default_journal_purchase"].l10n_latam_use_documents = False
         cls.invoice = cls.env["account.move"].create(
             {
                 "partner_id": cls.partner.id,
@@ -134,8 +149,11 @@ class TestIso20022Export(AccountTestInvoicingCommon):
 
     def test_generates_valid_pain_001_001_09_structure(self):
         order = self._build_and_confirm_order()
-        xml_bytes, ext = order.generate_payment_file()
-        self.assertEqual(ext, "xml")
+        xml_bytes, filename = order.generate_payment_file()
+        # account_payment_order's own contract is (file, FULL filename),
+        # not a bare extension -- a literal "xml" attachment name was the
+        # bug this test used to reinforce instead of catch.
+        self.assertEqual(filename, f"{order.name}.xml")
         root = etree.fromstring(xml_bytes)
         self.assertEqual(etree.QName(root).localname, "Document")
         self.assertEqual(root.tag, "{{{}}}Document".format(PAIN_NS["p"]))
