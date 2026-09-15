@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 KMEE
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+     Flujo de Efectivo - Paraguay - Método Indirecto
+     Parte del Resultado del Ejercicio y ajusta por partidas no monetarias
+     (depreciaciones, provisiones) y variaciones del capital de trabajo.
+     Una validación final compara contra el delta del saldo de Disponibilidades
+     (1.01.01.%) entre inicio y fin del período.
+
+     Convención: balp[] = movimientos del período; bale[] = saldo final;
+     bali[] = saldo inicial (initial balance).
+     Para activos: aumento del activo consume efectivo -> resta;
+                   disminución libera efectivo -> suma.
+     Para pasivos: aumento del pasivo libera efectivo -> suma;
+                   disminución consume efectivo -> resta.
+-->
+<odoo noupdate="1">
+    <record id="mis_report_flujo_efectivo_py" model="mis.report">
+        <field name="name">Flujo de Efectivo - Método Indirecto (Paraguay)</field>
+        <field name="description">Estado de Flujos de Efectivo - Indirecto</field>
+        <field name="move_lines_source" ref="account.model_account_move_line" />
+    </record>
+
+    <!-- ===== ACTIVIDADES OPERATIVAS ===== -->
+
+    <record id="fe_py_h_operativas" model="mis.report.kpi">
+        <field name="sequence">1000</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">FLUJO DE ACTIVIDADES OPERATIVAS</field>
+        <field name="name">h_operativas</field>
+        <field name="expression">""</field>
+        <field name="type">str</field>
+        <field name="compare_method">none</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_header" />
+    </record>
+
+    <record id="fe_py_resultado_neto" model="mis.report.kpi">
+        <field name="sequence">1010</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">Resultado del Ejercicio</field>
+        <field name="name">resultado_neto</field>
+        <field
+            name="expression"
+        >-balp[4%] - balp[5%] - balp[7.01%] - balp[7.02%] - balp[8%] - balp[10%] - balp[11%] - balp[13%] - balp[14%] - balp[15%] - balp[17%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_subtotal" />
+    </record>
+
+    <!-- Ajustes por partidas no monetarias -->
+
+    <record id="fe_py_h_ajustes_no_monetarios" model="mis.report.kpi">
+        <field name="sequence">1100</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">(+) Ajustes por partidas no monetarias</field>
+        <field name="name">h_ajustes_no_monetarios</field>
+        <field name="expression">""</field>
+        <field name="type">str</field>
+        <field name="compare_method">none</field>
+    </record>
+
+    <record id="fe_py_depreciaciones" model="mis.report.kpi">
+        <field name="sequence">1110</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">Depreciaciones y Amortizaciones del Ejercicio</field>
+        <field name="name">depreciaciones</field>
+        <field name="expression">balp[15%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="fe_py_provisiones_no_monetarias" model="mis.report.kpi">
+        <field name="sequence">1120</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">Provisiones y Castigos (no monetarios)</field>
+        <field name="name">provisiones_no_monetarias</field>
+        <field name="expression">balp[14%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <!-- Variaciones del capital de trabajo -->
+
+    <record id="fe_py_h_variaciones_kt" model="mis.report.kpi">
+        <field name="sequence">1200</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">(+/-) Variaciones del Capital de Trabajo</field>
+        <field name="name">h_variaciones_kt</field>
+        <field name="expression">""</field>
+        <field name="type">str</field>
+        <field name="compare_method">none</field>
+    </record>
+
+    <record id="fe_py_var_creditos" model="mis.report.kpi">
+        <field name="sequence">1210</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">(Aumento) / Disminución de Créditos</field>
+        <field name="name">var_creditos</field>
+        <field name="expression">-balp[1.01.03%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="fe_py_var_inventarios" model="mis.report.kpi">
+        <field name="sequence">1220</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">(Aumento) / Disminución de Inventarios</field>
+        <field name="name">var_inventarios</field>
+        <field name="expression">-balp[1.01.04%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="fe_py_var_gastos_pagados" model="mis.report.kpi">
+        <field name="sequence">1230</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field
+            name="description"
+        >(Aumento) / Disminución de Gastos Pagados por Adelantado</field>
+        <field name="name">var_gastos_pagados</field>
+        <field name="expression">-balp[1.01.05%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="fe_py_var_proveedores" model="mis.report.kpi">
+        <field name="sequence">1240</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">Aumento / (Disminución) de Proveedores</field>
+        <field name="name">var_proveedores</field>
+        <field name="expression">-balp[2.01.01%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="fe_py_var_obligaciones_sociales" model="mis.report.kpi">
+        <field name="sequence">1250</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field
+            name="description"
+        >Aumento / (Disminución) de Remuneraciones y Cargas Sociales</field>
+        <field name="name">var_obligaciones_sociales</field>
+        <field name="expression">-balp[2.01.03%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="fe_py_var_obligaciones_fiscales" model="mis.report.kpi">
+        <field name="sequence">1260</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field
+            name="description"
+        >Aumento / (Disminución) de Obligaciones Fiscales</field>
+        <field name="name">var_obligaciones_fiscales</field>
+        <field name="expression">-balp[2.01.04%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="fe_py_flujo_operativo" model="mis.report.kpi">
+        <field name="sequence">1300</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">FLUJO NETO DE ACTIVIDADES OPERATIVAS</field>
+        <field name="name">flujo_operativo</field>
+        <field
+            name="expression"
+        >resultado_neto + depreciaciones + provisiones_no_monetarias + var_creditos + var_inventarios + var_gastos_pagados + var_proveedores + var_obligaciones_sociales + var_obligaciones_fiscales</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_total" />
+    </record>
+
+    <!-- ===== ACTIVIDADES DE INVERSIÓN ===== -->
+
+    <record id="fe_py_h_inversion" model="mis.report.kpi">
+        <field name="sequence">2000</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">FLUJO DE ACTIVIDADES DE INVERSIÓN</field>
+        <field name="name">h_inversion</field>
+        <field name="expression">""</field>
+        <field name="type">str</field>
+        <field name="compare_method">none</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_header" />
+    </record>
+
+    <record id="fe_py_var_bienes_uso" model="mis.report.kpi">
+        <field name="sequence">2010</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">(Inversión) / Venta de Bienes de Uso</field>
+        <field name="name">var_bienes_uso</field>
+        <field name="expression">-balp[1.02.04%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="fe_py_var_intangibles" model="mis.report.kpi">
+        <field name="sequence">2020</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">(Inversión) / Baja de Intangibles</field>
+        <field name="name">var_intangibles</field>
+        <field name="expression">-balp[1.02.07%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="fe_py_var_inversiones_lp" model="mis.report.kpi">
+        <field name="sequence">2030</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field
+            name="description"
+        >(Inversión) / Venta de Inversiones Financieras LP</field>
+        <field name="name">var_inversiones_lp</field>
+        <field name="expression">-balp[1.02.03%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="fe_py_flujo_inversion" model="mis.report.kpi">
+        <field name="sequence">2100</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">FLUJO NETO DE ACTIVIDADES DE INVERSIÓN</field>
+        <field name="name">flujo_inversion</field>
+        <field
+            name="expression"
+        >var_bienes_uso + var_intangibles + var_inversiones_lp</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_total" />
+    </record>
+
+    <!-- ===== ACTIVIDADES DE FINANCIACIÓN ===== -->
+
+    <record id="fe_py_h_financiacion" model="mis.report.kpi">
+        <field name="sequence">3000</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">FLUJO DE ACTIVIDADES DE FINANCIACIÓN</field>
+        <field name="name">h_financiacion</field>
+        <field name="expression">""</field>
+        <field name="type">str</field>
+        <field name="compare_method">none</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_header" />
+    </record>
+
+    <record id="fe_py_var_prestamos_ct" model="mis.report.kpi">
+        <field name="sequence">3010</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">Aumento / (Cancelación) de Préstamos CP</field>
+        <field name="name">var_prestamos_ct</field>
+        <field name="expression">-balp[2.01.02%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="fe_py_var_prestamos_lp" model="mis.report.kpi">
+        <field name="sequence">3020</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">Aumento / (Cancelación) de Préstamos LP</field>
+        <field name="name">var_prestamos_lp</field>
+        <field name="expression">-balp[2.02%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="fe_py_var_capital" model="mis.report.kpi">
+        <field name="sequence">3030</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">Aporte / (Retiro) de Capital y Reservas</field>
+        <field name="name">var_capital</field>
+        <field name="expression">-balp[3.01%] - balp[3.02%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="fe_py_flujo_financiacion" model="mis.report.kpi">
+        <field name="sequence">3100</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">FLUJO NETO DE ACTIVIDADES DE FINANCIACIÓN</field>
+        <field name="name">flujo_financiacion</field>
+        <field
+            name="expression"
+        >var_prestamos_ct + var_prestamos_lp + var_capital</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_total" />
+    </record>
+
+    <!-- ===== TOTAL Y CONCILIACIÓN ===== -->
+
+    <record id="fe_py_variacion_efectivo" model="mis.report.kpi">
+        <field name="sequence">9000</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">VARIACIÓN NETA DEL EFECTIVO</field>
+        <field name="name">variacion_efectivo</field>
+        <field
+            name="expression"
+        >flujo_operativo + flujo_inversion + flujo_financiacion</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_total" />
+    </record>
+
+    <record id="fe_py_efectivo_inicial" model="mis.report.kpi">
+        <field name="sequence">9100</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">Efectivo al inicio del período</field>
+        <field name="name">efectivo_inicial</field>
+        <field name="expression">bali[1.01.01%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="fe_py_efectivo_final" model="mis.report.kpi">
+        <field name="sequence">9200</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">Efectivo al cierre del período</field>
+        <field name="name">efectivo_final</field>
+        <field name="expression">bale[1.01.01%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_total" />
+    </record>
+
+    <record id="fe_py_diferencia_conciliacion" model="mis.report.kpi">
+        <field name="sequence">9999</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="description">Diferencia de conciliación (debe ser 0)</field>
+        <field name="name">diferencia_conciliacion</field>
+        <field
+            name="expression"
+        >efectivo_final - efectivo_inicial - variacion_efectivo</field>
+        <field name="type">num</field>
+        <field name="compare_method">none</field>
+    </record>
+</odoo>
