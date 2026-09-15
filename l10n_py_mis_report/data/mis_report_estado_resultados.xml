@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 KMEE
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+     Estado de Resultados - Paraguay (Resolución General N° 49/14)
+     Usa movimientos del período (balp[]) sobre los prefijos del Plan.
+
+     Estructura del Plan RG 49/14 (clases de resultado):
+       4.*  Ingresos Operativos (Ventas)
+       5.*  Costo de Ventas
+       7.01 Ingresos por producción/tenencia de bienes (sector agrícola/ganadero/forestal)
+       7.02 Costo de producción/tenencia (sector agrícola/ganadero/forestal)
+       8.*  Ingresos Financieros
+       10.* Gastos Comerciales (de Ventas)
+       11.* Gastos Administrativos
+       13.* Gastos Financieros
+       14.* Provisiones / Castigos
+       15.* Depreciaciones y Amortizaciones del Ejercicio
+       17.* Impuesto a la Renta
+       19.* Resultado del Ejercicio (cuenta de cierre)
+
+     Convención de signos (todos los KPIs usan -balp[] de modo que ingresos
+     aparezcan positivos y egresos negativos en la visualización).
+-->
+<odoo noupdate="1">
+    <record id="mis_report_estado_resultados_py" model="mis.report">
+        <field name="name">Estado de Resultados (Paraguay - RG 49/14)</field>
+        <field name="description">Estado de Resultados - RG 49/14</field>
+        <field name="move_lines_source" ref="account.model_account_move_line" />
+    </record>
+
+    <!-- ============ INGRESOS OPERATIVOS ============ -->
+
+    <record id="er_py_ingresos_operativos" model="mis.report.kpi">
+        <field name="sequence">100</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">INGRESOS OPERATIVOS</field>
+        <field name="name">ingresos_operativos</field>
+        <field name="expression">-balp[4%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_subtotal" />
+    </record>
+
+    <record id="er_py_ventas_mercaderias" model="mis.report.kpi">
+        <field name="sequence">110</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">Ventas de Mercaderías</field>
+        <field name="name">ventas_mercaderias</field>
+        <field name="expression">-balp[4.01%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="er_py_ventas_agricolas" model="mis.report.kpi">
+        <field name="sequence">120</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field
+            name="description"
+        >Ventas Productos Agrícolas / Ganaderos / Forestales</field>
+        <field name="name">ventas_agricolas</field>
+        <field
+            name="expression"
+        >-balp[4.02%] - balp[4.03%] - balp[4.04%] - balp[4.05%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="er_py_exportaciones" model="mis.report.kpi">
+        <field name="sequence">130</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">Exportaciones</field>
+        <field name="name">exportaciones</field>
+        <field name="expression">-balp[4.06%] - balp[4.07%] - balp[4.08%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="er_py_ventas_servicios" model="mis.report.kpi">
+        <field name="sequence">140</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">Ventas de Servicios</field>
+        <field name="name">ventas_servicios</field>
+        <field name="expression">-balp[4.09%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="er_py_ventas_regimenes_especiales" model="mis.report.kpi">
+        <field name="sequence">150</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field
+            name="description"
+        >Ventas Regímenes Especiales (Turismo / ZF / Maquila)</field>
+        <field name="name">ventas_regimenes_especiales</field>
+        <field name="expression">-balp[4.10%] - balp[4.11%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="er_py_descuentos_devoluciones" model="mis.report.kpi">
+        <field name="sequence">160</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">(-) Descuentos y Devoluciones</field>
+        <field name="name">descuentos_devoluciones</field>
+        <field name="expression">-balp[4.98%] - balp[4.99%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <!-- Ingresos sector agrícola (clase 7.01) -->
+
+    <record id="er_py_ingresos_agricola" model="mis.report.kpi">
+        <field name="sequence">170</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field
+            name="description"
+        >Ingresos por Producción/Tenencia (Sector Agrícola/Ganadero/Forestal)</field>
+        <field name="name">ingresos_agricola</field>
+        <field name="expression">-balp[7.01%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="er_py_total_ingresos" model="mis.report.kpi">
+        <field name="sequence">199</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">TOTAL INGRESOS</field>
+        <field name="name">total_ingresos</field>
+        <field name="expression">ingresos_operativos + ingresos_agricola</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_total" />
+    </record>
+
+    <!-- ============ COSTO DE VENTAS ============ -->
+
+    <record id="er_py_costo_ventas" model="mis.report.kpi">
+        <field name="sequence">200</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">COSTO DE VENTAS</field>
+        <field name="name">costo_ventas</field>
+        <field name="expression">-balp[5%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_subtotal" />
+    </record>
+
+    <record id="er_py_costo_agricola" model="mis.report.kpi">
+        <field name="sequence">210</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field
+            name="description"
+        >Costo de Producción / Tenencia (Sector Agrícola)</field>
+        <field name="name">costo_agricola</field>
+        <field name="expression">-balp[7.02%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <!-- ============ RESULTADO BRUTO ============ -->
+
+    <record id="er_py_resultado_bruto" model="mis.report.kpi">
+        <field name="sequence">300</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">RESULTADO BRUTO</field>
+        <field name="name">resultado_bruto</field>
+        <field name="expression">total_ingresos + costo_ventas + costo_agricola</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_total" />
+    </record>
+
+    <!-- ============ GASTOS COMERCIALES (clase 10) ============ -->
+
+    <record id="er_py_gastos_comerciales" model="mis.report.kpi">
+        <field name="sequence">400</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">GASTOS COMERCIALES (Ventas)</field>
+        <field name="name">gastos_comerciales</field>
+        <field name="expression">-balp[10%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_subtotal" />
+    </record>
+
+    <record id="er_py_gc_personal" model="mis.report.kpi">
+        <field name="sequence">410</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field
+            name="description"
+        >Personal Comercial (sueldos, aportes, beneficios)</field>
+        <field name="name">gc_personal</field>
+        <field name="expression">-balp[10.01%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="er_py_gc_comisiones" model="mis.report.kpi">
+        <field name="sequence">420</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">Comisiones / Viáticos / Publicidad / Fletes</field>
+        <field name="name">gc_comisiones_publicidad</field>
+        <field
+            name="expression"
+        >-balp[10.02%] - balp[10.03%] - balp[10.04%] - balp[10.05%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <!-- ============ GASTOS ADMINISTRATIVOS (clase 11) ============ -->
+
+    <record id="er_py_gastos_administrativos" model="mis.report.kpi">
+        <field name="sequence">500</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">GASTOS ADMINISTRATIVOS</field>
+        <field name="name">gastos_administrativos</field>
+        <field name="expression">-balp[11%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_subtotal" />
+    </record>
+
+    <record id="er_py_ga_personal" model="mis.report.kpi">
+        <field name="sequence">510</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">Personal Administrativo (sueldos, aportes)</field>
+        <field name="name">ga_personal</field>
+        <field name="expression">-balp[11.01%] - balp[11.02%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="er_py_ga_servicios" model="mis.report.kpi">
+        <field name="sequence">520</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field
+            name="description"
+        >Alquileres / Energía / Combustibles / Mantenimiento</field>
+        <field name="name">ga_servicios</field>
+        <field
+            name="expression"
+        >-balp[11.05%] - balp[11.07%] - balp[11.08%] - balp[11.09%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <!-- ============ RESULTADO OPERATIVO ============ -->
+
+    <record id="er_py_resultado_operativo" model="mis.report.kpi">
+        <field name="sequence">550</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">RESULTADO OPERATIVO</field>
+        <field name="name">resultado_operativo</field>
+        <field
+            name="expression"
+        >resultado_bruto + gastos_comerciales + gastos_administrativos</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_total" />
+    </record>
+
+    <!-- ============ RESULTADOS FINANCIEROS ============ -->
+
+    <record id="er_py_ingresos_financieros" model="mis.report.kpi">
+        <field name="sequence">600</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">Ingresos Financieros</field>
+        <field name="name">ingresos_financieros</field>
+        <field name="expression">-balp[8%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="er_py_gastos_financieros" model="mis.report.kpi">
+        <field name="sequence">610</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field
+            name="description"
+        >Gastos Financieros (intereses, comisiones, dif. cambio)</field>
+        <field name="name">gastos_financieros</field>
+        <field name="expression">-balp[13%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="er_py_resultados_financieros" model="mis.report.kpi">
+        <field name="sequence">650</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">RESULTADOS FINANCIEROS (NETO)</field>
+        <field name="name">resultados_financieros</field>
+        <field name="expression">ingresos_financieros + gastos_financieros</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_subtotal" />
+    </record>
+
+    <!-- ============ PROVISIONES / CASTIGOS ============ -->
+
+    <record id="er_py_provisiones_castigos" model="mis.report.kpi">
+        <field name="sequence">700</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">PROVISIONES / CASTIGOS (Neto)</field>
+        <field name="name">provisiones_castigos</field>
+        <field name="expression">-balp[14%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_subtotal" />
+    </record>
+
+    <!-- ============ DEPRECIACIONES Y AMORTIZACIONES ============ -->
+
+    <record id="er_py_depreciaciones_amortizaciones" model="mis.report.kpi">
+        <field name="sequence">800</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">DEPRECIACIONES Y AMORTIZACIONES</field>
+        <field name="name">depreciaciones_amortizaciones</field>
+        <field name="expression">-balp[15%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_subtotal" />
+    </record>
+
+    <!-- ============ RESULTADO ANTES DE IMPUESTOS ============ -->
+
+    <record id="er_py_otros_ingresos_egresos" model="mis.report.kpi">
+        <field name="sequence">895</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">OTROS INGRESOS Y EGRESOS (Extraordinarios)</field>
+        <field name="name">otros_ingresos_egresos</field>
+        <field name="expression">-balp[17%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_subtotal" />
+    </record>
+
+    <record id="er_py_resultado_antes_impuestos" model="mis.report.kpi">
+        <field name="sequence">900</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">RESULTADO ANTES DE IMPUESTOS</field>
+        <field name="name">resultado_antes_impuestos</field>
+        <field
+            name="expression"
+        >resultado_operativo + resultados_financieros + provisiones_castigos + depreciaciones_amortizaciones + otros_ingresos_egresos</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_total" />
+    </record>
+
+    <!-- ============ IMPUESTO A LA RENTA ============ -->
+
+    <record id="er_py_impuesto_renta" model="mis.report.kpi">
+        <field name="sequence">950</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">IMPUESTO A LA RENTA (IRE / IRP / INR)</field>
+        <field name="name">impuesto_renta</field>
+        <field name="expression">-balp[19%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_subtotal" />
+    </record>
+
+    <!-- ============ RESULTADO DEL EJERCICIO ============ -->
+
+    <record id="er_py_resultado_ejercicio" model="mis.report.kpi">
+        <field name="sequence">999</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">RESULTADO DEL EJERCICIO</field>
+        <field name="name">resultado_ejercicio</field>
+        <field name="expression">resultado_antes_impuestos + impuesto_renta</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_total" />
+    </record>
+</odoo>

@@ -1,0 +1,955 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 KMEE
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+     Instancias de informes con períodos *relativos* (no fechas fijas):
+       mode=relative   -> resuelve fechas en función del pivot_date (hoy)
+       type=y/m        -> período anual o mensual
+       offset=0        -> período actual; -1 = anterior; -2 = anterior-1
+       duration=1      -> un período del tipo seleccionado
+
+     Al abrir la instancia, MIS Builder calcula automáticamente las fechas
+     desde el pivot_date (por defecto: la fecha de hoy).
+-->
+<odoo noupdate="1">
+    <!-- ============== BALANCE GENERAL ============== -->
+
+    <record id="mis_instance_balance_general_py" model="mis.report.instance">
+        <field name="name">Balance General</field>
+        <field name="description">Balance General - RG 49/14 (anual)</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="target_move">posted</field>
+        <field name="widget_show_pivot_date" eval="True" />
+    </record>
+
+    <record id="mis_instance_bg_py_p_actual" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_balance_general_py" />
+        <field name="name">Ejercicio Actual</field>
+        <field name="mode">relative</field>
+        <field name="type">y</field>
+        <field name="offset">0</field>
+        <field name="duration">1</field>
+        <field name="source">actuals</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="mis_instance_bg_py_p_anterior" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_balance_general_py" />
+        <field name="name">Ejercicio Anterior</field>
+        <field name="mode">relative</field>
+        <field name="type">y</field>
+        <field name="offset">-1</field>
+        <field name="duration">1</field>
+        <field name="source">actuals</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <!-- ============== ESTADO DE RESULTADOS ============== -->
+
+    <record id="mis_instance_estado_resultados_py" model="mis.report.instance">
+        <field name="name">Estado de Resultados</field>
+        <field
+            name="description"
+        >Estado de Resultados - RG 49/14 (anual con comparativo)</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="target_move">posted</field>
+        <field name="widget_show_pivot_date" eval="True" />
+    </record>
+
+    <record id="mis_instance_er_py_p_actual" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_estado_resultados_py" />
+        <field name="name">Ejercicio Actual (YTD)</field>
+        <field name="mode">relative</field>
+        <field name="type">y</field>
+        <field name="offset">0</field>
+        <field name="duration">1</field>
+        <field name="source">actuals</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="mis_instance_er_py_p_anterior" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_estado_resultados_py" />
+        <field name="name">Ejercicio Anterior</field>
+        <field name="mode">relative</field>
+        <field name="type">y</field>
+        <field name="offset">-1</field>
+        <field name="duration">1</field>
+        <field name="source">actuals</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <!-- Variante mensual del Estado de Resultados - últimos 12 meses -->
+
+    <record id="mis_instance_estado_resultados_py_mensual" model="mis.report.instance">
+        <field name="name">Estado de Resultados (Mensual - últimos 12 meses)</field>
+        <field
+            name="description"
+        >Estado de Resultados con una columna por mes para los últimos 12 meses</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="target_move">posted</field>
+        <field name="widget_show_pivot_date" eval="True" />
+        <field name="display_columns_description" eval="True" />
+    </record>
+
+    <record id="mis_instance_er_py_m_11" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_estado_resultados_py_mensual"
+        />
+        <field name="name">M-11</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-11</field>
+        <field name="duration">1</field>
+        <field name="source">actuals</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="mis_instance_er_py_m_10" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_estado_resultados_py_mensual"
+        />
+        <field name="name">M-10</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-10</field>
+        <field name="duration">1</field>
+        <field name="source">actuals</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="mis_instance_er_py_m_09" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_estado_resultados_py_mensual"
+        />
+        <field name="name">M-9</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-9</field>
+        <field name="duration">1</field>
+        <field name="source">actuals</field>
+        <field name="sequence">30</field>
+    </record>
+
+    <record id="mis_instance_er_py_m_08" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_estado_resultados_py_mensual"
+        />
+        <field name="name">M-8</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-8</field>
+        <field name="duration">1</field>
+        <field name="source">actuals</field>
+        <field name="sequence">40</field>
+    </record>
+
+    <record id="mis_instance_er_py_m_07" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_estado_resultados_py_mensual"
+        />
+        <field name="name">M-7</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-7</field>
+        <field name="duration">1</field>
+        <field name="source">actuals</field>
+        <field name="sequence">50</field>
+    </record>
+
+    <record id="mis_instance_er_py_m_06" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_estado_resultados_py_mensual"
+        />
+        <field name="name">M-6</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-6</field>
+        <field name="duration">1</field>
+        <field name="source">actuals</field>
+        <field name="sequence">60</field>
+    </record>
+
+    <record id="mis_instance_er_py_m_05" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_estado_resultados_py_mensual"
+        />
+        <field name="name">M-5</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-5</field>
+        <field name="duration">1</field>
+        <field name="source">actuals</field>
+        <field name="sequence">70</field>
+    </record>
+
+    <record id="mis_instance_er_py_m_04" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_estado_resultados_py_mensual"
+        />
+        <field name="name">M-4</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-4</field>
+        <field name="duration">1</field>
+        <field name="source">actuals</field>
+        <field name="sequence">80</field>
+    </record>
+
+    <record id="mis_instance_er_py_m_03" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_estado_resultados_py_mensual"
+        />
+        <field name="name">M-3</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-3</field>
+        <field name="duration">1</field>
+        <field name="source">actuals</field>
+        <field name="sequence">90</field>
+    </record>
+
+    <record id="mis_instance_er_py_m_02" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_estado_resultados_py_mensual"
+        />
+        <field name="name">M-2</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-2</field>
+        <field name="duration">1</field>
+        <field name="source">actuals</field>
+        <field name="sequence">100</field>
+    </record>
+
+    <record id="mis_instance_er_py_m_01" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_estado_resultados_py_mensual"
+        />
+        <field name="name">M-1</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-1</field>
+        <field name="duration">1</field>
+        <field name="source">actuals</field>
+        <field name="sequence">110</field>
+    </record>
+
+    <record id="mis_instance_er_py_m_00" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_estado_resultados_py_mensual"
+        />
+        <field name="name">M-0 (Mes Actual)</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">0</field>
+        <field name="duration">1</field>
+        <field name="source">actuals</field>
+        <field name="sequence">120</field>
+    </record>
+
+    <!-- ============== FLUJO DE EFECTIVO ============== -->
+
+    <record id="mis_instance_flujo_efectivo_py" model="mis.report.instance">
+        <field name="name">Flujo de Efectivo (Indirecto)</field>
+        <field
+            name="description"
+        >Estado de Flujos de Efectivo - Método Indirecto (anual)</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="target_move">posted</field>
+        <field name="widget_show_pivot_date" eval="True" />
+    </record>
+
+    <record id="mis_instance_fe_py_p_actual" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py" />
+        <field name="name">Ejercicio Actual</field>
+        <field name="mode">relative</field>
+        <field name="type">y</field>
+        <field name="offset">0</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="mis_instance_fe_py_p_anterior" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py" />
+        <field name="name">Ejercicio Anterior</field>
+        <field name="mode">relative</field>
+        <field name="type">y</field>
+        <field name="offset">-1</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">20</field>
+    </record>
+
+    <!-- DFC Mensual - últimos 12 meses -->
+
+    <record id="mis_instance_flujo_efectivo_py_mensual" model="mis.report.instance">
+        <field name="name">Flujo de Efectivo (Mensual - últimos 12 meses)</field>
+        <field
+            name="description"
+        >DFC indirecto, una columna por mes para los últimos 12 meses</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="target_move">posted</field>
+        <field name="widget_show_pivot_date" eval="True" />
+        <field name="display_columns_description" eval="True" />
+    </record>
+
+    <record id="mis_instance_fe_py_m_11" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_mensual" />
+        <field name="name">M-11</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-11</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="mis_instance_fe_py_m_10" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_mensual" />
+        <field name="name">M-10</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-10</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="mis_instance_fe_py_m_09" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_mensual" />
+        <field name="name">M-9</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-9</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">30</field>
+    </record>
+
+    <record id="mis_instance_fe_py_m_08" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_mensual" />
+        <field name="name">M-8</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-8</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">40</field>
+    </record>
+
+    <record id="mis_instance_fe_py_m_07" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_mensual" />
+        <field name="name">M-7</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-7</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">50</field>
+    </record>
+
+    <record id="mis_instance_fe_py_m_06" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_mensual" />
+        <field name="name">M-6</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-6</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">60</field>
+    </record>
+
+    <record id="mis_instance_fe_py_m_05" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_mensual" />
+        <field name="name">M-5</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-5</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">70</field>
+    </record>
+
+    <record id="mis_instance_fe_py_m_04" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_mensual" />
+        <field name="name">M-4</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-4</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">80</field>
+    </record>
+
+    <record id="mis_instance_fe_py_m_03" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_mensual" />
+        <field name="name">M-3</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-3</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">90</field>
+    </record>
+
+    <record id="mis_instance_fe_py_m_02" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_mensual" />
+        <field name="name">M-2</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-2</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">100</field>
+    </record>
+
+    <record id="mis_instance_fe_py_m_01" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_mensual" />
+        <field name="name">M-1</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">-1</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">110</field>
+    </record>
+
+    <record id="mis_instance_fe_py_m_00" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_mensual" />
+        <field name="name">Mes Actual</field>
+        <field name="mode">relative</field>
+        <field name="type">m</field>
+        <field name="offset">0</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">120</field>
+    </record>
+
+    <!-- DFC Semanal - últimas 12 semanas -->
+
+    <record id="mis_instance_flujo_efectivo_py_semanal" model="mis.report.instance">
+        <field name="name">Flujo de Efectivo (Semanal - últimas 12 semanas)</field>
+        <field
+            name="description"
+        >DFC indirecto, una columna por semana para las últimas 12 semanas</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="target_move">posted</field>
+        <field name="widget_show_pivot_date" eval="True" />
+        <field name="display_columns_description" eval="True" />
+    </record>
+
+    <record id="mis_instance_fe_py_w_11" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_semanal" />
+        <field name="name">S-11</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">-11</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="mis_instance_fe_py_w_10" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_semanal" />
+        <field name="name">S-10</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">-10</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="mis_instance_fe_py_w_09" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_semanal" />
+        <field name="name">S-9</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">-9</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">30</field>
+    </record>
+
+    <record id="mis_instance_fe_py_w_08" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_semanal" />
+        <field name="name">S-8</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">-8</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">40</field>
+    </record>
+
+    <record id="mis_instance_fe_py_w_07" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_semanal" />
+        <field name="name">S-7</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">-7</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">50</field>
+    </record>
+
+    <record id="mis_instance_fe_py_w_06" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_semanal" />
+        <field name="name">S-6</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">-6</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">60</field>
+    </record>
+
+    <record id="mis_instance_fe_py_w_05" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_semanal" />
+        <field name="name">S-5</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">-5</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">70</field>
+    </record>
+
+    <record id="mis_instance_fe_py_w_04" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_semanal" />
+        <field name="name">S-4</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">-4</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">80</field>
+    </record>
+
+    <record id="mis_instance_fe_py_w_03" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_semanal" />
+        <field name="name">S-3</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">-3</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">90</field>
+    </record>
+
+    <record id="mis_instance_fe_py_w_02" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_semanal" />
+        <field name="name">S-2</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">-2</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">100</field>
+    </record>
+
+    <record id="mis_instance_fe_py_w_01" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_semanal" />
+        <field name="name">S-1</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">-1</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">110</field>
+    </record>
+
+    <record id="mis_instance_fe_py_w_00" model="mis.report.instance.period">
+        <field name="report_instance_id" ref="mis_instance_flujo_efectivo_py_semanal" />
+        <field name="name">Semana Actual</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">0</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">120</field>
+    </record>
+
+    <!-- DFC Forecast - próximas 12 semanas usando mis_builder_cash_flow
+         (source=actuals_alt + model=mis.cash_flow una real + forecast lines) -->
+
+    <record id="mis_instance_flujo_efectivo_py_forecast" model="mis.report.instance">
+        <field name="name">Flujo de Efectivo Forecast (próximas 12 semanas)</field>
+        <field
+            name="description"
+        >DFC con histórico acumulado + 12 semanas futuras (mis_builder_cash_flow)</field>
+        <field name="report_id" ref="mis_report_flujo_efectivo_py" />
+        <field name="target_move">posted</field>
+        <field name="widget_show_pivot_date" eval="True" />
+        <field name="display_columns_description" eval="True" />
+    </record>
+
+    <record id="mis_instance_fe_py_fc_hist" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_flujo_efectivo_py_forecast"
+        />
+        <field name="name">Histórico (acumulado)</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">-260</field>
+        <field name="duration">260</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="mis_instance_fe_py_fc_w00" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_flujo_efectivo_py_forecast"
+        />
+        <field name="name">Semana Actual</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">0</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="mis_instance_fe_py_fc_w01" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_flujo_efectivo_py_forecast"
+        />
+        <field name="name">S+1</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">1</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">30</field>
+    </record>
+
+    <record id="mis_instance_fe_py_fc_w02" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_flujo_efectivo_py_forecast"
+        />
+        <field name="name">S+2</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">2</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">40</field>
+    </record>
+
+    <record id="mis_instance_fe_py_fc_w03" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_flujo_efectivo_py_forecast"
+        />
+        <field name="name">S+3</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">3</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">50</field>
+    </record>
+
+    <record id="mis_instance_fe_py_fc_w04" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_flujo_efectivo_py_forecast"
+        />
+        <field name="name">S+4</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">4</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">60</field>
+    </record>
+
+    <record id="mis_instance_fe_py_fc_w05" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_flujo_efectivo_py_forecast"
+        />
+        <field name="name">S+5</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">5</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">70</field>
+    </record>
+
+    <record id="mis_instance_fe_py_fc_w06" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_flujo_efectivo_py_forecast"
+        />
+        <field name="name">S+6</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">6</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">80</field>
+    </record>
+
+    <record id="mis_instance_fe_py_fc_w07" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_flujo_efectivo_py_forecast"
+        />
+        <field name="name">S+7</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">7</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">90</field>
+    </record>
+
+    <record id="mis_instance_fe_py_fc_w08" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_flujo_efectivo_py_forecast"
+        />
+        <field name="name">S+8</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">8</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">100</field>
+    </record>
+
+    <record id="mis_instance_fe_py_fc_w09" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_flujo_efectivo_py_forecast"
+        />
+        <field name="name">S+9</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">9</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">110</field>
+    </record>
+
+    <record id="mis_instance_fe_py_fc_w10" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_flujo_efectivo_py_forecast"
+        />
+        <field name="name">S+10</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">10</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">120</field>
+    </record>
+
+    <record id="mis_instance_fe_py_fc_w11" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_flujo_efectivo_py_forecast"
+        />
+        <field name="name">S+11</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">11</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">130</field>
+    </record>
+
+    <record id="mis_instance_fe_py_fc_w12" model="mis.report.instance.period">
+        <field
+            name="report_instance_id"
+            ref="mis_instance_flujo_efectivo_py_forecast"
+        />
+        <field name="name">S+12</field>
+        <field name="mode">relative</field>
+        <field name="type">w</field>
+        <field name="offset">12</field>
+        <field name="duration">1</field>
+        <field name="source">actuals_alt</field>
+        <field
+            name="source_aml_model_id"
+            ref="mis_builder_cash_flow.model_mis_cash_flow"
+        />
+        <field name="sequence">140</field>
+    </record>
+</odoo>
