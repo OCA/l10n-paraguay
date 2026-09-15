@@ -323,6 +323,17 @@
 
     <!-- ============ RESULTADO ANTES DE IMPUESTOS ============ -->
 
+    <record id="er_py_otros_ingresos_egresos" model="mis.report.kpi">
+        <field name="sequence">895</field>
+        <field name="report_id" ref="mis_report_estado_resultados_py" />
+        <field name="description">OTROS INGRESOS Y EGRESOS (Extraordinarios)</field>
+        <field name="name">otros_ingresos_egresos</field>
+        <field name="expression">-balp[17%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_subtotal" />
+    </record>
+
     <record id="er_py_resultado_antes_impuestos" model="mis.report.kpi">
         <field name="sequence">900</field>
         <field name="report_id" ref="mis_report_estado_resultados_py" />
@@ -330,7 +341,7 @@
         <field name="name">resultado_antes_impuestos</field>
         <field
             name="expression"
-        >resultado_operativo + resultados_financieros + provisiones_castigos + depreciaciones_amortizaciones</field>
+        >resultado_operativo + resultados_financieros + provisiones_castigos + depreciaciones_amortizaciones + otros_ingresos_egresos</field>
         <field name="type">num</field>
         <field name="compare_method">pct</field>
         <field name="style_id" ref="mis_report_style_l10n_py_total" />
@@ -343,7 +354,7 @@
         <field name="report_id" ref="mis_report_estado_resultados_py" />
         <field name="description">IMPUESTO A LA RENTA (IRE / IRP / INR)</field>
         <field name="name">impuesto_renta</field>
-        <field name="expression">-balp[17%]</field>
+        <field name="expression">-balp[19%]</field>
         <field name="type">num</field>
         <field name="compare_method">pct</field>
         <field name="style_id" ref="mis_report_style_l10n_py_subtotal" />

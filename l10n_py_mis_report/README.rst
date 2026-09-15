@@ -56,10 +56,17 @@ Prefijo Concepto
 11.\*   Gastos Operativos
 13.\*   Gastos Financieros
 14.\*   Provisiones / Castigos
-15.\*   Resultados Extraordinarios
+15.\*   Depreciaciones y Amortizaciones
 17.\*   Impuesto a la Renta
-19.\*   Resultado del Ejercicio
+19.\*   Impuesto a la Renta
 ======= =================================
+
+El Balance General muestra el **Resultado del Ejercicio (no asignado)**
+como el saldo de las cuentas de resultado todavia abiertas (tipos de
+cuenta de ingreso y gasto), de modo que Activo = Pasivo + Patrimonio
+Neto tambien antes del cierre del ejercicio. En el Pasivo Corriente,
+2.01.03.01 son Obligaciones Fiscales (IVA, Renta, Retenciones),
+2.01.03.02 Remuneraciones y Cargas Sociales y 2.01.04 Provisiones.
 
 **Table of contents**
 

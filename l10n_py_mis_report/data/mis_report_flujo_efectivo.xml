@@ -42,7 +42,7 @@
         <field name="name">resultado_neto</field>
         <field
             name="expression"
-        >-balp[4%] - balp[5%] - balp[7.01%] - balp[7.02%] - balp[8%] - balp[10%] - balp[11%] - balp[13%] - balp[14%] - balp[15%] - balp[17%]</field>
+        >-balp[('account_type', 'in', ('income', 'income_other', 'expense', 'expense_direct_cost', 'expense_depreciation'))]</field>
         <field name="type">num</field>
         <field name="compare_method">pct</field>
         <field name="style_id" ref="mis_report_style_l10n_py_subtotal" />
