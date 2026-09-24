@@ -222,6 +222,20 @@ class L10nPyLibro(models.Model):
         exento = int(
             round(self._convert_amount_to_pyg(move, move.l10n_py_amount_exempt or 0))
         )
+        # D1 item 3 - cada balde é convertido/arredondado independentemente,
+        # o que pode deixar um resíduo de arredondamento (moeda estrangeira,
+        # múltiplos baldes). O resíduo é absorvido pelo maior balde não-zero
+        # para garantir o invariante 9+10+11 == 12 exatamente, em vez de só
+        # "por construção" (correção O1).
+        target_total = self._get_total_in_pyg(move)
+        residue = target_total - (b10 + b5 + exento)
+        if residue:
+            buckets = {"b10": b10, "b5": b5, "exento": exento}
+            nonzero = {key: value for key, value in buckets.items() if value}
+            if nonzero:
+                largest_key = max(nonzero, key=nonzero.get)
+                buckets[largest_key] += residue
+                b10, b5, exento = buckets["b10"], buckets["b5"], buckets["exento"]
         return b10, b5, exento
 
     def _get_total_in_pyg(self, move):
