@@ -14,6 +14,7 @@
     ],
     "data": [
         # Views
+        "views/l10n_py_libro_line_views.xml",
         "views/l10n_py_libro_views.xml",
         "views/l10n_py_libro_menu.xml",
     ],
