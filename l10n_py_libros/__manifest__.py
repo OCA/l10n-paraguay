@@ -12,7 +12,11 @@
         "l10n_py_account",
         "l10n_py_edi_base",
     ],
-    "data": [],
+    "data": [
+        # Views
+        "views/l10n_py_libro_views.xml",
+        "views/l10n_py_libro_menu.xml",
+    ],
     "installable": True,
     "application": False,
     "auto_install": False,
