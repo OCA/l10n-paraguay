@@ -265,3 +265,70 @@ class TestLibroVentasCompras(LibroCommonCase):
         line = libro.line_ids
         self.assertEqual(line.f_moneda_extranjera, "S")
         self.assertGreater(line.f_monto_total, 100)
+
+    def test_moeda_estrangeira_conversao_pyg_soma_baldes_igual_total(self):
+        # O1 - residual de arredondamento (D1 item 3): cada balde é
+        # convertido/arredondado de forma independente, mas o resíduo deve
+        # ser absorvido pelo maior balde não-zero para que 9+10+11 == 12
+        # exatamente, e o total deve bater com move.amount_total convertido
+        # com tolerancia de 1 guaraní.
+        currency_usd = self.env.ref("base.USD")
+        invoice = self._create_invoice(
+            "out_invoice",
+            [
+                (self.product, self.tax_10, 111.11),
+                (self.product, self.tax_5, 33.33),
+                (self.product, False, 7.77),
+            ],
+            currency_id=currency_usd.id,
+            l10n_py_exchange_rate=7300.1234,
+        )
+        invoice.action_post()
+        libro = self._create_libro("ventas")
+        libro.action_generate_lines()
+        line = libro.line_ids
+        self.assertEqual(line.state, "ok", line.error_message)
+        self.assertEqual(
+            line.f_monto_gravado_10 + line.f_monto_gravado_5 + line.f_monto_exento,
+            line.f_monto_total,
+        )
+        target = libro._get_total_in_pyg(invoice)
+        self.assertLessEqual(abs(line.f_monto_total - target), 1)
+
+    def test_monto_total_e_soma_dos_baldes_marca_linha_em_erro(self):
+        # O1 - a checagem "total vs. baldes" tem que comparar contra
+        # move.amount_total (não só consigo mesma): editar manualmente o
+        # monto_total sem alterar o comprovante de origem deve marcar erro.
+        invoice = self._create_invoice(
+            "out_invoice", [(self.product, self.tax_10, 1100.0)]
+        )
+        invoice.action_post()
+        libro = self._create_libro("ventas")
+        libro.action_generate_lines()
+        line = libro.line_ids
+        self.assertEqual(line.state, "ok", line.error_message)
+        line.write({"f_monto_total": line.f_monto_total + 5000})
+        self.assertEqual(line.state, "erro")
+        self.assertIn("monto total", line.error_message.lower())
+
+    def test_documento_alterado_apos_geracao_recalcula_state(self):
+        # O2 - @api.depends alargado (move_id.l10n_py_libro_supplier_timbrado
+        # /_number/l10n_py_authorization_id/reversed_entry_id/l10n_py_edi_
+        # status/l10n_py_cdc, libro_id.company_id.l10n_py_libro_nc_nd_
+        # direction): alterar o documento de origem depois da geração, sem
+        # chamar action_generate_lines/action_confirm/action_download_zip
+        # nem editar a línea diretamente, tem que recalcular o state
+        # automaticamente via store=True.
+        invoice = self._create_invoice(
+            "in_invoice",
+            [(self.product, self.tax_10_purchase, 1100.0)],
+            l10n_py_libro_supplier_timbrado="87654329",
+            l10n_py_libro_supplier_number="001-001-0000009",
+        )
+        invoice.action_post()
+        libro = self._create_libro("compras")
+        libro.action_generate_lines()
+        line = libro.line_ids
+        self.assertEqual(line.state, "ok", line.error_message)
+        invoice.l10n_py_libro_supplier_timbrado = False
+        self.assertEqual(line.state, "erro")
