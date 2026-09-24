@@ -13,6 +13,9 @@
         "l10n_py_edi_base",
     ],
     "data": [
+        # Data
+        "data/l10n_latam_identification_type_data.xml",
+        "data/l10n_py_libro_document_type_map_data.xml",
         # Views
         "views/l10n_py_libro_line_views.xml",
         "views/l10n_py_libro_views.xml",
