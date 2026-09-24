@@ -22,6 +22,7 @@
         "views/account_move_views.xml",
         "views/res_partner_views.xml",
         "views/res_company_views.xml",
+        "wizard/l10n_py_libro_generate_wizard_views.xml",
         "views/l10n_py_libro_menu.xml",
     ],
     "installable": True,
