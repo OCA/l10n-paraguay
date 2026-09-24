@@ -19,6 +19,7 @@
         # Views
         "views/l10n_py_libro_line_views.xml",
         "views/l10n_py_libro_views.xml",
+        "views/account_move_views.xml",
         "views/res_partner_views.xml",
         "views/l10n_py_libro_menu.xml",
     ],
