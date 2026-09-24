@@ -13,6 +13,9 @@
         "l10n_py_edi_base",
     ],
     "data": [
+        # Security
+        "security/ir.model.access.csv",
+        "security/l10n_py_libros_security.xml",
         # Data
         "data/l10n_latam_identification_type_data.xml",
         "data/l10n_py_libro_document_type_map_data.xml",
