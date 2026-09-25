@@ -23,13 +23,30 @@ class SaleOrder(models.Model):
 
     @api.onchange("l10n_py_maquila_program_id")
     def _onchange_maquila_program(self):
-        if self.l10n_py_maquila_program_id:
-            fp = self.env.ref(
-                "l10n_py_maquila_ops.fiscal_position_maquila_export",
-                raise_if_not_found=False,
-            )
-            if fp:
-                self.fiscal_position_id = fp
+        if not self.l10n_py_maquila_program_id:
+            return
+        partner = self.partner_id
+        company = self.company_id or self.env.company
+        is_foreign = (
+            bool(partner.country_id) and partner.country_id != company.country_id
+        )
+        if (
+            is_foreign
+            and self.fiscal_position_id
+            and self.fiscal_position_id.auto_apply
+        ):
+            # A fiscal position was already auto-detected for the foreign
+            # partner (e.g. the chart's "Ventas - Exportación" position,
+            # which maps IVA to the exonerated tax). Keep it instead of
+            # overwriting it with the maquila position below, which has no
+            # tax mapping of its own and would leave the VAT untouched.
+            return
+        fp = self.env.ref(
+            "l10n_py_maquila_ops.fiscal_position_maquila_export",
+            raise_if_not_found=False,
+        )
+        if fp:
+            self.fiscal_position_id = fp
 
     def action_confirm(self):
         py_country = self.env.ref("base.py", raise_if_not_found=False)

@@ -245,3 +245,67 @@ class TestMaquilaOps(TransactionCase):
         order = self._domestic_sale(500, program=prog)  # 50000, over — but not pura
         order.action_confirm()
         self.assertEqual(order.state, "sale")
+
+    # ---------- fiscal position on export orders ----------
+    def _py_chart_company(self, name):
+        """A company with the real l10n_py chart loaded (fiscal positions,
+        including the auto_apply "Ventas - Exportación" one, and taxes)."""
+        company = self.env["res.company"].create({"name": name})
+        self.env["account.chart.template"].try_loading(
+            "py", company=company, install_demo=False
+        )
+        return company
+
+    def _foreign_partner(self, name="Foreign Matriz"):
+        return self.env["res.partner"].create(
+            {"name": name, "country_id": self.env.ref("base.br").id}
+        )
+
+    def _maquila_export_order(self, company, program):
+        foreign = self._foreign_partner()
+        order = self.env["sale.order"].create(
+            {"partner_id": foreign.id, "company_id": company.id}
+        )
+        # Simulate what Odoo's own onchange machinery does when the
+        # quotation partner is set: auto-detect the fiscal position first.
+        order.fiscal_position_id = (
+            self.env["account.fiscal.position"]
+            .with_company(company)
+            ._get_fiscal_position(foreign)
+        )
+        order.l10n_py_maquila_program_id = program
+        order._onchange_maquila_program()
+        return order
+
+    def test_maquila_export_keeps_auto_detected_exoneration(self):
+        """A maquila export order for a foreign partner must not lose the
+        chart's auto-detected "Ventas - Exportación" fiscal position (which
+        maps VAT to exonerado) in favor of the maquila position, which has
+        no tax mapping of its own."""
+        company = self._py_chart_company("PY Maquila Export Co")
+        program = self.env["l10n_py.maquila.program"].create(
+            {
+                "name": "Export FP Program",
+                "code": "RES-BIM-OPS-FP1",
+                "maquila_type": "pura",
+                "matriz_partner_id": self.matriz.id,
+                "company_id": company.id,
+                "state": "active",
+            }
+        )
+        vat10 = (
+            self.env["account.tax"]
+            .with_company(company)
+            .search([("type_tax_use", "=", "sale"), ("amount", "=", 10)], limit=1)
+        )
+        self.assertTrue(vat10, "the l10n_py chart must provide a 10% sale tax")
+
+        order = self._maquila_export_order(company, program)
+
+        self.assertEqual(order.fiscal_position_id.name, "Ventas - Exportación")
+        mapped = order.fiscal_position_id.map_tax(vat10)
+        self.assertEqual(
+            mapped.l10n_py_iva_affectation,
+            "2",
+            "a maquila export must end with exonerated VAT, not 10%",
+        )
