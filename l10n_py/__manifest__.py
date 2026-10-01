@@ -1,6 +1,6 @@
 {
     "name": "Paraguay - Accounting",
-    "version": "18.0.2.0.0",
+    "version": "19.0.1.0.0",
     "category": "Accounting/Localizations/Account Charts",
     "summary": "Localización contable para Paraguay",
     "author": "KMEE, Odoo Community Association (OCA)",
@@ -14,6 +14,7 @@
     # (arquitectura de chart template de Odoo 17+); esos archivos se cargan
     # bajo demanda por account.chart.template y NO deben listarse en "data".
     "data": [],
+    "oca_data_manual": ["data/Plano_de_Contas_Classificado.csv"],
     "demo": [],
     "installable": True,
     "application": False,

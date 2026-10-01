@@ -1,6 +1,6 @@
 # Part of the Paraguayan localization. See LICENSE file for full copyright
 # and licensing details.
-from odoo import _, models
+from odoo import models
 
 from odoo.addons.account.models.chart_template import template
 
@@ -11,7 +11,9 @@ class AccountChartTemplate(models.AbstractModel):
     @template("py")
     def _get_py_template_data(self):
         return {
-            "name": _("Plan de Cuentas - Paraguay (Resolución General N° 49/14)"),
+            "name": self.env._(
+                "Plan de Cuentas - Paraguay (Resolución General N° 49/14)"
+            ),
             "code_digits": "6",
             "property_account_receivable_id": "account_py_301",
             "property_account_payable_id": "account_py_2001",
@@ -35,8 +37,6 @@ class AccountChartTemplate(models.AbstractModel):
                     "account_py_1116_expense"
                 ),
                 "account_journal_suspense_account_id": "account_py_103",
-                "account_journal_payment_debit_account_id": "account_py_301",
-                "account_journal_payment_credit_account_id": "account_py_2001",
                 "account_sale_tax_id": "py_tax_vat_10_ventas",
                 "account_purchase_tax_id": "py_tax_vat_10_compras",
             },

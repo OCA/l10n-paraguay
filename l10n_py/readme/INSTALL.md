@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Odoo 16.0
+- Odoo 19.0
 - `l10n_py_base` module installed
 - `account` module (core Odoo)
 
