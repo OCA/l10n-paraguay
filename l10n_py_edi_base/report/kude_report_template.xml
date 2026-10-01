@@ -223,14 +223,10 @@
                                             t-options='{"format": "dd/MM/yyyy"}'
                                         />
                                     </div>
-                                    <t
-                                        t-if="doc.partner_id.phone or doc.partner_id.mobile"
-                                    >
+                                    <t t-if="doc.partner_id.phone">
                                         <div style="margin-bottom: 1px;">
                                             <strong>Tel: </strong>
-                                            <span
-                                                t-esc="doc.partner_id.phone or doc.partner_id.mobile"
-                                            />
+                                            <span t-out="doc.partner_id.phone" />
                                         </div>
                                     </t>
                                     <t t-if="doc.partner_id.email">
@@ -336,7 +332,7 @@
                                             style="border-right: 1px solid #ccc; padding: 2px 4px; text-align: center;"
                                         >
                                             <span
-                                                t-esc="line.product_id.default_code or ''"
+                                                t-out="line.product_id.default_code or ''"
                                             />
                                         </td>
                                         <td
@@ -588,7 +584,7 @@
                             <t t-if="doc.l10n_py_cdc">
                                 <div>
                                     Consulte en: https://ekuatia.set.gov.py/consultas/qr?cdc=<span
-                                    t-esc="doc.l10n_py_cdc"
+                                    t-out="doc.l10n_py_cdc"
                                 />
                                 </div>
                             </t>

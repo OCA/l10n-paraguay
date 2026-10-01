@@ -7,7 +7,7 @@ import string
 
 from dateutil.relativedelta import relativedelta
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -298,7 +298,9 @@ class AccountMove(models.Model):
         for record in self:
             if record.l10n_py_security_code and len(record.l10n_py_security_code) != 9:
                 raise ValidationError(
-                    _("El código de seguridad debe tener exactamente 9 caracteres")
+                    self.env._(
+                        "El código de seguridad debe tener exactamente 9 caracteres"
+                    )
                 )
 
     # ============== PRIVATE METHODS ==============
@@ -531,9 +533,9 @@ class AccountMove(models.Model):
             )
 
         # Agregar contacto
-        if partner.phone or partner.mobile:
-            customer_data["telefono"] = partner.phone or ""
-            customer_data["celular"] = partner.mobile or ""
+        # res.partner.mobile was merged into phone in 19.0
+        if partner.phone:
+            customer_data["telefono"] = partner.phone
 
         if partner.email:
             customer_data["email"] = partner.email
@@ -762,11 +764,11 @@ class AccountMove(models.Model):
         errors = []
         if len(docs) != 1:
             errors.append(
-                _("Autofactura: debe tener exactamente 1 documento asociado.")
+                self.env._("Autofactura: debe tener exactamente 1 documento asociado.")
             )
         elif docs[0].association_type != "3":
             errors.append(
-                _(
+                self.env._(
                     "Autofactura: el documento asociado debe "
                     "ser una constancia electrónica."
                 )
@@ -781,7 +783,7 @@ class AccountMove(models.Model):
         ]
         for field_name, desc in required_fields:
             if not getattr(self, field_name):
-                errors.append(_("Autofactura: %s es obligatorio.") % desc)
+                errors.append(self.env._("Autofactura: %s es obligatorio.", desc))
         return errors
 
     def _validate_edi_document_type(self):
@@ -805,7 +807,7 @@ class AccountMove(models.Model):
         elif code == "5":
             if len(docs) != 1:
                 errors.append(
-                    _(
+                    self.env._(
                         "Nota de Crédito Electrónica: debe tener "
                         "exactamente 1 documento asociado."
                     )
@@ -815,7 +817,7 @@ class AccountMove(models.Model):
         elif code == "6":
             if len(docs) != 1:
                 errors.append(
-                    _(
+                    self.env._(
                         "Nota de Débito Electrónica: debe tener "
                         "exactamente 1 documento asociado."
                     )
@@ -824,12 +826,12 @@ class AccountMove(models.Model):
         # NRE (code=7): validações NRE
         elif code == "7":
             if not self.l10n_py_nre_motive:
-                errors.append(_("Nota de Remisión: el motivo es obligatorio."))
+                errors.append(self.env._("Nota de Remisión: el motivo es obligatorio."))
             # Motivo "1" (traslado por venta) sin doc asociado → requer data estimada
             if self.l10n_py_nre_motive == "1" and not docs:
                 if not self.l10n_py_nre_estimated_invoice_date:
                     errors.append(
-                        _(
+                        self.env._(
                             "NRE traslado por venta sin documento "
                             "asociado: debe indicar fecha estimada "
                             "de facturación."
@@ -845,7 +847,7 @@ class AccountMove(models.Model):
                     and not (inv_date.month == 12 and est_date.month == 1)
                 ):
                     errors.append(
-                        _(
+                        self.env._(
                             "La fecha estimada de facturación no puede "
                             "exceder el mes siguiente al de emisión."
                         )
@@ -856,7 +858,7 @@ class AccountMove(models.Model):
                 company_ruc = self.company_id.l10n_py_ruc or ""
                 if partner_ruc != company_ruc:
                     errors.append(
-                        _(
+                        self.env._(
                             "Traslado entre locales: el RUC del "
                             "receptor debe coincidir con el del emisor."
                         )
@@ -871,33 +873,33 @@ class AccountMove(models.Model):
         # Validar datos de la empresa
         company = self.company_id
         if not company.l10n_py_ruc:
-            errors.append(_("Configure el RUC de la empresa"))
+            errors.append(self.env._("Configure el RUC de la empresa"))
 
         # Validar datos del cliente (F15)
         partner = self.partner_id
         if partner.l10n_py_taxpayer_type == "1" and not partner.l10n_py_ruc:
-            errors.append(_("El cliente contribuyente debe tener RUC"))
+            errors.append(self.env._("El cliente contribuyente debe tener RUC"))
         if partner.l10n_py_taxpayer_type == "2" and not partner.l10n_py_doc_number:
             errors.append(
-                _(
+                self.env._(
                     "El cliente no contribuyente debe tener número "
                     "de documento de identidad"
                 )
             )
 
         if not partner.street:
-            errors.append(_("La dirección del cliente es obligatoria"))
+            errors.append(self.env._("La dirección del cliente es obligatoria"))
 
         # Validar datos del diario
         journal = self.journal_id
         if not journal.l10n_py_authorization_id:
-            errors.append(_("Configure el timbrado en el diario"))
+            errors.append(self.env._("Configure el timbrado en el diario"))
 
         if (
             journal.l10n_py_authorization_validity
             and journal.l10n_py_authorization_validity < fields.Date.today()
         ):
-            errors.append(_("El timbrado está vencido"))
+            errors.append(self.env._("El timbrado está vencido"))
 
         # Validar productos
         for line in self.invoice_line_ids.filtered(
@@ -906,7 +908,9 @@ class AccountMove(models.Model):
             if hasattr(line.product_id, "l10n_py_ncm_code"):
                 if not line.product_id.l10n_py_ncm_code:
                     errors.append(
-                        _("El producto %s no tiene código NCM") % line.product_id.name
+                        self.env._(
+                            "El producto %s no tiene código NCM", line.product_id.name
+                        )
                     )
 
         # Validar requisitos por tipo de documento (F03-F07)
@@ -917,7 +921,7 @@ class AccountMove(models.Model):
         if self.currency_id.name == "PYG" and self.amount_total > _NOMINACION_THRESHOLD:
             if partner.l10n_py_taxpayer_type == "2" and not partner.l10n_py_doc_number:
                 errors.append(
-                    _(
+                    self.env._(
                         "Facturas superiores a Gs. 7.000.000 no pueden "
                         "ser innominadas. Debe identificar al receptor."
                     )
@@ -938,7 +942,9 @@ class AccountMove(models.Model):
             .search([("company_id", "=", self.company_id.id)], limit=1)
         )
         if not connector:
-            raise UserError(_("No hay un conector EDI configurado para esta empresa"))
+            raise UserError(
+                self.env._("No hay un conector EDI configurado para esta empresa")
+            )
         return connector
 
     def _target_new_tab(self, attachment_id):
@@ -984,7 +990,7 @@ class AccountMove(models.Model):
             # Generate XML first
             self.action_preview_xml()
         if not self.l10n_py_edi_xml:
-            raise UserError(_("No hay XML disponible para generar el KuDE"))
+            raise UserError(self.env._("No hay XML disponible para generar el KuDE"))
 
         from pykude import auto_kude
         from pykude.kude_fe.config import KudeFeConfig
@@ -1038,7 +1044,7 @@ class AccountMove(models.Model):
             _logger.error("Error enviando EDI: %s", str(e))
             self.l10n_py_edi_status = "error"
             self.l10n_py_edi_message = str(e)
-            raise UserError(_("Error enviando documento: %s") % str(e)) from e
+            raise UserError(self.env._("Error enviando documento: %s", str(e))) from e
 
     def _process_edi_response(self, response):
         """Procesar respuesta exitosa del EDI"""
@@ -1098,7 +1104,7 @@ class AccountMove(models.Model):
         result = connector.preview_qr(document_data)
         if not result or not result.get("qr"):
             raise UserError(
-                _(
+                self.env._(
                     "No se pudo generar el QR. Verifique el certificado y el "
                     "CSC/IdCSC configurados en el conector EDI."
                 )
@@ -1115,8 +1121,8 @@ class AccountMove(models.Model):
             "tag": "display_notification",
             "params": {
                 "type": "success",
-                "title": _("QR generado"),
-                "message": _("CDC y código QR de previsualización generados."),
+                "title": self.env._("QR generado"),
+                "message": self.env._("CDC y código QR de previsualización generados."),
                 "sticky": False,
             },
         }
@@ -1144,7 +1150,7 @@ class AccountMove(models.Model):
         now = fields.Datetime.now()
         if now > deadline:
             raise UserError(
-                _(
+                self.env._(
                     "El plazo de cancelación ha expirado. "
                     "Límite: %(deadline)s (%(hours)s horas desde emisión).",
                     deadline=deadline,
@@ -1157,7 +1163,7 @@ class AccountMove(models.Model):
         self.ensure_one()
 
         if not self.l10n_py_cdc:
-            raise UserError(_("No se puede cancelar un documento sin CDC"))
+            raise UserError(self.env._("No se puede cancelar un documento sin CDC"))
 
         self._validate_cancel_deadline()
 
@@ -1167,7 +1173,9 @@ class AccountMove(models.Model):
             self.l10n_py_edi_status = "cancelled"
             self.l10n_py_edi_message = f"Cancelado el {fields.Datetime.now()}"
         else:
-            raise UserError(_("Error cancelando documento: %s") % response.get("error"))
+            raise UserError(
+                self.env._("Error cancelando documento: %s", response.get("error"))
+            )
 
     def action_retry_edi(self):
         """Reintentar envío de documento"""
@@ -1175,7 +1183,9 @@ class AccountMove(models.Model):
 
         if self.l10n_py_edi_status not in ["error", "rejected"]:
             raise UserError(
-                _("Solo se pueden reintentar documentos con error o rechazados")
+                self.env._(
+                    "Solo se pueden reintentar documentos con error o rechazados"
+                )
             )
 
         return self.action_send_edi()
@@ -1185,7 +1195,7 @@ class AccountMove(models.Model):
         self.ensure_one()
 
         if not self.l10n_py_edi_xml:
-            raise UserError(_("No hay XML disponible para este documento"))
+            raise UserError(self.env._("No hay XML disponible para este documento"))
 
         return {
             "type": "ir.actions.act_url",
@@ -1205,7 +1215,7 @@ class AccountMove(models.Model):
             self._generate_kude()
 
         if not self.l10n_py_kude_pdf:
-            raise UserError(_("No hay KUDE disponible para este documento"))
+            raise UserError(self.env._("No hay KUDE disponible para este documento"))
 
         return {
             "type": "ir.actions.act_url",
