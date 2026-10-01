@@ -120,7 +120,11 @@ class TestAccountMove(TransactionCase):
             }
         )
 
-        # Impuestos (incluidos en el precio para SIFEN)
+        # Impuestos (incluidos en el precio para SIFEN); tax_group_id is required
+        # in 19.0 and has no default when the Paraguayan chart is not loaded
+        cls.tax_group = cls.env["account.tax.group"].create(
+            {"name": "IVA Test", "country_id": cls.country_py.id}
+        )
         cls.tax_10 = cls.Tax.create(
             {
                 "name": "IVA 10% Test",
@@ -128,6 +132,7 @@ class TestAccountMove(TransactionCase):
                 "amount_type": "percent",
                 "type_tax_use": "sale",
                 "price_include_override": "tax_included",
+                "tax_group_id": cls.tax_group.id,
             }
         )
         cls.tax_5 = cls.Tax.create(
@@ -137,6 +142,7 @@ class TestAccountMove(TransactionCase):
                 "amount_type": "percent",
                 "type_tax_use": "sale",
                 "price_include_override": "tax_included",
+                "tax_group_id": cls.tax_group.id,
             }
         )
         cls.tax_exempt = cls.Tax.create(
@@ -145,6 +151,7 @@ class TestAccountMove(TransactionCase):
                 "amount": 0.0,
                 "amount_type": "percent",
                 "type_tax_use": "sale",
+                "tax_group_id": cls.tax_group.id,
             }
         )
 
