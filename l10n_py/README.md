@@ -20,7 +20,6 @@ fiscales y contables específicos del país.
 ### Facturación
 
 - **Campos específicos paraguayos en facturas**:
-
   - Número completo de factura (formato: 001-001-0000001)
   - Discriminación automática de IVA por alícuota (5%, 10%, Exento)
   - Total en letras (guaraníes)
