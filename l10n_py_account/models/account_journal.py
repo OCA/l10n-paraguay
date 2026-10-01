@@ -1,6 +1,6 @@
 # l10n_py_account/models/account_journal.py
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -46,9 +46,13 @@ class AccountJournal(models.Model):
         for journal in self:
             if journal.l10n_py_establishment:
                 if not journal.l10n_py_establishment.isdigit():
-                    raise ValidationError(_("El establecimiento debe ser numérico"))
+                    raise ValidationError(
+                        self.env._("El establecimiento debe ser numérico")
+                    )
                 if len(journal.l10n_py_establishment) != 3:
-                    raise ValidationError(_("El establecimiento debe tener 3 dígitos"))
+                    raise ValidationError(
+                        self.env._("El establecimiento debe tener 3 dígitos")
+                    )
 
     @api.constrains("l10n_py_point")
     def _check_point(self):
@@ -56,10 +60,12 @@ class AccountJournal(models.Model):
         for journal in self:
             if journal.l10n_py_point:
                 if not journal.l10n_py_point.isdigit():
-                    raise ValidationError(_("El punto de expedición debe ser numérico"))
+                    raise ValidationError(
+                        self.env._("El punto de expedición debe ser numérico")
+                    )
                 if len(journal.l10n_py_point) != 3:
                     raise ValidationError(
-                        _("El punto de expedición debe tener 3 dígitos")
+                        self.env._("El punto de expedición debe tener 3 dígitos")
                     )
 
     @api.constrains("l10n_py_authorization_id")
@@ -74,7 +80,7 @@ class AccountJournal(models.Model):
                     != journal.l10n_py_point
                 ):
                     raise ValidationError(
-                        _(
+                        self.env._(
                             "El timbrado seleccionado no corresponde al "
                             "establecimiento y punto de expedición "
                             "configurados en el diario."

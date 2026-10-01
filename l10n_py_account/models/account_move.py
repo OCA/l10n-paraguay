@@ -2,7 +2,7 @@
 
 from num2words import num2words
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -149,13 +149,10 @@ class AccountMove(models.Model):
         compute="_compute_l10n_py_amount_total_words",
     )
 
-    _sql_constraints = [
-        (
-            "l10n_py_invoice_unique",
-            "unique(l10n_py_authorization_id, l10n_py_invoice_number)",
-            "El número de factura debe ser único por timbrado.",
-        ),
-    ]
+    _l10n_py_invoice_unique = models.Constraint(
+        "unique(l10n_py_authorization_id, l10n_py_invoice_number)",
+        "El número de factura debe ser único por timbrado.",
+    )
 
     # ============== ACTION METHODS ==============
 
@@ -174,7 +171,7 @@ class AccountMove(models.Model):
                         # criadas pelo account.chart.template.try_loading)
                         continue
                     raise UserError(
-                        _(
+                        self.env._(
                             "Debe seleccionar un timbrado para confirmar "
                             "una factura de venta."
                         )
@@ -199,7 +196,7 @@ class AccountMove(models.Model):
                     next_num = max_num + 1 if max_num else auth.invoice_number_from
                     if next_num > auth.invoice_number_to:
                         raise UserError(
-                            _(
+                            self.env._(
                                 "La faja de numeración está agotada "
                                 "para el timbrado %(timbrado)s.",
                                 timbrado=auth.name,

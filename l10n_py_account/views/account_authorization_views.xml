@@ -137,7 +137,7 @@
                 />
                 <separator />
                 <field name="l10n_latam_document_type_id" />
-                <group expand="0" string="Agrupar Por">
+                <group>
                     <filter
                         string="Estado"
                         name="group_state"
