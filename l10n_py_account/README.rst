@@ -21,13 +21,13 @@ Paraguay - Accounting Extensions
     :target: http://www.gnu.org/licenses/lgpl-3.0-standalone.html
     :alt: License: LGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Fl10n--paraguay-lightgray.png?logo=github
-    :target: https://github.com/OCA/l10n-paraguay/tree/18.0/l10n_py_account
+    :target: https://github.com/OCA/l10n-paraguay/tree/19.0/l10n_py_account
     :alt: OCA/l10n-paraguay
 .. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/l10n-paraguay-18-0/l10n-paraguay-18-0-l10n_py_account
+    :target: https://translation.odoo-community.org/projects/l10n-paraguay-19-0/l10n-paraguay-19-0-l10n_py_account
     :alt: Translate me on Weblate
 .. |badge5| image:: https://img.shields.io/badge/runboat-Try%20me-875A7B.png
-    :target: https://runboat.odoo-community.org/builds?repo=OCA/l10n-paraguay&target_branch=18.0
+    :target: https://runboat.odoo-community.org/builds?repo=OCA/l10n-paraguay&target_branch=19.0
     :alt: Try me on Runboat
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
@@ -41,31 +41,31 @@ specific functionality required for Paraguayan fiscal compliance.
 Features
 --------
 
-- **Journal Extensions**: Enhanced journal configuration with
-  Paraguayan-specific fields
+-  **Journal Extensions**: Enhanced journal configuration with
+   Paraguayan-specific fields
 
-  - Establishment (punto de expedición)
-  - Point of Sale (punto de emisión)
-  - Timbrado (tax stamp authorization)
+   -  Establishment (punto de expedición)
+   -  Point of Sale (punto de emisión)
+   -  Timbrado (tax stamp authorization)
 
-- **Authorization Management**: Complete timbrado lifecycle management
+-  **Authorization Management**: Complete timbrado lifecycle management
 
-  - Authorization number tracking
-  - Validity period control
-  - Document number range management
-  - Automatic sequence generation
+   -  Authorization number tracking
+   -  Validity period control
+   -  Document number range management
+   -  Automatic sequence generation
 
-- **Account Move Extensions**: Enhanced invoice/bill features
+-  **Account Move Extensions**: Enhanced invoice/bill features
 
-  - Automatic timbrado assignment
-  - Document number formatting
-  - Fiscal validations
+   -  Automatic timbrado assignment
+   -  Document number formatting
+   -  Fiscal validations
 
-- **Fiscal Validations**:
+-  **Fiscal Validations**:
 
-  - Valid timbrado verification
-  - Document number range validation
-  - Expiration date checking
+   -  Valid timbrado verification
+   -  Document number range validation
+   -  Expiration date checking
 
 Purpose
 -------
@@ -77,8 +77,8 @@ management which is mandatory for all fiscal documents in Paraguay.
 Dependencies
 ------------
 
-- ``account``: Odoo core accounting
-- ``l10n_py_base``: Base Paraguayan localization
+-  ``account``: Odoo core accounting
+-  ``l10n_py_base``: Base Paraguayan localization
 
 **Table of contents**
 
@@ -94,10 +94,10 @@ Installation
 Prerequisites
 -------------
 
-- Odoo 16.0
-- ``account`` module (core Odoo)
-- ``l10n_py_base`` module installed
-- Valid timbrado from SET (for production use)
+-  Odoo 16.0
+-  ``account`` module (core Odoo)
+-  ``l10n_py_base`` module installed
+-  Valid timbrado from SET (for production use)
 
 Installation Steps
 ------------------
@@ -106,15 +106,15 @@ Installation Steps
 
 2. **Install Module**:
 
-   - Go to **Apps**
-   - Click **Update Apps List**
-   - Search for "Paraguay - Accounting Extensions"
-   - Click **Install**
+   -  Go to **Apps**
+   -  Click **Update Apps List**
+   -  Search for "Paraguay - Accounting Extensions"
+   -  Click **Install**
 
 3. **Verify Installation**: Check that new menus appear:
 
-   - **Accounting > Configuration > Timbrados**
-   - Enhanced journal configuration options
+   -  **Accounting > Configuration > Timbrados**
+   -  Enhanced journal configuration options
 
 Post-Installation Setup
 -----------------------
@@ -131,10 +131,10 @@ Step 2: Create First Timbrado
 2. Click **Create**
 3. Enter your SET-provided authorization:
 
-   - Authorization number
-   - Validity dates
-   - Document number range
-   - Establishment and point of sale codes
+   -  Authorization number
+   -  Validity dates
+   -  Document number range
+   -  Establishment and point of sale codes
 
 Step 3: Configure Sales Journal
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -143,9 +143,9 @@ Step 3: Configure Sales Journal
 2. Edit your sales journal
 3. Set:
 
-   - Establishment code
-   - Point of sale code
-   - Link to timbrado
+   -  Establishment code
+   -  Point of sale code
+   -  Link to timbrado
 
 4. Save
 
@@ -162,8 +162,8 @@ Demo Data
 
 The module includes demo data:
 
-- Sample timbrados
-- Configured journals
+-  Sample timbrados
+-  Configured journals
 
 **Note**: Delete demo data before using in production:
 
@@ -175,13 +175,13 @@ Configuration Checklist
 
 Before going live:
 
-- ☐ Company fiscal data complete
-- ☐ Valid timbrado from SET
-- ☐ Timbrado record created in system
-- ☐ Sales journals configured
-- ☐ Purchase journals configured (if needed)
-- ☐ Document number sequences tested
-- ☐ User permissions configured
+-  ☐ Company fiscal data complete
+-  ☐ Valid timbrado from SET
+-  ☐ Timbrado record created in system
+-  ☐ Sales journals configured
+-  ☐ Purchase journals configured (if needed)
+-  ☐ Document number sequences tested
+-  ☐ User permissions configured
 
 Required Information from SET
 -----------------------------
@@ -199,16 +199,16 @@ Dependencies
 
 This module requires:
 
-- ``account``: Core accounting functionality
-- ``l10n_py_base``: Paraguayan base localization
+-  ``account``: Core accounting functionality
+-  ``l10n_py_base``: Paraguayan base localization
 
 Optional Modules
 ----------------
 
 For complete functionality, consider:
 
-- ``l10n_py``: Paraguayan chart of accounts
-- ``l10n_py_edi_base``: Electronic invoicing
+-  ``l10n_py``: Paraguayan chart of accounts
+-  ``l10n_py_edi_base``: Electronic invoicing
 
 Troubleshooting Installation
 ----------------------------
@@ -246,9 +246,9 @@ Configure journals for Paraguayan fiscal documents:
 2. Select or create a sales/purchase journal
 3. Configure Paraguayan fields:
 
-   - **Establishment** (Punto de Expedición): e.g., "001"
-   - **Point of Sale** (Punto de Emisión): e.g., "001"
-   - Link to active **Timbrado**
+   -  **Establishment** (Punto de Expedición): e.g., "001"
+   -  **Point of Sale** (Punto de Emisión): e.g., "001"
+   -  Link to active **Timbrado**
 
 Timbrado (Authorization) Management
 -----------------------------------
@@ -260,32 +260,32 @@ Creating a New Timbrado
 2. Click **Create**
 3. Fill in required information:
 
-   - **Authorization Number** (Timbrado): e.g., "12345678"
-   - **Start Date**: Authorization start date
-   - **End Date**: Authorization expiration date
-   - **Document Range**: From and To numbers
-   - **Establishment**: e.g., "001"
-   - **Point of Sale**: e.g., "001"
+   -  **Authorization Number** (Timbrado): e.g., "12345678"
+   -  **Start Date**: Authorization start date
+   -  **End Date**: Authorization expiration date
+   -  **Document Range**: From and To numbers
+   -  **Establishment**: e.g., "001"
+   -  **Point of Sale**: e.g., "001"
 
 4. Click **Save**
 
 Timbrado Fields Explained
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- **Authorization Number**: The timbrado number issued by SET
-- **Start/End Date**: Validity period of the authorization
-- **From Number**: Starting document number (e.g., 1)
-- **To Number**: Ending document number (e.g., 50000)
-- **Establishment**: Physical location code (001, 002, etc.)
-- **Point of Sale**: Point of emission code (001, 002, etc.)
+-  **Authorization Number**: The timbrado number issued by SET
+-  **Start/End Date**: Validity period of the authorization
+-  **From Number**: Starting document number (e.g., 1)
+-  **To Number**: Ending document number (e.g., 50000)
+-  **Establishment**: Physical location code (001, 002, etc.)
+-  **Point of Sale**: Point of emission code (001, 002, etc.)
 
 Activating a Timbrado
 ~~~~~~~~~~~~~~~~~~~~~
 
 1. Timbrados are automatically active if:
 
-   - Current date is between start and end dates
-   - Document numbers are not exhausted
+   -  Current date is between start and end dates
+   -  Document numbers are not exhausted
 
 2. System shows active status with indicators
 
@@ -302,29 +302,29 @@ Document Number Sequences
 
 The module automatically manages sequences:
 
-- Sequences are created based on timbrado configuration
-- Format: XXX-XXX-NNNNNNN (Establishment-Point of Sale-Number)
-- Numbers increment automatically
-- System warns when approaching limit
+-  Sequences are created based on timbrado configuration
+-  Format: XXX-XXX-NNNNNNN (Establishment-Point of Sale-Number)
+-  Numbers increment automatically
+-  System warns when approaching limit
 
 Automatic Validations
 ---------------------
 
 The system validates:
 
-- Timbrado is active and not expired
-- Document numbers are within authorized range
-- Establishment and point of sale match
-- Date is within authorization period
+-  Timbrado is active and not expired
+-  Document numbers are within authorized range
+-  Establishment and point of sale match
+-  Date is within authorization period
 
 Multiple Timbrados
 ------------------
 
 You can have multiple timbrados:
 
-- Different establishments
-- Different points of sale
-- Overlapping periods (for transition)
+-  Different establishments
+-  Different points of sale
+-  Overlapping periods (for transition)
 
 Best practice:
 
@@ -349,9 +349,9 @@ Standard Invoice Flow
 3. Select customer and add invoice lines
 4. The system automatically:
 
-   - Assigns the active timbrado from the journal
-   - Generates the next document number
-   - Validates timbrado status
+   -  Assigns the active timbrado from the journal
+   -  Generates the next document number
+   -  Validates timbrado status
 
 5. Click **Confirm**
 
@@ -364,9 +364,9 @@ Invoices will have the format:
 
    XXX-XXX-NNNNNNN
 
-- XXX: Establishment (e.g., 001)
-- XXX: Point of Sale (e.g., 001)
-- NNNNNNN: Sequential number (e.g., 0000001)
+-  XXX: Establishment (e.g., 001)
+-  XXX: Point of Sale (e.g., 001)
+-  NNNNNNN: Sequential number (e.g., 0000001)
 
 Example: ``001-001-0000123``
 
@@ -380,17 +380,17 @@ Checking Timbrado Status
 2. View list of all timbrados
 3. Status indicators show:
 
-   - **Active**: Green (currently valid and in range)
-   - **Expired**: Red (past end date)
-   - **Exhausted**: Orange (all numbers used)
+   -  **Active**: Green (currently valid and in range)
+   -  **Expired**: Red (past end date)
+   -  **Exhausted**: Orange (all numbers used)
 
 When Timbrado is Expiring
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The system will warn you when:
 
-- End date is approaching (configurable threshold)
-- Document numbers are running low (e.g., <100 remaining)
+-  End date is approaching (configurable threshold)
+-  Document numbers are running low (e.g., <100 remaining)
 
 Action required:
 
@@ -429,10 +429,10 @@ Monitor timbrado usage:
 1. Go to **Accounting > Reporting > Timbrado Report**
 2. View:
 
-   - Numbers used
-   - Numbers remaining
-   - Expiration status
-   - Document count
+   -  Numbers used
+   -  Numbers remaining
+   -  Expiration status
+   -  Document count
 
 Fiscal Period Closing
 ~~~~~~~~~~~~~~~~~~~~~
@@ -508,7 +508,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/OCA/l10n-paraguay/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/OCA/l10n-paraguay/issues/new?body=module:%20l10n_py_account%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/OCA/l10n-paraguay/issues/new?body=module:%20l10n_py_account%0Aversion:%2019.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -533,6 +533,6 @@ OCA, or the Odoo Community Association, is a nonprofit organization whose
 mission is to support the collaborative development of Odoo features and
 promote its widespread use.
 
-This module is part of the `OCA/l10n-paraguay <https://github.com/OCA/l10n-paraguay/tree/18.0/l10n_py_account>`_ project on GitHub.
+This module is part of the `OCA/l10n-paraguay <https://github.com/OCA/l10n-paraguay/tree/19.0/l10n_py_account>`_ project on GitHub.
 
 You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.

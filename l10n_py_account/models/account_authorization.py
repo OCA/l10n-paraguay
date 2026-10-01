@@ -2,7 +2,7 @@
 import re
 from datetime import date
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 MAX_INVOICE_NUMBER = 9999999
@@ -127,15 +127,12 @@ class AccountAuthorization(models.Model):
         help="Porcentaje de números utilizados respecto al total autorizado",
     )
 
-    _sql_constraints = [
-        (
-            "unique_timbrado",
-            "unique(name, establishment, expedition_point, series, "
-            "l10n_latam_document_type_id, company_id)",
-            "La combinación timbrado/establecimiento/punto de expedición/"
-            "serie/tipo de documento debe ser única.",
-        ),
-    ]
+    _unique_timbrado = models.Constraint(
+        "unique(name, establishment, expedition_point, series, "
+        "l10n_latam_document_type_id, company_id)",
+        "La combinación timbrado/establecimiento/punto de expedición/"
+        "serie/tipo de documento debe ser única.",
+    )
 
     @api.depends("date_from", "date_to")
     def _compute_state(self):
@@ -202,7 +199,7 @@ class AccountAuthorization(models.Model):
         for record in self:
             if not record.name.isdigit() or len(record.name) != 8:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "El número de timbrado debe contener exactamente "
                         "8 dígitos numéricos."
                     )
@@ -214,7 +211,7 @@ class AccountAuthorization(models.Model):
         for record in self:
             if not record.establishment.isdigit() or len(record.establishment) != 3:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "El código de establecimiento debe contener "
                         "exactamente 3 dígitos."
                     )
@@ -224,7 +221,7 @@ class AccountAuthorization(models.Model):
                 or len(record.expedition_point) != 3
             ):
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "El código de punto de expedición debe contener "
                         "exactamente 3 dígitos."
                     )
@@ -235,14 +232,16 @@ class AccountAuthorization(models.Model):
         """Valida que el rango de numeración sea válido"""
         for record in self:
             if record.invoice_number_from <= 0:
-                raise ValidationError(_("El número inicial debe ser mayor a cero."))
+                raise ValidationError(
+                    self.env._("El número inicial debe ser mayor a cero.")
+                )
             if record.invoice_number_to <= record.invoice_number_from:
                 raise ValidationError(
-                    _("El número final debe ser mayor al número inicial.")
+                    self.env._("El número final debe ser mayor al número inicial.")
                 )
             if record.invoice_number_to > MAX_INVOICE_NUMBER:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "El número final no puede exceder %(max)s.",
                         max=MAX_INVOICE_NUMBER,
                     )
@@ -254,7 +253,7 @@ class AccountAuthorization(models.Model):
         for record in self:
             if record.series and not re.match(r"^[A-Z]{2}$", record.series):
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "La serie debe ser exactamente 2 letras mayúsculas "
                         "(ej: AA, AB, ZZ)."
                     )
@@ -266,7 +265,7 @@ class AccountAuthorization(models.Model):
         for record in self:
             if record.date_to < record.date_from:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "La fecha de vencimiento debe ser posterior "
                         "a la fecha de inicio."
                     )
@@ -303,13 +302,15 @@ class AccountAuthorization(models.Model):
         today = date.today()
 
         if not self.active:
-            raise ValidationError(_("El timbrado está inactivo."))
+            raise ValidationError(self.env._("El timbrado está inactivo."))
 
         if today < self.date_from:
-            raise ValidationError(_("El timbrado aún no ha entrado en vigencia."))
+            raise ValidationError(
+                self.env._("El timbrado aún no ha entrado en vigencia.")
+            )
 
         if today > self.date_to:
-            raise ValidationError(_("El timbrado ha vencido."))
+            raise ValidationError(self.env._("El timbrado ha vencido."))
 
         return True
 
@@ -319,15 +320,13 @@ class AccountAuthorization(models.Model):
 
         if number < self.invoice_number_from or number > self.invoice_number_to:
             raise ValidationError(
-                _(
+                self.env._(
                     "El número %(number)s está fuera del rango autorizado "
-                    "(%(from)s - %(to)s)."
+                    "(%(from)s - %(to)s).",
+                    number=number,
+                    **{"from": self.invoice_number_from},
+                    to=self.invoice_number_to,
                 )
-                % {
-                    "number": number,
-                    "from": self.invoice_number_from,
-                    "to": self.invoice_number_to,
-                }
             )
 
         # Verificar si el número ya fue utilizado
@@ -342,14 +341,12 @@ class AccountAuthorization(models.Model):
 
         if existing:
             raise ValidationError(
-                _(
+                self.env._(
                     "El número %(number)s ya ha sido utilizado en la factura "
-                    "%(invoice_name)s."
+                    "%(invoice_name)s.",
+                    number=number,
+                    invoice_name=existing[0].name,
                 )
-                % {
-                    "number": number,
-                    "invoice_name": existing[0].name,
-                }
             )
 
         return True
