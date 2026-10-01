@@ -16,9 +16,7 @@ class City(models.Model):
     l10n_py_code = fields.Char(
         string="Código SET",
         size=4,
-        help=(
-            "Código de la ciudad según SET " "(Subsecretaría de Estado de Tributación)"
-        ),
+        help=("Código de la ciudad según SET (Subsecretaría de Estado de Tributación)"),
     )
 
     _sql_constraints = [

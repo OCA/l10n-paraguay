@@ -54,8 +54,7 @@ class RUCValidator:
             expected = stdnum_ruc.calc_check_digit(number[:-1])
             return (
                 False,
-                f"Invalid check digit. Expected: {expected}, "
-                f"received: {number[-1]}",
+                f"Invalid check digit. Expected: {expected}, received: {number[-1]}",
             )
         except ValidationError:
             return False, "Invalid RUC."
