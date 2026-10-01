@@ -298,7 +298,7 @@ class AccountMove(models.Model):
         for record in self:
             if record.l10n_py_security_code and len(record.l10n_py_security_code) != 9:
                 raise ValidationError(
-                    _("El código de seguridad debe tener " "exactamente 9 caracteres")
+                    _("El código de seguridad debe tener exactamente 9 caracteres")
                 )
 
     # ============== PRIVATE METHODS ==============
@@ -1175,7 +1175,7 @@ class AccountMove(models.Model):
 
         if self.l10n_py_edi_status not in ["error", "rejected"]:
             raise UserError(
-                _("Solo se pueden reintentar documentos " "con error o rechazados")
+                _("Solo se pueden reintentar documentos con error o rechazados")
             )
 
         return self.action_send_edi()
