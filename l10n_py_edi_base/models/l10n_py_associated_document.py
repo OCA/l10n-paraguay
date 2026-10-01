@@ -1,6 +1,6 @@
 # l10n_py_edi_base/models/l10n_py_associated_document.py
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -104,16 +104,18 @@ class AssociatedDocument(models.Model):
             if rec.association_type == "1":
                 if not rec.cdc:
                     raise ValidationError(
-                        _("Documento electrónico: el CDC es obligatorio.")
+                        self.env._("Documento electrónico: el CDC es obligatorio.")
                     )
                 if rec.cdc and (len(rec.cdc) != 44 or not rec.cdc.isdigit()):
                     raise ValidationError(
-                        _("El CDC debe contener exactamente 44 dígitos numéricos.")
+                        self.env._(
+                            "El CDC debe contener exactamente 44 dígitos numéricos."
+                        )
                     )
             else:
                 if rec.cdc:
                     raise ValidationError(
-                        _("Solo documentos electrónicos pueden tener CDC.")
+                        self.env._("Solo documentos electrónicos pueden tener CDC.")
                     )
 
     @api.constrains(
@@ -144,7 +146,7 @@ class AssociatedDocument(models.Model):
                 ]
                 if missing:
                     raise ValidationError(
-                        _(
+                        self.env._(
                             "Documento impreso: campos obligatorios "
                             "faltantes: %(fields)s",
                             fields=", ".join(missing),
@@ -156,7 +158,7 @@ class AssociatedDocument(models.Model):
                 )
                 if has_printed:
                     raise ValidationError(
-                        _(
+                        self.env._(
                             "Documentos electrónicos o constancias no "
                             "pueden tener campos de documento impreso."
                         )
@@ -169,12 +171,14 @@ class AssociatedDocument(models.Model):
             if rec.association_type == "3":
                 if not rec.constancia_type or not rec.constancia_number:
                     raise ValidationError(
-                        _("Constancia electrónica: tipo y número son obligatorios.")
+                        self.env._(
+                            "Constancia electrónica: tipo y número son obligatorios."
+                        )
                     )
             else:
                 if rec.constancia_type or rec.constancia_number:
                     raise ValidationError(
-                        _(
+                        self.env._(
                             "Solo constancias electrónicas pueden tener "
                             "tipo y número de constancia."
                         )

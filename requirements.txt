@@ -1,3 +1,7 @@
 # generated from manifests external_dependencies
+cryptography
 num2words
+pykude
 python-stdnum
+qrcode
+requests
