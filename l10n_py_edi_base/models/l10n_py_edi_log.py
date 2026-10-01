@@ -8,7 +8,7 @@ Implementa logging completo conforme propostas de melhoria
 import json
 import logging
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -302,8 +302,8 @@ class EDILog(models.Model):
             "type": "ir.actions.client",
             "tag": "display_notification",
             "params": {
-                "title": _("Dados da %s") % data_type.capitalize(),
-                "message": data or _("Sem dados"),
+                "title": self.env._("Dados da %s", data_type.capitalize()),
+                "message": data or self.env._("Sem dados"),
                 "type": "info",
                 "sticky": True,
             },

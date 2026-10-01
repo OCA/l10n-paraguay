@@ -1,6 +1,6 @@
 # l10n_py_edi_base/wizard/l10n_py_edi_cancel_wizard.py
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 # Límites de cancelación por tipo de DTE (en horas)
@@ -31,10 +31,10 @@ class EDICancelWizard(models.TransientModel):
         """Cancelar documento EDI con verificación de plazos."""
         self.ensure_one()
         if not self.invoice_id:
-            raise UserError(_("No se seleccionó una factura"))
+            raise UserError(self.env._("No se seleccionó una factura"))
 
         if not self.invoice_id.l10n_py_cdc:
-            raise UserError(_("La factura no tiene CDC, no se puede cancelar"))
+            raise UserError(self.env._("La factura no tiene CDC, no se puede cancelar"))
 
         # Verificar plazo de cancelación
         self._check_cancel_deadline()
@@ -45,8 +45,8 @@ class EDICancelWizard(models.TransientModel):
             "type": "ir.actions.client",
             "tag": "display_notification",
             "params": {
-                "title": _("Cancelación Exitosa"),
-                "message": _("El documento ha sido cancelado"),
+                "title": self.env._("Cancelación Exitosa"),
+                "message": self.env._("El documento ha sido cancelado"),
                 "type": "success",
                 "sticky": False,
             },
@@ -72,7 +72,7 @@ class EDICancelWizard(models.TransientModel):
 
             if hours_since > limit_hours:
                 raise UserError(
-                    _(
+                    self.env._(
                         "El plazo de cancelación ha expirado. "
                         "Tipo %(doc_type)s permite cancelación hasta "
                         "%(limit)s horas después de la aceptación "

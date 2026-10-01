@@ -2,7 +2,7 @@
 
 import logging
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -75,15 +75,17 @@ class NumberInutilization(models.Model):
     def _check_range(self):
         for rec in self:
             if rec.number_from <= 0 or rec.number_to <= 0:
-                raise ValidationError(_("Los números deben ser mayores a cero."))
+                raise ValidationError(
+                    self.env._("Los números deben ser mayores a cero.")
+                )
             if rec.number_to < rec.number_from:
                 raise ValidationError(
-                    _("El número final debe ser mayor o igual al inicial.")
+                    self.env._("El número final debe ser mayor o igual al inicial.")
                 )
             quantity = rec.number_to - rec.number_from + 1
             if quantity > MAX_INUTILIZATION_RANGE:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "El rango máximo de inutilización es "
                         "%(max)s números (solicitados: %(qty)s).",
                         max=MAX_INUTILIZATION_RANGE,
@@ -98,7 +100,7 @@ class NumberInutilization(models.Model):
             auth = rec.authorization_id
             if rec.number_from < auth.invoice_number_from:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "El número inicial está fuera del rango "
                         "del timbrado (mínimo: %(min)s).",
                         min=auth.invoice_number_from,
@@ -106,7 +108,7 @@ class NumberInutilization(models.Model):
                 )
             if rec.number_to > auth.invoice_number_to:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "El número final está fuera del rango "
                         "del timbrado (máximo: %(max)s).",
                         max=auth.invoice_number_to,
@@ -127,7 +129,7 @@ class NumberInutilization(models.Model):
             )
             if used:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "Hay %(count)s número(s) en el rango que "
                         "ya fueron usados en facturas confirmadas.",
                         count=used,
@@ -141,7 +143,7 @@ class NumberInutilization(models.Model):
         self.ensure_one()
         if self.state != "draft":
             raise UserError(
-                _("Solo se pueden enviar inutilizaciones en estado borrador.")
+                self.env._("Solo se pueden enviar inutilizaciones en estado borrador.")
             )
 
         connector = (
@@ -150,7 +152,9 @@ class NumberInutilization(models.Model):
             .search([("company_id", "=", self.company_id.id)], limit=1)
         )
         if not connector:
-            raise UserError(_("No hay un conector EDI configurado para esta empresa."))
+            raise UserError(
+                self.env._("No hay un conector EDI configurado para esta empresa.")
+            )
 
         auth = self.authorization_id
         data = {
@@ -170,9 +174,13 @@ class NumberInutilization(models.Model):
             else:
                 self.state = "rejected"
                 _logger.warning("Inutilización rechazada: %s", response.get("error"))
-                raise UserError(_("Error de inutilización: %s") % response.get("error"))
+                raise UserError(
+                    self.env._("Error de inutilización: %s", response.get("error"))
+                )
         except UserError:
             raise
         except Exception as e:
             self.state = "rejected"
-            raise UserError(_("Error enviando inutilización: %s") % str(e)) from e
+            raise UserError(
+                self.env._("Error enviando inutilización: %s", str(e))
+            ) from e
