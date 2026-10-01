@@ -104,12 +104,17 @@ class TestEDILifecycle(TransactionCase):
             }
         )
 
+        # tax_group_id is required in 19.0 and has no default without the chart
+        cls.tax_group = cls.env["account.tax.group"].create(
+            {"name": "Exento Test", "country_id": cls.country_py.id}
+        )
         cls.tax_exempt = cls.env["account.tax"].create(
             {
                 "name": "Exento Test",
                 "amount": 0.0,
                 "amount_type": "percent",
                 "type_tax_use": "sale",
+                "tax_group_id": cls.tax_group.id,
             }
         )
 
@@ -145,6 +150,14 @@ class TestEDILifecycle(TransactionCase):
         """F10: action_post configura status EDI como to_send"""
         move = self._create_and_post_invoice()
         self.assertEqual(move.l10n_py_edi_status, "to_send")
+
+    def test_prepare_customer_data_with_phone(self):
+        """res.partner.mobile no longer exists in 19.0: phone feeds the contact data"""
+        self.partner.phone = "+595 21 444 1111"
+        move = self._create_and_post_invoice()
+        customer_data = move._prepare_customer_data()
+        self.assertEqual(customer_data["telefono"], "+595 21 444 1111")
+        self.assertNotIn("celular", customer_data)
 
     def test_transmission_deadline_computed(self):
         """F10: Prazo de transmissão calculado (72h desde emissão)"""

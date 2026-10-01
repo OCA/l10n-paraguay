@@ -14,10 +14,7 @@ class EDIDocumentType(models.Model):
     name = fields.Char(string="Nombre", required=True, translate=True)
     description = fields.Text(string="Descripción", translate=True)
 
-    _sql_constraints = [
-        (
-            "code_unique",
-            "unique(code)",
-            "El código del tipo de documento debe ser único",
-        )
-    ]
+    _code_unique = models.Constraint(
+        "unique(code)",
+        "El código del tipo de documento debe ser único",
+    )
