@@ -80,7 +80,7 @@
         <field name="priority">110</field>
         <field name="arch" type="xml">
             <!-- Nombre de Fantasía después del nombre (patrón l10n_br_base) -->
-            <xpath expr="//div[hasclass('oe_title')]" position="after">
+            <xpath expr="//h1[field[@name='name']]" position="after">
                 <field
                     name="l10n_py_fantasy_name"
                     placeholder="Nombre de Fantasía..."
@@ -89,10 +89,7 @@
             </xpath>
 
             <!-- Campos fiscales PY después del bloque de identificación LATAM -->
-            <xpath
-                expr="//div[field[@name='l10n_latam_identification_type_id']]"
-                position="after"
-            >
+            <xpath expr="//field[@name='vat']" position="after">
                 <field
                     name="l10n_py_taxpayer_type"
                     invisible="country_id != %(base.py)d"

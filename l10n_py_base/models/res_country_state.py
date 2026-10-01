@@ -20,10 +20,7 @@ class CountryState(models.Model):
         ),
     )
 
-    _sql_constraints = [
-        (
-            "l10n_py_code_unique",
-            "unique(l10n_py_code, country_id)",
-            "El código SET del departamento debe ser único por país",
-        )
-    ]
+    _l10n_py_code_unique = models.Constraint(
+        "unique(l10n_py_code, country_id)",
+        "El código SET del departamento debe ser único por país",
+    )

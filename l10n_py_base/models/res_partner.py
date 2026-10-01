@@ -187,6 +187,18 @@ class ResPartner(models.Model):
                     values["vat"] = formatted
         return super().write(values)
 
+    @api.model
+    def format_vat_py(self, vat):
+        """Keep the RUC as typed instead of letting base_vat compact it.
+
+        Since Odoo 19, ``base_vat`` formats the VAT through ``format_vat_<cc>``
+        and falls back to the python-stdnum ``compact()``, which strips the
+        hyphen of ``NNNNNNNN-D``. ``_format_vat_py`` would then take the whole
+        compacted number (check digit included) as the RUC base and append a
+        new, wrong check digit.
+        """
+        return vat.strip() if vat else vat
+
     def _format_vat_py(self, vals):
         """Format vat for RUC type: append DV if missing or incorrect.
 
