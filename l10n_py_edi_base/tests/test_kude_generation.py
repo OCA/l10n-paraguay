@@ -1,4 +1,3 @@
-import base64
 from datetime import timedelta
 from unittest.mock import ANY, MagicMock, patch
 
@@ -6,6 +5,7 @@ from odoo import fields
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 from odoo.tools import mute_logger
+from odoo.tools.binary import BinaryBytes
 
 
 @tagged("post_install", "-at_install", "l10n_py")
@@ -139,7 +139,7 @@ class TestKudeGeneration(TransactionCase):
         move.write(
             {
                 "l10n_py_cdc": cdc,
-                "l10n_py_edi_xml": base64.b64encode(self.sample_xml.encode("utf-8")),
+                "l10n_py_edi_xml": BinaryBytes(self.sample_xml.encode("utf-8")),
                 "l10n_py_edi_xml_filename": f"{cdc}.xml",
                 "l10n_py_edi_status": "accepted",
             }
@@ -161,7 +161,7 @@ class TestKudeGeneration(TransactionCase):
 
     @patch("pykude.auto_kude")
     def test_generate_kude_stores_pdf(self, mock_auto_kude):
-        """_generate_kude stores base64 PDF and filename on the invoice."""
+        """_generate_kude stores the PDF and filename on the invoice."""
         mock_kude_obj = MagicMock()
         mock_kude_obj.output.return_value = self.sample_pdf
         mock_auto_kude.return_value = mock_kude_obj
@@ -171,8 +171,7 @@ class TestKudeGeneration(TransactionCase):
         move._generate_kude()
 
         self.assertTrue(move.l10n_py_kude_pdf)
-        pdf_decoded = base64.b64decode(move.l10n_py_kude_pdf)
-        self.assertEqual(pdf_decoded, self.sample_pdf)
+        self.assertEqual(move.l10n_py_kude_pdf.content, self.sample_pdf)
         self.assertEqual(move.l10n_py_kude_filename, f"KUDE_{cdc}.pdf")
 
     def test_generate_kude_no_xml_skips(self):
@@ -206,7 +205,7 @@ class TestKudeGeneration(TransactionCase):
 
     @patch("pykude.auto_kude")
     def test_generate_kude_decodes_xml_correctly(self, mock_auto_kude):
-        """_generate_kude decodes base64 XML before passing to pykude."""
+        """_generate_kude decodes the XML before passing to pykude."""
         mock_kude_obj = MagicMock()
         mock_kude_obj.output.return_value = self.sample_pdf
         mock_auto_kude.return_value = mock_kude_obj
@@ -216,7 +215,7 @@ class TestKudeGeneration(TransactionCase):
             "<rDE><dNomEmi>Compañía Test SA</dNomEmi></rDE>"
         )
         move = self._create_invoice_with_xml()
-        move.l10n_py_edi_xml = base64.b64encode(xml_with_accents.encode("utf-8"))
+        move.l10n_py_edi_xml = BinaryBytes(xml_with_accents.encode("utf-8"))
         move._generate_kude()
 
         mock_auto_kude.assert_called_once_with(xml=xml_with_accents, config=ANY)

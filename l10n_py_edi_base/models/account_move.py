@@ -9,6 +9,7 @@ from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools.binary import BinaryBytes
 
 _logger = logging.getLogger(__name__)
 
@@ -972,16 +973,14 @@ class AccountMove(models.Model):
         connector = self._get_edi_connector()
         xml_string = connector.preview_document(document_data)
 
-        import base64 as b64
-
-        xml_b64 = b64.b64encode(xml_string.encode("utf-8"))
-        self.l10n_py_edi_xml = xml_b64
+        xml_bytes = xml_string.encode("utf-8")
+        self.l10n_py_edi_xml = BinaryBytes(xml_bytes)
         self.l10n_py_edi_xml_filename = "preview.xml"
 
         attachment = self.env["ir.attachment"].create(
             {
                 "name": f"preview_{self.name or self.id}.xml",
-                "datas": xml_b64,
+                "raw": xml_bytes,
                 "mimetype": "text/xml",
                 "res_model": self._name,
                 "res_id": self.id,
@@ -991,8 +990,6 @@ class AccountMove(models.Model):
 
     def action_preview_kude(self):
         """Generar KuDE (PDF) a partir del XML preview via pykude."""
-        import base64
-
         self.ensure_one()
         if not self.l10n_py_edi_xml:
             # Generate XML first
@@ -1003,11 +1000,11 @@ class AccountMove(models.Model):
         from pykude import auto_kude
         from pykude.kude_fe.config import KudeFeConfig
 
-        xml_content = base64.b64decode(self.l10n_py_edi_xml).decode("utf-8")
+        xml_content = self.l10n_py_edi_xml.decode("utf-8")
 
         config = KudeFeConfig()
         if self.company_id.logo:
-            config.logo = base64.b64decode(self.company_id.logo)
+            config.logo = self.company_id.logo.content
 
         kude = auto_kude(xml=xml_content, config=config)
         pdf_bytes = kude.output()
@@ -1015,7 +1012,7 @@ class AccountMove(models.Model):
         attachment = self.env["ir.attachment"].create(
             {
                 "name": f"KUDE_preview_{self.name or self.id}.pdf",
-                "datas": base64.b64encode(pdf_bytes),
+                "raw": pdf_bytes,
                 "mimetype": "application/pdf",
                 "res_model": self._name,
                 "res_id": self.id,
@@ -1078,9 +1075,7 @@ class AccountMove(models.Model):
 
             # Guardar XML si viene
             if de_data.get("xml"):
-                import base64 as b64
-
-                self.l10n_py_edi_xml = b64.b64encode(de_data["xml"].encode("utf-8"))
+                self.l10n_py_edi_xml = BinaryBytes(de_data["xml"].encode("utf-8"))
                 self.l10n_py_edi_xml_filename = f"{self.l10n_py_cdc}.xml"
 
             # Auto-generar KuDE al aceptar
@@ -1095,9 +1090,8 @@ class AccountMove(models.Model):
 
         for move in self:
             if move.l10n_py_qr_string:
-                move.l10n_py_qr_code = QRGenerator.generate_image(
-                    move.l10n_py_qr_string
-                )
+                image = QRGenerator.generate_image(move.l10n_py_qr_string)
+                move.l10n_py_qr_code = BinaryBytes(image) if image else False
 
     def action_l10n_py_preview_qr(self):
         """Genera CDC + QR (firma local) SIN transmitir, para previsualizar.
@@ -1236,23 +1230,21 @@ class AccountMove(models.Model):
 
     def _generate_kude(self):
         """Generar KUDE (representación gráfica del DE) vía pykude."""
-        import base64
-
         self.ensure_one()
         if not self.l10n_py_edi_xml:
             return
         from pykude import auto_kude
         from pykude.kude_fe.config import KudeFeConfig
 
-        xml_content = base64.b64decode(self.l10n_py_edi_xml).decode("utf-8")
+        xml_content = self.l10n_py_edi_xml.decode("utf-8")
 
         config = KudeFeConfig()
         if self.company_id.logo:
-            config.logo = base64.b64decode(self.company_id.logo)
+            config.logo = self.company_id.logo.content
 
         kude = auto_kude(xml=xml_content, config=config)
         pdf_bytes = kude.output()
-        self.l10n_py_kude_pdf = base64.b64encode(pdf_bytes)
+        self.l10n_py_kude_pdf = BinaryBytes(pdf_bytes)
         self.l10n_py_kude_filename = f"KUDE_{self.l10n_py_cdc}.pdf"
 
     # ============== CRON METHODS ==============

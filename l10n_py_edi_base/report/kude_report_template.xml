@@ -74,7 +74,7 @@
                                 <!-- QR Code -->
                                 <t t-if="doc.l10n_py_qr_code">
                                     <img
-                                        t-att-src="'data:image/png;base64,' + doc.l10n_py_qr_code.decode('ascii')"
+                                        t-att-src="'data:image/png;base64,' + doc.l10n_py_qr_code.to_base64()"
                                         style="width: 110px; height: 110px;"
                                         alt="QR"
                                     />

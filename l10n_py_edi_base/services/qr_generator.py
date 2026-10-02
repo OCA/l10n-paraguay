@@ -112,16 +112,14 @@ class QRGenerator:
 
     @staticmethod
     def generate_image(data, box_size=4, border=2):
-        """Genera la imagen PNG del QR en base64 (listo para Binary de Odoo).
+        """Genera la imagen PNG del QR.
 
         Returns:
-            bytes: contenido PNG codificado en base64, o False si falla.
+            bytes: contenido PNG, o False si falla.
         """
         if not data:
             return False
         try:
-            import base64
-
             import qrcode
 
             qr = qrcode.QRCode(
@@ -134,7 +132,7 @@ class QRGenerator:
             img = qr.make_image(fill_color="black", back_color="white")
             buff = BytesIO()
             img.save(buff, format="PNG")
-            return base64.b64encode(buff.getvalue())
+            return buff.getvalue()
         except Exception as exc:  # noqa: BLE001  # pragma: no cover - depende de libs externas
             _logger.warning("No se pudo generar la imagen del QR: %s", exc)
             return False

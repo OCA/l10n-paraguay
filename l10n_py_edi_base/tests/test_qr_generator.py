@@ -68,9 +68,7 @@ class TestQRGenerator(TransactionCase):
             self._build(csc="")
 
     def test_image_is_png(self):
-        """La imagen generada es un PNG (base64)."""
-        import base64
-
-        img_b64 = QRGenerator.generate_image(self._build())
-        self.assertTrue(img_b64)
-        self.assertEqual(base64.b64decode(img_b64)[:8], b"\x89PNG\r\n\x1a\n")
+        """La imagen generada es un PNG."""
+        img = QRGenerator.generate_image(self._build())
+        self.assertTrue(img)
+        self.assertEqual(img[:8], b"\x89PNG\r\n\x1a\n")
