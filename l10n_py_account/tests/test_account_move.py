@@ -1,5 +1,6 @@
-from datetime import date, timedelta
+from datetime import timedelta
 
+from odoo import fields
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
@@ -95,7 +96,7 @@ class TestAccountMove(TransactionCase):
         )
 
         # Timbrado válido
-        today = date.today()
+        today = fields.Date.today()
         cls.authorization = cls.Authorization.create(
             {
                 "name": "33445566",
@@ -239,7 +240,7 @@ class TestAccountMove(TransactionCase):
     def test_action_post_exhausted_range(self):
         """F02: Faja agotada → UserError"""
         # Crear timbrado con rango mínimo
-        today = date.today()
+        today = fields.Date.today()
         auth_small = self.Authorization.create(
             {
                 "name": "99999999",
@@ -332,7 +333,7 @@ class TestAccountMove(TransactionCase):
                 "move_type": "in_invoice",
                 "partner_id": vendor.id,
                 "journal_id": journal_purchase.id,
-                "invoice_date": date.today(),
+                "invoice_date": fields.Date.today(),
                 "invoice_line_ids": [
                     (
                         0,

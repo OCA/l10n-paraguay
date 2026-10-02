@@ -1,7 +1,8 @@
-from datetime import date, timedelta
+from datetime import timedelta
 
 from psycopg2 import IntegrityError
 
+from odoo import fields
 from odoo.exceptions import ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
@@ -34,7 +35,7 @@ class TestAccountAuthorization(TransactionCase):
                 }
             )
 
-        cls.today = date.today()
+        cls.today = fields.Date.today()
         cls.date_from = cls.today - timedelta(days=30)
         cls.date_to = cls.today + timedelta(days=335)
 
