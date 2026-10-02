@@ -68,7 +68,6 @@
         <field name="type">consu</field>
         <field name="default_code">MQ-MP-ABS</field>
         <field name="uom_id" ref="uom.product_uom_kgm" />
-        <field name="uom_po_id" ref="uom.product_uom_kgm" />
     </record>
 
     <record id="product_aditivo_uv" model="product.product">
@@ -76,7 +75,6 @@
         <field name="type">consu</field>
         <field name="default_code">MQ-MP-UV</field>
         <field name="uom_id" ref="uom.product_uom_kgm" />
-        <field name="uom_po_id" ref="uom.product_uom_kgm" />
     </record>
 
     <record id="product_conector_12pin" model="product.product">
@@ -91,7 +89,6 @@
         <field name="type">consu</field>
         <field name="default_code">MQ-MP-CCU</field>
         <field name="uom_id" ref="uom.product_uom_meter" />
-        <field name="uom_po_id" ref="uom.product_uom_meter" />
     </record>
 
     <!-- Raw materials (national PY) -->
@@ -107,7 +104,6 @@
         <field name="type">consu</field>
         <field name="default_code">MQ-NAC-CAI</field>
         <field name="uom_id" ref="uom.product_uom_meter" />
-        <field name="uom_po_id" ref="uom.product_uom_meter" />
     </record>
 
     <!-- Finished products -->
