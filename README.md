@@ -18,7 +18,11 @@ l10n-paraguay
 
 [//]: # (addons)
 
-This part will be replaced when running the oca-gen-addons-table script from OCA/maintainer-tools.
+Available addons
+----------------
+addon | version | maintainers | summary
+--- | --- | --- | ---
+[l10n_py](l10n_py/) | 19.0.1.0.0 |  | Localización contable para Paraguay
 
 [//]: # (end addons)
 
