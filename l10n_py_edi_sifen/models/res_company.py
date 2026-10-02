@@ -3,7 +3,7 @@
 import base64
 import logging
 
-from odoo import _, fields, models
+from odoo import fields, models
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -22,7 +22,9 @@ class ResCompany(models.Model):
         self.ensure_one()
         if not self.l10n_py_certificate:
             raise UserError(
-                _("Configure el certificado PKCS12 en la empresa %s") % self.name
+                self.env._(
+                    "Configure el certificado PKCS12 en la empresa %s", self.name
+                )
             )
         cert_bytes = base64.b64decode(self.l10n_py_certificate)
         return cert_bytes, self.l10n_py_certificate_password or ""
