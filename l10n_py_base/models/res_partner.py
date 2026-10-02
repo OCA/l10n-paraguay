@@ -22,7 +22,7 @@ class ResPartner(models.Model):
         return (
             self.env.ref("base.py", raise_if_not_found=False)
             if self.env.company.country_id.code == "PY"
-            else False
+            else self.env["res.country"]
         )
 
     # ============== CAMPOS FISCALES PY ==============
@@ -116,16 +116,22 @@ class ResPartner(models.Model):
 
     # ============== COMPUTE METHODS ==============
 
-    @api.depends("vat", "l10n_latam_identification_type_id")
+    def _l10n_py_is_ruc_partner(self):
+        """Whether the tax number of the partner is a Paraguayan RUC.
+
+        Odoo 20 removed ``l10n_latam_base`` and its identification types: the
+        ``vat`` of a partner located in Paraguay is the RUC. Identity documents
+        of non-taxpayers (CI, passport, residence card) live in
+        ``l10n_py_doc_type`` and ``l10n_py_doc_number`` instead.
+        """
+        self.ensure_one()
+        return bool(self.vat) and self.country_id == self.env.ref("base.py")
+
+    @api.depends("vat", "country_id")
     def _compute_l10n_py_ruc_fields(self):
         """Compute l10n_py_ruc and l10n_py_ruc_dv from vat field."""
-        ruc_type = self.env.ref("l10n_py_base.it_ruc", raise_if_not_found=False)
         for partner in self:
-            if (
-                ruc_type
-                and partner.l10n_latam_identification_type_id == ruc_type
-                and partner.vat
-            ):
+            if partner._l10n_py_is_ruc_partner():
                 vat_clean = partner.vat.strip()
                 if "-" in vat_clean:
                     parts = vat_clean.split("-", 1)
@@ -143,136 +149,84 @@ class ResPartner(models.Model):
 
     def _inverse_l10n_py_ruc(self):
         """When l10n_py_ruc is written directly, sync to vat field."""
-        ruc_type = self.env.ref("l10n_py_base.it_ruc", raise_if_not_found=False)
         for partner in self:
             if partner.l10n_py_ruc:
                 ruc_num = partner.l10n_py_ruc.strip()
                 dv = str(RUCValidator._calculate_check_digit(ruc_num))
                 partner.vat = f"{ruc_num}-{dv}"
-                if ruc_type:
-                    partner.l10n_latam_identification_type_id = ruc_type
 
     # ============== CREATE / WRITE ==============
 
     @api.model_create_multi
     def create(self, vals_list):
-        ruc_type = self.env.ref("l10n_py_base.it_ruc", raise_if_not_found=False)
+        country_py = self.env.ref("base.py")
+        default_country_id = self._default_country_id().id
         for vals in vals_list:
-            # Backward compat: convert l10n_py_ruc to vat + identification type
+            # Backward compat: convert l10n_py_ruc to vat
             if vals.get("l10n_py_ruc") and not vals.get("vat"):
                 ruc_num = vals.pop("l10n_py_ruc").strip()
                 dv = str(RUCValidator._calculate_check_digit(ruc_num))
                 vals["vat"] = f"{ruc_num}-{dv}"
-                if ruc_type:
-                    vals.setdefault("l10n_latam_identification_type_id", ruc_type.id)
-            self._format_vat_py(vals)
+            country_id = vals.get("country_id", default_country_id)
+            if vals.get("vat") and country_id == country_py.id:
+                vals["vat"] = self._format_ruc(vals["vat"])
         return super().create(vals_list)
 
     def write(self, values):
-        if any(
-            f in values
-            for f in ["vat", "l10n_latam_identification_type_id", "country_id"]
-        ):
+        if "vat" in values or "country_id" in values:
+            country_py = self.env.ref("base.py")
             for record in self:
-                vat_values = {
-                    "vat": values.get("vat", record.vat),
-                    "l10n_latam_identification_type_id": values.get(
-                        "l10n_latam_identification_type_id",
-                        record.l10n_latam_identification_type_id.id,
-                    ),
-                    "country_id": values.get("country_id", record.country_id.id),
-                }
-                formatted = self._format_vat_py(vat_values)
-                if formatted:
-                    values["vat"] = formatted
+                vat = values.get("vat", record.vat)
+                country_id = values.get("country_id", record.country_id.id)
+                if vat and country_id == country_py.id:
+                    values["vat"] = self._format_ruc(vat)
         return super().write(values)
 
     @api.model
     def format_vat_py(self, vat):
-        """Keep the RUC as typed instead of letting base_vat compact it.
+        """Keep the RUC as typed instead of letting the core compact it.
 
-        Since Odoo 19, ``base_vat`` formats the VAT through ``format_vat_<cc>``
-        and falls back to the python-stdnum ``compact()``, which strips the
-        hyphen of ``NNNNNNNN-D``. ``_format_vat_py`` would then take the whole
-        compacted number (check digit included) as the RUC base and append a
-        new, wrong check digit.
+        The core formats the VAT through ``format_vat_<cc>`` and falls back to
+        the python-stdnum ``compact()``, which strips the hyphen of
+        ``NNNNNNNN-D``. ``_format_ruc`` would then take the whole compacted
+        number (check digit included) as the RUC base and append a new, wrong
+        check digit.
         """
         return vat.strip() if vat else vat
 
-    def _format_vat_py(self, vals):
-        """Format vat for RUC type: append DV if missing or incorrect.
+    @api.model
+    def _format_ruc(self, vat):
+        """Return the RUC with its check digit (``NNNNNNNN-D``).
 
-        For create: modifies vals in-place.
-        For write: returns formatted vat or None.
+        The check digit is appended when missing and recomputed when informed.
+        A value that is not a plain RUC number is returned untouched.
         """
-        ruc_type = self.env.ref("l10n_py_base.it_ruc", raise_if_not_found=False)
-        if not ruc_type or not vals.get("vat"):
-            return None
-
-        id_type_id = vals.get("l10n_latam_identification_type_id")
-        if isinstance(id_type_id, int):
-            is_ruc = id_type_id == ruc_type.id
-        else:
-            is_ruc = False
-
-        if not is_ruc:
-            return None
-
-        vat = vals["vat"].strip()
+        vat = vat.strip()
         if "-" in vat:
             ruc_num = vat.split("-", 1)[0]
         else:
             ruc_num = "".join(c for c in vat if c.isdigit())
-
         if ruc_num and ruc_num.isdigit() and len(ruc_num) >= 6:
             dv = str(RUCValidator._calculate_check_digit(ruc_num))
-            formatted = f"{ruc_num}-{dv}"
-            vals["vat"] = formatted
-            return formatted
-
-        return None
+            return f"{ruc_num}-{dv}"
+        return vat
 
     # ============== ONCHANGE METHODS ==============
 
-    @api.onchange("l10n_latam_identification_type_id")
-    def _onchange_l10n_py_identification_type(self):
-        """Auto-set taxpayer type and doc_type based on identification type."""
-        ruc_type = self.env.ref("l10n_py_base.it_ruc", raise_if_not_found=False)
-        if not self.l10n_latam_identification_type_id:
-            return
+    @api.onchange("l10n_py_doc_type")
+    def _onchange_l10n_py_doc_type(self):
+        """A partner identified by an identity document is a non-taxpayer."""
+        if self.l10n_py_doc_type:
+            self.l10n_py_taxpayer_type = "2"
 
-        if self.l10n_latam_identification_type_id == ruc_type:
+    @api.onchange("vat", "country_id")
+    def _onchange_vat_l10n_py(self):
+        """When the RUC changes, auto-format it with the check digit."""
+        if self._l10n_py_is_ruc_partner():
+            self.vat = self._format_ruc(self.vat)
             self.l10n_py_taxpayer_type = "1"
             self.l10n_py_doc_type = False
             self.l10n_py_doc_number = False
-        else:
-            type_map = self._get_identification_doc_type_map()
-            doc_type = type_map.get(self.l10n_latam_identification_type_id.id)
-            if doc_type:
-                self.l10n_py_taxpayer_type = "2"
-                self.l10n_py_doc_type = doc_type
-                if self.vat:
-                    self.l10n_py_doc_number = self.vat
-
-    @api.onchange("vat")
-    def _onchange_vat_l10n_py(self):
-        """When vat changes for RUC type, auto-format with DV."""
-        ruc_type = self.env.ref("l10n_py_base.it_ruc", raise_if_not_found=False)
-        if ruc_type and self.l10n_latam_identification_type_id == ruc_type and self.vat:
-            vat = self.vat.strip()
-            if "-" in vat:
-                ruc_num = vat.split("-", 1)[0]
-            else:
-                ruc_num = "".join(c for c in vat if c.isdigit())
-
-            if ruc_num and ruc_num.isdigit() and len(ruc_num) >= 6:
-                dv = str(RUCValidator._calculate_check_digit(ruc_num))
-                self.vat = f"{ruc_num}-{dv}"
-        elif self.vat and self.l10n_latam_identification_type_id:
-            # Sync doc_number for non-RUC types
-            type_map = self._get_identification_doc_type_map()
-            if self.l10n_latam_identification_type_id.id in type_map:
-                self.l10n_py_doc_number = self.vat
 
     @api.onchange("l10n_py_neighborhood_id")
     def _onchange_l10n_py_neighborhood_id(self):
@@ -335,29 +289,12 @@ class ResPartner(models.Model):
     def check_vat_py(self, vat):
         """Validate a Paraguayan RUC, check digit included.
 
-        Only partners whose identification type is flagged as VAT reach this
-        method: ``l10n_latam_base`` filters the others out before calling
-        ``base_vat``, so documents such as CI, passport or residence card are
-        not validated here.
+        The core calls this hook for the ``vat`` of partners located in
+        Paraguay.
         """
         if not vat:
             return False
         return RUCValidator.validate(vat)[0]
-
-    # ============== HELPER METHODS ==============
-
-    def _get_identification_doc_type_map(self):
-        """Map identification type IDs to l10n_py_doc_type selection values."""
-        result = {}
-        for xml_id, doc_type in [
-            ("l10n_py_base.it_ci", "1"),
-            ("l10n_py_base.it_pasaporte", "2"),
-            ("l10n_py_base.it_carnet_residencia", "3"),
-        ]:
-            rec = self.env.ref(xml_id, raise_if_not_found=False)
-            if rec:
-                result[rec.id] = doc_type
-        return result
 
     @api.model
     def _formatting_address_fields(self):

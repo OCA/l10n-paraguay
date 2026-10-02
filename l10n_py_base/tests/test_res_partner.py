@@ -11,10 +11,6 @@ class TestResPartner(TransactionCase):
         super().setUpClass()
         cls.Partner = cls.env["res.partner"]
         cls.country_py = cls.env.ref("base.py")
-        cls.it_ruc = cls.env.ref("l10n_py_base.it_ruc")
-        cls.it_ci = cls.env.ref("l10n_py_base.it_ci")
-        cls.it_pasaporte = cls.env.ref("l10n_py_base.it_pasaporte")
-        cls.it_carnet = cls.env.ref("l10n_py_base.it_carnet_residencia")
 
     def test_partner_fiscal_fields_exist(self):
         """Campos fiscales l10n_py deben existir en el modelo"""
@@ -32,7 +28,7 @@ class TestResPartner(TransactionCase):
         self.assertTrue(hasattr(partner, "l10n_py_department_code"))
         self.assertTrue(hasattr(partner, "l10n_py_city_code"))
 
-    # ============== RUC via vat + identification type ==============
+    # ============== RUC via vat ==============
 
     def test_ruc_computed_from_vat(self):
         """l10n_py_ruc y l10n_py_ruc_dv se calculan desde vat"""
@@ -40,7 +36,6 @@ class TestResPartner(TransactionCase):
             {
                 "name": "Test RUC",
                 "country_id": self.country_py.id,
-                "l10n_latam_identification_type_id": self.it_ruc.id,
                 "vat": "80012345-0",
             }
         )
@@ -53,7 +48,6 @@ class TestResPartner(TransactionCase):
             {
                 "name": "Test RUC auto DV",
                 "country_id": self.country_py.id,
-                "l10n_latam_identification_type_id": self.it_ruc.id,
                 "vat": "80012345",
             }
         )
@@ -72,19 +66,18 @@ class TestResPartner(TransactionCase):
             }
         )
         self.assertEqual(partner.vat, "80012345-0")
-        self.assertEqual(partner.l10n_latam_identification_type_id, self.it_ruc)
         self.assertEqual(partner.l10n_py_ruc_dv, "0")
 
-    def test_ruc_empty_when_not_ruc_type(self):
-        """l10n_py_ruc vacío cuando identification type no es RUC"""
+    def test_ruc_empty_when_not_paraguayan(self):
+        """l10n_py_ruc vacío cuando el contacto no está en Paraguay"""
         partner = self.Partner.create(
             {
-                "name": "Test CI",
-                "country_id": self.country_py.id,
-                "l10n_latam_identification_type_id": self.it_ci.id,
-                "vat": "4567890",
+                "name": "Test AR",
+                "country_id": self.env.ref("base.ar").id,
+                "vat": "20055361682",
             }
         )
+        self.assertEqual(partner.vat, "20055361682")
         self.assertFalse(partner.l10n_py_ruc)
         self.assertFalse(partner.l10n_py_ruc_dv)
 
@@ -114,7 +107,6 @@ class TestResPartner(TransactionCase):
                 {
                     "name": f"Test DV {ruc_num}",
                     "country_id": self.country_py.id,
-                    "l10n_latam_identification_type_id": self.it_ruc.id,
                     "vat": ruc_num,
                 }
             )
@@ -154,8 +146,6 @@ class TestResPartner(TransactionCase):
             {
                 "name": "Persona Natural PY",
                 "country_id": self.country_py.id,
-                "l10n_latam_identification_type_id": self.it_ci.id,
-                "vat": "4567890",
                 "l10n_py_taxpayer_type": "2",
                 "l10n_py_doc_type": "1",
                 "l10n_py_doc_number": "4567890",
@@ -163,7 +153,8 @@ class TestResPartner(TransactionCase):
         )
         self.assertEqual(partner.l10n_py_doc_type, "1")
         self.assertEqual(partner.l10n_py_doc_number, "4567890")
-        self.assertEqual(partner.vat, "4567890")
+        self.assertFalse(partner.vat)
+        self.assertFalse(partner.l10n_py_ruc)
 
     def test_taxpayer_with_ruc(self):
         """Contribuyente con RUC y DV"""
@@ -171,7 +162,6 @@ class TestResPartner(TransactionCase):
             {
                 "name": "Empresa PY",
                 "country_id": self.country_py.id,
-                "l10n_latam_identification_type_id": self.it_ruc.id,
                 "vat": "80012345",
                 "l10n_py_taxpayer_type": "1",
             }
@@ -181,26 +171,44 @@ class TestResPartner(TransactionCase):
 
     def test_non_taxpayer_doc_types(self):
         """Todos los tipos de documento de identidad son aceptados"""
-        id_types = {
-            "1": self.it_ci,
-            "2": self.it_pasaporte,
-            "3": self.it_carnet,
-        }
-        for doc_type, id_type in id_types.items():
+        for doc_type in ("1", "2", "3", "4"):
             partner = self.Partner.create(
                 {
                     "name": f"Partner doc_type {doc_type}",
                     "country_id": self.country_py.id,
-                    "l10n_latam_identification_type_id": id_type.id,
-                    "vat": "12345",
                     "l10n_py_taxpayer_type": "2",
                     "l10n_py_doc_type": doc_type,
-                    "l10n_py_doc_number": "12345",
+                    "l10n_py_doc_number": "AB12345",
                 }
             )
             self.assertEqual(partner.l10n_py_doc_type, doc_type)
+            self.assertFalse(partner.vat)
 
     # ============== Onchanges ==============
+
+    def test_onchange_doc_type_sets_non_taxpayer(self):
+        """Elegir un documento de identidad marca al contacto como no contribuyente"""
+        partner = self.Partner.new(
+            {"name": "Test doc", "country_id": self.country_py.id}
+        )
+        partner.l10n_py_doc_type = "1"
+        partner._onchange_l10n_py_doc_type()
+        self.assertEqual(partner.l10n_py_taxpayer_type, "2")
+
+    def test_onchange_vat_formats_ruc(self):
+        """Informar el RUC completa el DV y marca al contacto como contribuyente"""
+        partner = self.Partner.new(
+            {
+                "name": "Test RUC onchange",
+                "country_id": self.country_py.id,
+                "vat": "80012345",
+                "l10n_py_doc_type": "1",
+            }
+        )
+        partner._onchange_vat_l10n_py()
+        self.assertEqual(partner.vat, "80012345-0")
+        self.assertEqual(partner.l10n_py_taxpayer_type, "1")
+        self.assertFalse(partner.l10n_py_doc_type)
 
     def test_neighborhood_onchange(self):
         """Auto-llenar ciudad al seleccionar barrio"""
@@ -285,7 +293,6 @@ class TestResPartner(TransactionCase):
             {
                 "name": "Contribuyente RUC válido",
                 "country_id": self.country_py.id,
-                "l10n_latam_identification_type_id": self.it_ruc.id,
                 "vat": "80028061-0",
             }
         )
@@ -303,7 +310,6 @@ class TestResPartner(TransactionCase):
             {
                 "name": "Contribuyente RUC",
                 "country_id": self.country_py.id,
-                "l10n_latam_identification_type_id": self.it_ruc.id,
                 "vat": "80028061-0",
             }
         )
@@ -314,16 +320,26 @@ class TestResPartner(TransactionCase):
 
     def test_check_vat_py_ignores_non_vat_documents(self):
         """Cédula y pasaporte no pasan por la validación de RUC"""
-        for id_type, number in [
-            (self.it_ci, "1234567-8"),
-            (self.it_pasaporte, "AB1234567"),
-        ]:
+        for doc_type, number in [("1", "1234567-8"), ("2", "AB1234567")]:
             partner = self.Partner.create(
                 {
                     "name": f"No contribuyente {number}",
                     "country_id": self.country_py.id,
-                    "l10n_latam_identification_type_id": id_type.id,
-                    "vat": number,
+                    "l10n_py_doc_type": doc_type,
+                    "l10n_py_doc_number": number,
                 }
             )
-            self.assertEqual(partner.vat, number)
+            self.assertEqual(partner.l10n_py_doc_number, number)
+            self.assertFalse(partner.vat)
+
+    def test_vat_outside_paraguay_is_not_touched(self):
+        """El RUC solo se formatea para contactos en Paraguay"""
+        partner = self.Partner.create(
+            {
+                "name": "Cliente AR",
+                "country_id": self.env.ref("base.ar").id,
+                "vat": "20055361682",
+            }
+        )
+        partner.write({"vat": "20-05536168-2"})
+        self.assertFalse(partner.l10n_py_ruc)

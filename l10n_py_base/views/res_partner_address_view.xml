@@ -88,11 +88,19 @@
                 />
             </xpath>
 
-            <!-- Campos fiscales PY después del bloque de identificación LATAM -->
-            <xpath expr="//field[@name='vat']" position="after">
+            <!-- Campos fiscales PY después del RUC (vat) -->
+            <xpath expr="//div[@id='vat_div']" position="after">
                 <field
                     name="l10n_py_taxpayer_type"
                     invisible="country_id != %(base.py)d"
+                />
+                <field
+                    name="l10n_py_doc_type"
+                    invisible="country_id != %(base.py)d or l10n_py_taxpayer_type != '2'"
+                />
+                <field
+                    name="l10n_py_doc_number"
+                    invisible="country_id != %(base.py)d or l10n_py_taxpayer_type != '2'"
                 />
                 <field
                     name="l10n_py_activity_description"
