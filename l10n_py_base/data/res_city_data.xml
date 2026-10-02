@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <record id="city_py_00_10" model="res.city">
         <field name="name">LA ENCARNACIÓN</field>

@@ -61,13 +61,13 @@ class TestRucValidator(TransactionCase):
 
     def test_invalid_ruc_letters(self):
         """RUC con letras debe ser inválido"""
-        is_valid, error = RUCValidator.validate("AB1234-5")
+        is_valid, _error = RUCValidator.validate("AB1234-5")
         self.assertFalse(is_valid)
         self.assertFalse(RUCValidator.is_valid_format("1234567A"))
 
     def test_invalid_ruc_too_long(self):
         """RUC con más de 9 dígitos debe ser inválido"""
-        is_valid, error = RUCValidator.validate("1234567890")
+        is_valid, _error = RUCValidator.validate("1234567890")
         self.assertFalse(is_valid)
 
     def test_invalid_ruc_empty(self):

@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <record id="l10n_py_base_res_partner_address" model="ir.ui.view">
         <field name="name">l10n_py_base.res.partner.address</field>
         <field name="model">res.partner</field>
-        <field name="priority">999</field>
+        <field name="priority" eval="999" />
         <field name="arch" type="xml">
             <!-- Leaving padding as 0 because it is getting unnecessary spacing -->
             <form style="padding: 0 !important;">
@@ -77,7 +77,7 @@
         <field name="name">l10n_py_base.res.partner.form</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form" />
-        <field name="priority">110</field>
+        <field name="priority" eval="110" />
         <field name="arch" type="xml">
             <!-- Nombre de Fantasía después del nombre (patrón l10n_br_base) -->
             <xpath expr="//h1[field[@name='name']]" position="after">
