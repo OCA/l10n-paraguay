@@ -135,6 +135,6 @@ class QRGenerator:
             buff = BytesIO()
             img.save(buff, format="PNG")
             return base64.b64encode(buff.getvalue())
-        except Exception as exc:  # pragma: no cover - depende de libs externas
+        except Exception as exc:  # noqa: BLE001  # pragma: no cover - depende de libs externas
             _logger.warning("No se pudo generar la imagen del QR: %s", exc)
             return False

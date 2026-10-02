@@ -1,5 +1,6 @@
-from datetime import date, timedelta
+from datetime import timedelta
 
+from odoo import fields
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
@@ -71,7 +72,7 @@ class TestDocumentTypeValidation(TransactionCase):
             }
         )
 
-        today = date.today()
+        today = fields.Date.today()
         cls.authorization = cls.env["account.authorization"].create(
             {
                 "name": "44556688",
@@ -190,7 +191,7 @@ class TestDocumentTypeValidation(TransactionCase):
                 "expedition_point": "001",
                 "doc_number": "0000001",
                 "doc_type_code": "1",
-                "doc_date": date.today(),
+                "doc_date": fields.Date.today(),
             }
         )
         errors = move._validate_edi_document_type()
@@ -284,8 +285,8 @@ class TestDocumentTypeValidation(TransactionCase):
         move = self._create_move(
             "7",
             l10n_py_nre_motive="1",
-            l10n_py_nre_estimated_invoice_date=date.today() + timedelta(days=10),
-            invoice_date=date.today(),
+            l10n_py_nre_estimated_invoice_date=fields.Date.today() + timedelta(days=10),
+            invoice_date=fields.Date.today(),
         )
         errors = move._validate_edi_document_type()
         self.assertFalse(errors)

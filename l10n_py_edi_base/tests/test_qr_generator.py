@@ -18,18 +18,18 @@ class TestQRGenerator(TransactionCase):
     """Tests de la construcción del enlace dCarQR y la imagen."""
 
     def _build(self, **kw):
-        params = dict(
-            cdc=_CDC,
-            emission_date="2026-06-24T10:30:00",
-            digest_value="abc123BASE64DIGEST==",
-            idcsc="0001",
-            csc=_CSC,
-            total_operation=110000,
-            total_iva=10000,
-            item_count=2,
-            receptor_ruc="80012345",
-            is_test=True,
-        )
+        params = {
+            "cdc": _CDC,
+            "emission_date": "2026-06-24T10:30:00",
+            "digest_value": "abc123BASE64DIGEST==",
+            "idcsc": "0001",
+            "csc": _CSC,
+            "total_operation": 110000,
+            "total_iva": 10000,
+            "item_count": 2,
+            "receptor_ruc": "80012345",
+            "is_test": True,
+        }
         params.update(kw)
         return QRGenerator.build_qr_link(**params)
 

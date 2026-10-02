@@ -828,15 +828,18 @@ class AccountMove(models.Model):
             if not self.l10n_py_nre_motive:
                 errors.append(self.env._("Nota de Remisión: el motivo es obligatorio."))
             # Motivo "1" (traslado por venta) sin doc asociado → requer data estimada
-            if self.l10n_py_nre_motive == "1" and not docs:
-                if not self.l10n_py_nre_estimated_invoice_date:
-                    errors.append(
-                        self.env._(
-                            "NRE traslado por venta sin documento "
-                            "asociado: debe indicar fecha estimada "
-                            "de facturación."
-                        )
+            if (
+                self.l10n_py_nre_motive == "1"
+                and not docs
+                and not self.l10n_py_nre_estimated_invoice_date
+            ):
+                errors.append(
+                    self.env._(
+                        "NRE traslado por venta sin documento "
+                        "asociado: debe indicar fecha estimada "
+                        "de facturación."
                     )
+                )
             # Data estimada no puede exceder el mes de emisión
             if self.l10n_py_nre_estimated_invoice_date and self.invoice_date:
                 est_date = self.l10n_py_nre_estimated_invoice_date
@@ -905,27 +908,32 @@ class AccountMove(models.Model):
         for line in self.invoice_line_ids.filtered(
             lambda line: line.display_type not in ("line_section", "line_note")
         ):
-            if hasattr(line.product_id, "l10n_py_ncm_code"):
-                if not line.product_id.l10n_py_ncm_code:
-                    errors.append(
-                        self.env._(
-                            "El producto %s no tiene código NCM", line.product_id.name
-                        )
+            if hasattr(line.product_id, "l10n_py_ncm_code") and (
+                not line.product_id.l10n_py_ncm_code
+            ):
+                errors.append(
+                    self.env._(
+                        "El producto %s no tiene código NCM", line.product_id.name
                     )
+                )
 
         # Validar requisitos por tipo de documento (F03-F07)
         errors.extend(self._validate_edi_document_type())
 
         # Validar nominación obligatoria (> Gs. 7.000.000)
         _NOMINACION_THRESHOLD = 7000000
-        if self.currency_id.name == "PYG" and self.amount_total > _NOMINACION_THRESHOLD:
-            if partner.l10n_py_taxpayer_type == "2" and not partner.l10n_py_doc_number:
-                errors.append(
-                    self.env._(
-                        "Facturas superiores a Gs. 7.000.000 no pueden "
-                        "ser innominadas. Debe identificar al receptor."
-                    )
+        if (
+            self.currency_id.name == "PYG"
+            and self.amount_total > _NOMINACION_THRESHOLD
+            and partner.l10n_py_taxpayer_type == "2"
+            and not partner.l10n_py_doc_number
+        ):
+            errors.append(
+                self.env._(
+                    "Facturas superiores a Gs. 7.000.000 no pueden "
+                    "ser innominadas. Debe identificar al receptor."
                 )
+            )
 
         if errors:
             raise UserError("\n".join(errors))
@@ -1078,7 +1086,7 @@ class AccountMove(models.Model):
             # Auto-generar KuDE al aceptar
             try:
                 self._generate_kude()
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 _logger.warning("Error generando KuDE: %s", str(e))
 
     def _l10n_py_generate_qr_image(self):
@@ -1266,7 +1274,7 @@ class AccountMove(models.Model):
         for doc in contingency_docs:
             try:
                 doc.action_send_edi()
-            except Exception:
+            except Exception:  # noqa: BLE001
                 _logger.warning("Error reenviando doc contingencia %s", doc.name)
 
         # 2. Verificar estado de documentos ya enviados
@@ -1290,7 +1298,7 @@ class AccountMove(models.Model):
                 if response.get("success"):
                     # Actualizar estado según respuesta
                     pass
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 _logger.error(
                     "Error verificando estado EDI para %s: %s",
                     doc.name,

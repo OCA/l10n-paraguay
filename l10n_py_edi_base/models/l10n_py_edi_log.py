@@ -257,8 +257,8 @@ class EDILog(models.Model):
 
             return log_record
 
-        except Exception as e:
-            _logger.exception(f"Erro ao criar log EDI: {str(e)}")
+        except Exception:
+            _logger.exception("Erro ao criar log EDI")
             return False
 
     def action_view_document(self):

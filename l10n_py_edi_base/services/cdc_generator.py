@@ -48,7 +48,7 @@ class CDCGenerator:
     def _format_date(cls, emission_date):
         """Devuelve la fecha de emisión como AAAAMMDD."""
         if emission_date is None:
-            emission_date = datetime.now()
+            emission_date = datetime.now()  # noqa: DTZ005
         if isinstance(emission_date, str):
             # Acepta ISO (2026-06-01T..) o AAAA-MM-DD
             emission_date = datetime.fromisoformat(emission_date[:19])
@@ -125,8 +125,10 @@ class CDCGenerator:
         if int(cdc[-1]) != expected:
             return (
                 False,
-                f"Dígito verificador inválido. Esperado: {expected}, "
-                f"recibido: {cdc[-1]}",
+                (
+                    f"Dígito verificador inválido. Esperado: {expected}, "
+                    f"recibido: {cdc[-1]}"
+                ),
             )
         return True, ""
 

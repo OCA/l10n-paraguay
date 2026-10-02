@@ -23,7 +23,7 @@ class TestCDCGeneration(TransactionCase):
             "expedition_point": "001",
             "sequence": 1,
             "taxpayer_type": 1,  # 1=física, 2=jurídica
-            "emission_date": datetime(2025, 1, 15, 10, 30),
+            "emission_date": datetime(2025, 1, 15, 10, 30),  # noqa: DTZ001
         }
 
     def _generate(self, **overrides):
