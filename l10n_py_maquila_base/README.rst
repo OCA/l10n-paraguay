@@ -90,6 +90,8 @@ Contributors
    -  Luis Felipe Mileo <mileo@kmee.com.br>
    -  André Marcos Ferreira <andre.ferreira@kmee.com.br>
 
+-  selimovich <mirsadselimovich@gmail.com>
+
 Maintainers
 -----------
 
