@@ -25,7 +25,7 @@ from pysifen.transmissao.config import PRODUCCION, TEST
 from xsdata.formats.dataclass.serializers import XmlSerializer
 from xsdata.formats.dataclass.serializers.config import SerializerConfig
 
-from odoo import _, fields, models
+from odoo import fields, models
 from odoo.exceptions import UserError
 
 from odoo.addons.l10n_py_edi_base.services.cdc_generator import CDCGenerator
@@ -482,14 +482,18 @@ class EDIConnector(models.Model):
                 "type": "ir.actions.client",
                 "tag": "display_notification",
                 "params": {
-                    "title": _("Conexión Exitosa"),
-                    "message": _("La conexión con SIFEN fue verificada correctamente."),
+                    "title": self.env._("Conexión Exitosa"),
+                    "message": self.env._(
+                        "La conexión con SIFEN fue verificada correctamente."
+                    ),
                     "type": "success",
                     "sticky": False,
                 },
             }
         except Exception as e:
-            raise UserError(_("Error de conexión con SIFEN: %s") % str(e)) from e
+            raise UserError(
+                self.env._("Error de conexión con SIFEN: %s", str(e))
+            ) from e
         finally:
             consulta.cleanup()
 

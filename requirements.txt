@@ -5,3 +5,4 @@ pykude
 python-stdnum
 qrcode
 requests
+sifen
