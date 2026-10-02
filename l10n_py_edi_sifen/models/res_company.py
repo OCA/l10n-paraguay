@@ -1,6 +1,5 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-import base64
 import logging
 
 from odoo import fields, models
@@ -26,5 +25,5 @@ class ResCompany(models.Model):
                     "Configure el certificado PKCS12 en la empresa %s", self.name
                 )
             )
-        cert_bytes = base64.b64decode(self.l10n_py_certificate)
+        cert_bytes = self.l10n_py_certificate.content
         return cert_bytes, self.l10n_py_certificate_password or ""
