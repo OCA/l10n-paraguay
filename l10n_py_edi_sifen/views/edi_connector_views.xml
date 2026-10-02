@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <!-- Extend base connector form for SIFEN provider -->
     <record id="view_edi_connector_form_sifen" model="ir.ui.view">

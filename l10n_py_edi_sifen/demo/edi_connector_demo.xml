@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo noupdate="1">
     <!-- SIFEN connector in test environment for the demo company -->
     <record id="demo_sifen_connector" model="l10n_py.edi.connector">

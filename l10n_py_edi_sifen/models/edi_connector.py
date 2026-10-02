@@ -133,7 +133,7 @@ class EDIConnector(models.Model):
             return self._sifen_build_recibe_response(
                 raw, rde.DE.Id, signed_xml, qr_link
             )
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             _logger.error("SIFEN send error: %s", str(e))
             return {"success": False, "error": str(e)}
         finally:
@@ -310,7 +310,7 @@ class EDIConnector(models.Model):
         try:
             xml_de = self._sifen_serialize_rde(rde)
             signed_xml = transmissao._sign_xml(xml_de, rde.DE.Id)
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             _logger.warning("No se pudo firmar el DE para el QR: %s", exc)
             return False
         return self._sifen_qr_link_from_signed(signed_xml)
@@ -373,7 +373,7 @@ class EDIConnector(models.Model):
                     "result": {"status": estado, "cdc": cdc},
                 }
             return {"success": False, "error": "Sin respuesta del SIFEN"}
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             _logger.error("SIFEN check_status error: %s", str(e))
             return {"success": False, "error": str(e)}
         finally:
@@ -388,7 +388,7 @@ class EDIConnector(models.Model):
                 Id=cdc,
                 mOtEve=reason or "Cancelación solicitada por el emisor",
             )
-            now_str = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+            now_str = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")  # noqa: DTZ005
             empty_signature = Signature(
                 SignedInfo=SignedInfo(
                     CanonicalizationMethod=CanonicalizationMethod(Algorithm=""),
@@ -416,7 +416,7 @@ class EDIConnector(models.Model):
                 return {"success": False, "error": error_msg}
 
             return {"success": False, "error": "Sin respuesta del SIFEN"}
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             _logger.error("SIFEN cancel error: %s", str(e))
             return {"success": False, "error": str(e)}
         finally:
@@ -437,7 +437,7 @@ class EDIConnector(models.Model):
                 iTiDE=_DOC_TYPE_TO_EVENTO.get(doc_type, TiTiDeev.VALUE_1),
                 mOtEve=data.get("motivo", "Inutilización de números"),
             )
-            now_str = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+            now_str = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")  # noqa: DTZ005
             empty_signature = Signature(
                 SignedInfo=SignedInfo(
                     CanonicalizationMethod=CanonicalizationMethod(Algorithm=""),
@@ -465,7 +465,7 @@ class EDIConnector(models.Model):
                 return {"success": False, "error": error_msg}
 
             return {"success": False, "error": "Sin respuesta del SIFEN"}
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             _logger.error("SIFEN inutilize error: %s", str(e))
             return {"success": False, "error": str(e)}
         finally:
@@ -639,11 +639,13 @@ class EDIConnector(models.Model):
             }
 
         errors = []
-        if hasattr(result, "rProtDe") and result.rProtDe:
-            if hasattr(result.rProtDe, "gResProc"):
-                for proc in result.rProtDe.gResProc:
-                    errors.append(
-                        f"[{getattr(proc, 'dCodRes', '')}] "
-                        f"{getattr(proc, 'dMsgRes', '')}"
-                    )
+        if (
+            hasattr(result, "rProtDe")
+            and result.rProtDe
+            and hasattr(result.rProtDe, "gResProc")
+        ):
+            for proc in result.rProtDe.gResProc:
+                errors.append(
+                    f"[{getattr(proc, 'dCodRes', '')}] {getattr(proc, 'dMsgRes', '')}"
+                )
         return {"success": False, "error": "\n".join(errors) or "Error SIFEN"}
