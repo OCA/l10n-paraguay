@@ -3,7 +3,7 @@
 
 from dateutil.relativedelta import relativedelta
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -116,13 +116,10 @@ class MaquilaProgram(models.Model):
     )
     active = fields.Boolean(default=True)
 
-    _sql_constraints = [
-        (
-            "code_company_uniq",
-            "unique(code, company_id)",
-            "The resolution code must be unique per company.",
-        ),
-    ]
+    _code_company_uniq = models.Constraint(
+        "unique(code, company_id)",
+        "The resolution code must be unique per company.",
+    )
 
     @api.depends("cnime_resolution_date", "benefit_duration_years")
     def _compute_benefit_expiry(self):
@@ -139,7 +136,7 @@ class MaquilaProgram(models.Model):
         for program in self:
             if not 0 <= program.internal_sale_pct <= 100:
                 raise ValidationError(
-                    _("Internal market %% must be between 0 and 100.")
+                    self.env._("Internal market %% must be between 0 and 100.")
                 )
 
     def _schedule_unique_expiry_activity(self, date_deadline, summary):
@@ -191,7 +188,7 @@ class MaquilaProgram(models.Model):
         for program in expiring_programs:
             program._schedule_unique_expiry_activity(
                 program.cnime_resolution_expiry,
-                _(
+                self.env._(
                     "Program %(code)s expires on %(date)s",
                     code=program.code,
                     date=program.cnime_resolution_expiry,
@@ -210,7 +207,7 @@ class MaquilaProgram(models.Model):
         for program in programs_contract:
             program._schedule_unique_expiry_activity(
                 program.agreement_id.end_date,
-                _(
+                self.env._(
                     "Contract for program %(code)s expires on %(date)s",
                     code=program.code,
                     date=program.agreement_id.end_date,
@@ -229,7 +226,7 @@ class MaquilaProgram(models.Model):
         for line in expiring_intn:
             line.program_id._schedule_unique_expiry_activity(
                 line.intn_expiry_date,
-                _(
+                self.env._(
                     "INTN certificate for %(product)s expires on %(date)s",
                     product=line.product_id.name,
                     date=line.intn_expiry_date,

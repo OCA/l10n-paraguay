@@ -21,13 +21,13 @@ Paraguay - Maquila Base
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Fl10n--paraguay-lightgray.png?logo=github
-    :target: https://github.com/OCA/l10n-paraguay/tree/18.0/l10n_py_maquila_base
+    :target: https://github.com/OCA/l10n-paraguay/tree/19.0/l10n_py_maquila_base
     :alt: OCA/l10n-paraguay
 .. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/l10n-paraguay-18-0/l10n-paraguay-18-0-l10n_py_maquila_base
+    :target: https://translation.odoo-community.org/projects/l10n-paraguay-19-0/l10n-paraguay-19-0-l10n_py_maquila_base
     :alt: Translate me on Weblate
 .. |badge5| image:: https://img.shields.io/badge/runboat-Try%20me-875A7B.png
-    :target: https://runboat.odoo-community.org/builds?repo=OCA/l10n-paraguay&target_branch=18.0
+    :target: https://runboat.odoo-community.org/builds?repo=OCA/l10n-paraguay&target_branch=19.0
     :alt: Try me on Runboat
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
@@ -37,14 +37,14 @@ Decreto 5714/2026), which replaced Ley 1064/97.
 
 It provides the core data model shared by the rest of the maquila stack:
 
-- **Maquila program**: biministerial resolution, legal regime (Ley
-  7547/2025 or legacy Ley 1064/97), modalities (pura, servicios,
-  capacidad ociosa, sub-maquila, shelter/albergue, coexistencia),
-  foreign matrix, CNIME contract (OCA Agreement) and benefit duration
-  (20 years, Art. 13).
-- **Program products** with their INTN certificates and validity.
-- An expiry cron that raises warning activities for programs, contracts
-  and INTN certificates nearing their deadline.
+-  **Maquila program**: biministerial resolution, legal regime (Ley
+   7547/2025 or legacy Ley 1064/97), modalities (pura, servicios,
+   capacidad ociosa, sub-maquila, shelter/albergue, coexistencia),
+   foreign matrix, CNIME contract (OCA Agreement) and benefit duration
+   (20 years, Art. 13).
+-  **Program products** with their INTN certificates and validity.
+-  An expiry cron that raises warning activities for programs, contracts
+   and INTN certificates nearing their deadline.
 
 **Table of contents**
 
@@ -70,7 +70,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/OCA/l10n-paraguay/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/OCA/l10n-paraguay/issues/new?body=module:%20l10n_py_maquila_base%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/OCA/l10n-paraguay/issues/new?body=module:%20l10n_py_maquila_base%0Aversion:%2019.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -85,10 +85,10 @@ Authors
 Contributors
 ------------
 
-- KMEE INFORMÁTICA LTDA
+-  KMEE INFORMÁTICA LTDA
 
-  - Luis Felipe Mileo <mileo@kmee.com.br>
-  - André Marcos Ferreira <andre.ferreira@kmee.com.br>
+   -  Luis Felipe Mileo <mileo@kmee.com.br>
+   -  André Marcos Ferreira <andre.ferreira@kmee.com.br>
 
 Maintainers
 -----------
@@ -103,6 +103,6 @@ OCA, or the Odoo Community Association, is a nonprofit organization whose
 mission is to support the collaborative development of Odoo features and
 promote its widespread use.
 
-This module is part of the `OCA/l10n-paraguay <https://github.com/OCA/l10n-paraguay/tree/18.0/l10n_py_maquila_base>`_ project on GitHub.
+This module is part of the `OCA/l10n-paraguay <https://github.com/OCA/l10n-paraguay/tree/19.0/l10n_py_maquila_base>`_ project on GitHub.
 
 You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.
