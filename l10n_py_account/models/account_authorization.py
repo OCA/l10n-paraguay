@@ -1,6 +1,5 @@
 # l10n_py_account/models/account_authorization.py
 import re
-from datetime import date
 
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
@@ -137,7 +136,7 @@ class AccountAuthorization(models.Model):
     @api.depends("date_from", "date_to")
     def _compute_state(self):
         """Calcula el estado del timbrado basado en las fechas"""
-        today = date.today()
+        today = fields.Date.context_today(self)
         for record in self:
             if not record.date_from or not record.date_to:
                 record.state = "valid"
@@ -299,7 +298,7 @@ class AccountAuthorization(models.Model):
     def check_validity(self):
         """Verifica si el timbrado es válido en la fecha actual"""
         self.ensure_one()
-        today = date.today()
+        today = fields.Date.context_today(self)
 
         if not self.active:
             raise ValidationError(self.env._("El timbrado está inactivo."))

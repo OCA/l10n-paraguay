@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo noupdate="1">
     <!-- Tipos de Documento LATAM para Paraguay -->
 
@@ -9,7 +9,7 @@
         <field name="doc_code_prefix">FE</field>
         <field name="report_name">FACTURA ELECTRÓNICA</field>
         <field name="internal_type">invoice</field>
-        <field name="sequence">1</field>
+        <field name="sequence" eval="1" />
     </record>
 
     <record id="dc_py_af" model="l10n_latam.document.type">
@@ -19,7 +19,7 @@
         <field name="doc_code_prefix">AF</field>
         <field name="report_name">AUTOFACTURA ELECTRÓNICA</field>
         <field name="internal_type">invoice</field>
-        <field name="sequence">4</field>
+        <field name="sequence" eval="4" />
     </record>
 
     <record id="dc_py_nc" model="l10n_latam.document.type">
@@ -29,7 +29,7 @@
         <field name="doc_code_prefix">NC</field>
         <field name="report_name">NOTA DE CRÉDITO ELECTRÓNICA</field>
         <field name="internal_type">credit_note</field>
-        <field name="sequence">5</field>
+        <field name="sequence" eval="5" />
     </record>
 
     <record id="dc_py_nd" model="l10n_latam.document.type">
@@ -39,7 +39,7 @@
         <field name="doc_code_prefix">ND</field>
         <field name="report_name">NOTA DE DÉBITO ELECTRÓNICA</field>
         <field name="internal_type">debit_note</field>
-        <field name="sequence">6</field>
+        <field name="sequence" eval="6" />
     </record>
 
     <record id="dc_py_nr" model="l10n_latam.document.type">
@@ -49,6 +49,6 @@
         <field name="doc_code_prefix">NR</field>
         <field name="report_name">NOTA DE REMISIÓN ELECTRÓNICA</field>
         <field name="internal_type">invoice</field>
-        <field name="sequence">7</field>
+        <field name="sequence" eval="7" />
     </record>
 </odoo>

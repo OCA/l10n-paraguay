@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <!-- Extensión de la vista de formulario de facturas -->
     <record id="view_move_form_py" model="ir.ui.view">

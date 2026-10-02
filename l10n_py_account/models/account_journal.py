@@ -72,17 +72,16 @@ class AccountJournal(models.Model):
     def _check_timbrado_consistency(self):
         """Validar consistencia del timbrado con establecimiento y punto"""
         for journal in self:
-            if journal.l10n_py_authorization_id:
-                if (
-                    journal.l10n_py_authorization_id.establishment
-                    != journal.l10n_py_establishment
-                    or journal.l10n_py_authorization_id.expedition_point
-                    != journal.l10n_py_point
-                ):
-                    raise ValidationError(
-                        self.env._(
-                            "El timbrado seleccionado no corresponde al "
-                            "establecimiento y punto de expedición "
-                            "configurados en el diario."
-                        )
+            if journal.l10n_py_authorization_id and (
+                journal.l10n_py_authorization_id.establishment
+                != journal.l10n_py_establishment
+                or journal.l10n_py_authorization_id.expedition_point
+                != journal.l10n_py_point
+            ):
+                raise ValidationError(
+                    self.env._(
+                        "El timbrado seleccionado no corresponde al "
+                        "establecimiento y punto de expedición "
+                        "configurados en el diario."
                     )
+                )
