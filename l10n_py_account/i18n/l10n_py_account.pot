@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -26,11 +26,6 @@ msgstr ""
 #. module: l10n_py_account
 #: model_terms:ir.ui.view,arch_db:l10n_py_account.view_account_authorization_search
 msgid "Activos"
-msgstr ""
-
-#. module: l10n_py_account
-#: model_terms:ir.ui.view,arch_db:l10n_py_account.view_account_authorization_search
-msgid "Agrupar Por"
 msgstr ""
 
 #. module: l10n_py_account
@@ -139,6 +134,9 @@ msgstr ""
 
 #. module: l10n_py_account
 #: model:ir.model.fields,field_description:l10n_py_account.field_account_authorization__display_name
+#: model:ir.model.fields,field_description:l10n_py_account.field_account_journal__display_name
+#: model:ir.model.fields,field_description:l10n_py_account.field_account_move__display_name
+#: model:ir.model.fields,field_description:l10n_py_account.field_res_company__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -307,6 +305,9 @@ msgstr ""
 
 #. module: l10n_py_account
 #: model:ir.model.fields,field_description:l10n_py_account.field_account_authorization__id
+#: model:ir.model.fields,field_description:l10n_py_account.field_account_journal__id
+#: model:ir.model.fields,field_description:l10n_py_account.field_account_move__id
+#: model:ir.model.fields,field_description:l10n_py_account.field_res_company__id
 msgid "ID"
 msgstr ""
 
@@ -371,11 +372,6 @@ msgid "Last Updated on"
 msgstr ""
 
 #. module: l10n_py_account
-#: model:product.template,name:l10n_py_account.product_exento_libro_product_template
-msgid "Libro \"Historia del Paraguay\""
-msgstr ""
-
-#. module: l10n_py_account
 #: model_terms:ir.ui.view,arch_db:l10n_py_account.view_move_form_py
 msgid "Liq. IVA 10% (F016)"
 msgstr ""
@@ -422,11 +418,6 @@ msgid "Marcar como inactivo para deshabilitar el timbrado"
 msgstr ""
 
 #. module: l10n_py_account
-#: model:product.template,name:l10n_py_account.product_iva_5_farmacia_product_template
-msgid "Medicamento Genérico"
-msgstr ""
-
-#. module: l10n_py_account
 #: model:l10n_latam.document.type,report_name:l10n_py_account.dc_py_nc
 msgid "NOTA DE CRÉDITO ELECTRÓNICA"
 msgstr ""
@@ -454,11 +445,6 @@ msgstr ""
 #. module: l10n_py_account
 #: model:l10n_latam.document.type,name:l10n_py_account.dc_py_nr
 msgid "Nota de Remisión"
-msgstr ""
-
-#. module: l10n_py_account
-#: model:product.template,name:l10n_py_account.product_iva_10_electronica_product_template
-msgid "Notebook Dell Inspiron"
 msgstr ""
 
 #. module: l10n_py_account
@@ -578,11 +564,6 @@ msgstr ""
 msgid ""
 "Serie del timbrado (2 letras mayúsculas, AA-ZZ). Permite reiniciar "
 "numeración cuando se agota la faja."
-msgstr ""
-
-#. module: l10n_py_account
-#: model:product.template,name:l10n_py_account.product_iva_10_servicio_product_template
-msgid "Servicio de Consultoría"
 msgstr ""
 
 #. module: l10n_py_account
@@ -764,11 +745,6 @@ msgstr ""
 #. module: l10n_py_account
 #: model_terms:ir.ui.view,arch_db:l10n_py_account.view_account_authorization_search
 msgid "Vigentes"
-msgstr ""
-
-#. module: l10n_py_account
-#: model:product.template,name:l10n_py_account.product_iva_5_alimento_product_template
-msgid "Yerba Mate Kurupí 1kg"
 msgstr ""
 
 #. module: l10n_py_account
