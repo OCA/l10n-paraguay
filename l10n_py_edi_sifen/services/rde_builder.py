@@ -232,7 +232,7 @@ class RDeBuilder:
         return gtimb
 
     def _build_gDatGralOpe(self):
-        fecha_str = self.data.get("fecha", datetime.now().strftime("%Y-%m-%dT%H:%M:%S"))
+        fecha_str = self.data.get("fecha", datetime.now().strftime("%Y-%m-%dT%H:%M:%S"))  # noqa: DTZ005
         return TgDaGoc(
             dFeEmiDE=fecha_str,
             gOpeCom=self._build_gOpeCom(),
@@ -475,7 +475,7 @@ class RDeBuilder:
             precio = Decimal(str(item_data.get("precioUnitario", 0)))
             cantidad = Decimal(str(item_data.get("cantidad", 1)))
             total_item = precio * cantidad
-            base_exenta = total_item if iva_tipo == 3 else Decimal("0")
+            base_exenta = total_item if iva_tipo == 3 else Decimal(0)
 
             item = TgCamItem(
                 dCodInt=item_data.get("codigo", ""),
@@ -487,7 +487,7 @@ class RDeBuilder:
                     dPUniProSer=precio,
                     dTotBruOpeItem=total_item,
                     gValorRestaItem=TgValorRestaItem(
-                        dDescItem=Decimal("0"),
+                        dDescItem=Decimal(0),
                         dTotOpeItem=total_item,
                     ),
                 ),
@@ -513,14 +513,14 @@ class RDeBuilder:
             dSub5=Decimal(str(totales.get("totalGravado5", 0))),
             dSub10=Decimal(str(totales.get("totalGravado10", 0))),
             dTotOpe=Decimal(str(totales.get("totalOperacion", 0))),
-            dTotDesc=Decimal("0"),
-            dTotDescGlotem=Decimal("0"),
-            dTotAntItem=Decimal("0"),
-            dTotAnt=Decimal("0"),
-            dPorcDescTotal=Decimal("0"),
-            dDescTotal=Decimal("0"),
-            dAnticipo=Decimal("0"),
-            dRedon=Decimal("0"),
+            dTotDesc=Decimal(0),
+            dTotDescGlotem=Decimal(0),
+            dTotAntItem=Decimal(0),
+            dTotAnt=Decimal(0),
+            dPorcDescTotal=Decimal(0),
+            dDescTotal=Decimal(0),
+            dAnticipo=Decimal(0),
+            dRedon=Decimal(0),
             dTotGralOpe=Decimal(str(totales.get("totalPYG", 0))),
             dIVA5=Decimal(str(totales.get("liquidacionIva5", 0))),
             dIVA10=Decimal(str(totales.get("liquidacionIva10", 0))),
