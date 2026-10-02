@@ -1,6 +1,6 @@
 {
     "name": "Paraguay - Electronic Invoicing Base",
-    "version": "19.0.1.0.0",
+    "version": "20.0.1.0.0",
     "category": "Accounting/Localizations/EDI",
     "summary": "Base module for Electronic Invoicing in Paraguay",
     "author": "KMEE, Odoo Community Association (OCA)",
@@ -14,7 +14,6 @@
     ],
     "data": [
         # Security
-        "security/ir.model.access.csv",
         "security/l10n_py_edi_security.xml",
         # Data
         "data/l10n_py_edi_document_types.xml",
@@ -36,6 +35,7 @@
         # Menus
         "views/l10n_py_edi_menu.xml",
         "views/edi_connector_views.xml",
+        "security/ir.access.csv",
     ],
     "external_dependencies": {
         "python": [
