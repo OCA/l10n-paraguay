@@ -1,7 +1,8 @@
 # l10n_py_edi_base/tests/test_edi_validation.py
 
-from datetime import date, timedelta
+from datetime import timedelta
 
+from odoo import fields
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
@@ -52,7 +53,7 @@ class TestEDIValidation(TransactionCase):
         )
 
         # Timbrado
-        today = date.today()
+        today = fields.Date.today()
         cls.authorization = cls.env["account.authorization"].create(
             {
                 "name": "12345678",

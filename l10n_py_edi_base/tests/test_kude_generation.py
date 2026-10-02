@@ -1,7 +1,8 @@
 import base64
-from datetime import date, timedelta
+from datetime import timedelta
 from unittest.mock import ANY, MagicMock, patch
 
+from odoo import fields
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 from odoo.tools import mute_logger
@@ -91,7 +92,7 @@ class TestKudeGeneration(TransactionCase):
             }
         )
 
-        today = date.today()
+        today = fields.Date.today()
         cls.authorization = cls.env["account.authorization"].create(
             {
                 "name": "99887766",

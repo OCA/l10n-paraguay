@@ -1,5 +1,6 @@
-from datetime import date, timedelta
+from datetime import timedelta
 
+from odoo import fields
 from odoo.exceptions import ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
@@ -105,7 +106,7 @@ class TestEdiDemoScenarios(TransactionCase):
         )
 
         # Authorization
-        today = date.today()
+        today = fields.Date.today()
         cls.authorization = cls.env["account.authorization"].create(
             {
                 "name": "11223399",
@@ -178,7 +179,7 @@ class TestEdiDemoScenarios(TransactionCase):
                 "expedition_point": "001",
                 "doc_number": "0000001",
                 "doc_type_code": "1",
-                "doc_date": date.today(),
+                "doc_date": fields.Date.today(),
             }
         )
         errors = move._validate_edi_document_type()
@@ -321,8 +322,8 @@ class TestEdiDemoScenarios(TransactionCase):
         move = self._create_move(
             "7",
             l10n_py_nre_motive="1",
-            l10n_py_nre_estimated_invoice_date=date.today() + timedelta(days=10),
-            invoice_date=date.today(),
+            l10n_py_nre_estimated_invoice_date=fields.Date.today() + timedelta(days=10),
+            invoice_date=fields.Date.today(),
         )
         errors = move._validate_edi_document_type()
         self.assertFalse(errors)
@@ -424,7 +425,7 @@ class TestEdiDemoScenarios(TransactionCase):
 
     def test_inutilization_valid_range(self):
         """Inutilización con rango válido → OK"""
-        today = date.today()
+        today = fields.Date.today()
         auth = self.env["account.authorization"].create(
             {
                 "name": "99001122",
@@ -451,7 +452,7 @@ class TestEdiDemoScenarios(TransactionCase):
 
     def test_inutilization_exceeds_max_range(self):
         """Inutilización con rango > 1000 → ValidationError"""
-        today = date.today()
+        today = fields.Date.today()
         auth = self.env["account.authorization"].create(
             {
                 "name": "99001133",
@@ -477,7 +478,7 @@ class TestEdiDemoScenarios(TransactionCase):
 
     def test_inutilization_outside_authorization(self):
         """Inutilización fuera del rango del timbrado → ValidationError"""
-        today = date.today()
+        today = fields.Date.today()
         auth = self.env["account.authorization"].create(
             {
                 "name": "99001144",
@@ -503,7 +504,7 @@ class TestEdiDemoScenarios(TransactionCase):
 
     def test_inutilization_negative_numbers(self):
         """Inutilización con números negativos → ValidationError"""
-        today = date.today()
+        today = fields.Date.today()
         auth = self.env["account.authorization"].create(
             {
                 "name": "99001155",
