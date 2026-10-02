@@ -1099,6 +1099,11 @@ Authors
 
 * KMEE
 
+Contributors
+------------
+
+-  selimovich <mirsadselimovich@gmail.com>
+
 Maintainers
 -----------
 
