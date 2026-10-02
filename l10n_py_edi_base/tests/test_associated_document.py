@@ -1,5 +1,4 @@
-from datetime import date
-
+from odoo import fields
 from odoo.exceptions import ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
@@ -112,7 +111,7 @@ class TestAssociatedDocument(TransactionCase):
                     "expedition_point": "001",
                     "doc_number": "0000001",
                     "doc_type_code": "1",
-                    "doc_date": date.today(),
+                    "doc_date": fields.Date.today(),
                     # falta timbrado
                 }
             )
@@ -128,7 +127,7 @@ class TestAssociatedDocument(TransactionCase):
                 "expedition_point": "001",
                 "doc_number": "0000001",
                 "doc_type_code": "1",
-                "doc_date": date.today(),
+                "doc_date": fields.Date.today(),
             }
         )
         self.assertTrue(doc.id)
@@ -145,7 +144,7 @@ class TestAssociatedDocument(TransactionCase):
                     "expedition_point": "001",
                     "doc_number": "0000001",
                     "doc_type_code": "1",
-                    "doc_date": date.today(),
+                    "doc_date": fields.Date.today(),
                     "cdc": self.valid_cdc,
                 }
             )

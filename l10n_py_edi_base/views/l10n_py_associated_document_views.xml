@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <!-- Inline tree para documentos asociados en factura -->
     <record id="view_l10n_py_associated_document_tree" model="ir.ui.view">

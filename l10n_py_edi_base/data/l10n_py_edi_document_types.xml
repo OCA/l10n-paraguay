@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo noupdate="1">
     <record id="l10n_py_edi_doc_type_1" model="l10n_py.edi.document.type">
         <field name="code">1</field>
