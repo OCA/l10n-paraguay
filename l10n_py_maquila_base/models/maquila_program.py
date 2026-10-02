@@ -10,7 +10,7 @@ from odoo.exceptions import ValidationError
 class MaquilaProgram(models.Model):
     _name = "l10n_py.maquila.program"
     _description = "Maquila Program"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ("mail.thread", "mail.activity.mixin")
     _order = "code"
 
     name = fields.Char(required=True, tracking=True)
@@ -100,7 +100,6 @@ class MaquilaProgram(models.Model):
     )
     analytic_account_id = fields.Many2one(
         "account.analytic.account",
-        string="Analytic Account",
         tracking=True,
         help="Analytic account for accounting segregation of this program",
     )
