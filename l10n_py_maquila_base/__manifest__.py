@@ -4,7 +4,7 @@
 {
     "name": "Paraguay - Maquila Base",
     "summary": "Base module for Paraguay Maquila regime (Ley 7547/2025)",
-    "version": "19.0.1.0.0",
+    "version": "20.0.1.0.0",
     "category": "Localization",
     "author": "KMEE, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/l10n-paraguay",
@@ -18,10 +18,10 @@
     ],
     "data": [
         "security/maquila_security.xml",
-        "security/ir.model.access.csv",
         "data/ir_cron_data.xml",
         "views/maquila_program_views.xml",
         "views/maquila_menu.xml",
+        "security/ir.access.csv",
     ],
     "demo": [
         "demo/maquila_program_demo.xml",

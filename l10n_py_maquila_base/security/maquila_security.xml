@@ -13,12 +13,4 @@
         <field name="privilege_id" ref="res_groups_privilege_maquila" />
         <field name="implied_ids" eval="[(4, ref('group_maquila_user'))]" />
     </record>
-
-    <record id="ir_rule_maquila_program_company" model="ir.rule">
-        <field name="name">Maquila Program: multi-company</field>
-        <field name="model_id" ref="model_l10n_py_maquila_program" />
-        <field name="domain_force">
-            ['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]
-        </field>
-    </record>
 </odoo>
