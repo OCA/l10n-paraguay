@@ -138,3 +138,21 @@ class TestMaquilaProgram(TransactionCase):
         self.program.write({"state": "active"})
         self.env["l10n_py.maquila.program"]._cron_check_expiry()
         self.assertTrue(self._activities([("summary", "like", "INTN")]))
+
+
+@tagged("post_install", "-at_install")
+class TestMaquilaDemoData(TransactionCase):
+    def test_demo_company(self):
+        """The maquila demo programs live in a dedicated maquiladora company"""
+        company = self.env.ref(
+            "l10n_py_maquila_base.demo_company_py_maquila", raise_if_not_found=False
+        )
+        if not company:
+            self.skipTest("Demo data not loaded")
+        self.assertTrue(company.l10n_py_is_maquiladora)
+        self.assertEqual(company.country_id, self.env.ref("base.py"))
+        self.assertEqual(company.currency_id, self.env.ref("base.PYG"))
+        program = self.env.ref("l10n_py_maquila_base.maquila_program_demo")
+        self.assertEqual(program.company_id, company)
+        main = self.env.ref("base.main_company")
+        self.assertFalse(main.l10n_py_is_maquiladora)
