@@ -6,7 +6,7 @@
 
     <record id="partner_autoparts_brasil" model="res.partner">
         <field name="name">AutoParts Brasil Ltda</field>
-        <field name="company_type">company</field>
+        <field name="is_company" eval="True" />
         <field name="country_id" ref="base.br" />
         <field name="city">São Paulo</field>
         <field name="street">Av. Paulista, 1000</field>
@@ -15,7 +15,7 @@
 
     <record id="partner_techparts_usa" model="res.partner">
         <field name="name">TechParts International Inc.</field>
-        <field name="company_type">company</field>
+        <field name="is_company" eval="True" />
         <field name="country_id" ref="base.us" />
         <field name="city">Miami</field>
         <field name="street">100 Biscayne Blvd</field>
@@ -23,14 +23,14 @@
 
     <record id="partner_supplier_china" model="res.partner">
         <field name="name">Shenzhen Materials Co. Ltd</field>
-        <field name="company_type">company</field>
+        <field name="is_company" eval="True" />
         <field name="country_id" ref="base.cn" />
         <field name="city">Shenzhen</field>
     </record>
 
     <record id="partner_supplier_germany" model="res.partner">
         <field name="name">ChemWerk GmbH</field>
-        <field name="company_type">company</field>
+        <field name="is_company" eval="True" />
         <field name="country_id" ref="base.de" />
         <field name="city">Stuttgart</field>
     </record>
