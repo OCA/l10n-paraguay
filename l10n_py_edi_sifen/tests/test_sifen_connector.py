@@ -7,6 +7,8 @@ from psycopg2 import IntegrityError
 from odoo.tests.common import TransactionCase, tagged
 from odoo.tools import mute_logger
 
+from odoo.addons.l10n_py_account.tests.common import create_py_company
+
 
 @tagged("post_install", "-at_install")
 class TestSIFENConnector(TransactionCase):
@@ -15,7 +17,7 @@ class TestSIFENConnector(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.company = cls.env.ref("base.main_company")
+        cls.company = create_py_company(cls)
         cls.company.write(
             {
                 "l10n_py_ruc": "80012345",

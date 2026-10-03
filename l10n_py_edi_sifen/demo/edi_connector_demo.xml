@@ -3,7 +3,7 @@
     <!-- SIFEN connector in test environment for the demo company -->
     <record id="demo_sifen_connector" model="l10n_py.edi.connector">
         <field name="name">SIFEN Test</field>
-        <field name="company_id" ref="base.main_company" />
+        <field name="company_id" ref="l10n_py_account.demo_company_py" />
         <field name="provider_type">sifen</field>
         <field name="environment">test</field>
         <field name="l10n_py_idcsc">0001</field>
