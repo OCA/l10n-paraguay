@@ -7,8 +7,13 @@
 
     <!-- NDE 1: Nota de débito con documento electrónico asociado -->
     <record id="demo_nde_electronic" model="account.move">
+        <field name="company_id" ref="l10n_py_account.demo_company_py" />
         <field name="partner_id" ref="l10n_py_account.partner_contribuyente_general" />
         <field name="move_type">out_invoice</field>
+        <field
+            name="journal_id"
+            search="[('company_id', '=', ref('l10n_py_account.demo_company_py')), ('type', '=', 'sale')]"
+        />
         <field name="invoice_date" eval="time.strftime('%Y-%m') + '-18'" />
         <field name="l10n_latam_document_type_id" ref="l10n_py_account.dc_py_nd" />
         <field
@@ -37,11 +42,16 @@
 
     <!-- NDE 2: Nota de débito con documento impreso asociado -->
     <record id="demo_nde_printed" model="account.move">
+        <field name="company_id" ref="l10n_py_account.demo_company_py" />
         <field
             name="partner_id"
             ref="l10n_py_account.partner_contribuyente_servicios"
         />
         <field name="move_type">out_invoice</field>
+        <field
+            name="journal_id"
+            search="[('company_id', '=', ref('l10n_py_account.demo_company_py')), ('type', '=', 'sale')]"
+        />
         <field name="invoice_date" eval="time.strftime('%Y-%m') + '-19'" />
         <field name="l10n_latam_document_type_id" ref="l10n_py_account.dc_py_nd" />
         <field
