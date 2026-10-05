@@ -8,6 +8,7 @@
         <field name="name">Fianza Bancaria - Banco Regional</field>
         <field name="program_id" ref="l10n_py_maquila_base.maquila_program_demo" />
         <field name="guarantee_type">bank</field>
+        <field name="scope">global</field>
         <field name="issuer">Banco Regional S.A.E.C.A.</field>
         <field name="amount">200000.00</field>
         <field name="date_start">2026-01-01</field>
