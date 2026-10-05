@@ -22,7 +22,9 @@ class MaquilaTumWizard(models.TransientModel):
     )
     van_amount = fields.Monetary(
         string="VAN Amount",
-        readonly=True,
+        help="Value added in the national territory (Ley 7547/2025 Art. 37). "
+        "Enter it manually; when l10n_py_maquila_mrp is installed, its VAN "
+        "wizard computes it from the bill of materials.",
     )
     export_invoice_amount = fields.Monetary(
         readonly=True,
@@ -70,8 +72,9 @@ class MaquilaTumWizard(models.TransientModel):
             ]
         )
         self.export_invoice_amount = sum(invoices.mapped("amount_total"))
-        # VAN would come from maquila_mrp module if installed
-        # For now, keep the manually entered value
+        # The VAN is an input: this module has no bill of materials, so it
+        # keeps the value entered by the user (l10n_py_maquila_mrp provides
+        # the VAN computation wizard).
         return {
             "type": "ir.actions.act_window",
             "res_model": self._name,
