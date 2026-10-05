@@ -1,5 +1,6 @@
-from datetime import date, timedelta
+from datetime import timedelta
 
+from odoo import fields
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
@@ -49,7 +50,7 @@ class TestExportValidation(TransactionCase):
             }
         )
 
-        today = date.today()
+        today = fields.Date.today()
         cls.env["account.authorization"].create(
             {
                 "name": "44556699",
