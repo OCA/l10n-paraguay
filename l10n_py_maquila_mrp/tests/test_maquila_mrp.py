@@ -82,10 +82,11 @@ class TestMaquilaMrp(TransactionCase):
             }
         )
 
-    def _make_done_production(self):
+    def _make_done_production(self, bom=None):
+        bom = bom or self.bom
         mo_form = Form(self.env["mrp.production"])
-        mo_form.product_id = self.finished
-        mo_form.bom_id = self.bom
+        mo_form.product_id = bom.product_tmpl_id.product_variant_id
+        mo_form.bom_id = bom
         mo_form.product_qty = 1.0
         mo = mo_form.save()
         mo.action_confirm()
@@ -250,3 +251,78 @@ class TestMaquilaMrp(TransactionCase):
         self.assertEqual(wiz.national_cost, 60)
         # VAN = total cost - foreign inputs (imported + mercosul).
         self.assertEqual(wiz.van_amount, 7980)
+
+    def test_van_mercosul_origin_split(self):
+        raw_mer = self.env["product.product"].create(
+            {
+                "name": "MRP Raw Mercosul",
+                "is_storable": True,
+                "standard_price": 5,
+                "categ_id": self.categ.id,
+            }
+        )
+        finished = self.env["product.product"].create(
+            {"name": "MRP Finished 2", "is_storable": True, "categ_id": self.categ.id}
+        )
+        bom = self.env["mrp.bom"].create(
+            {
+                "product_tmpl_id": finished.product_tmpl_id.id,
+                "product_qty": 1,
+                "l10n_py_maquila_program_id": self.program.id,
+                "bom_line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "product_id": raw_mer.id,
+                            "product_qty": 4,
+                            "l10n_py_origin_type": "national_mercosul",
+                        },
+                    ),
+                ],
+            }
+        )
+        self.program.analytic_account_id = self.analytic.id
+        self.env["account.analytic.line"].create(
+            {
+                "name": "total cost",
+                "account_id": self.analytic.id,
+                "amount": -1000,
+                "date": "2026-06-01",
+            }
+        )
+        self._make_done_production(bom)
+        vals = self.program._maquila_van_for_period("2026-01-01", "2026-12-31")
+        # 4 units @ 5 of Mercosul origin are foreign for the VAN.
+        self.assertEqual(vals["mercosul_cost"], 20)
+        self.assertEqual(vals["van_amount"], 980)
+
+    # ---------- net/gross quantities (derived from GRAP's mrp_bom_line_net_qty) ----
+    def test_bom_line_net_gross_helpers(self):
+        line = self.bom.bom_line_ids[0]  # gross 2
+        line.loss_percentage = 25
+        self.assertEqual(line.calculate_qty_net_theoretical(2, 25), 1.5)
+        line.set_product_qty_net()
+        self.assertEqual(line.product_qty_net, 1.5)
+        self.assertEqual(line.diff_product_qty_gross_net, 0)
+        line.product_qty_net = 3
+        self.assertEqual(line.diff_product_qty_gross_net, 1.5)
+        line.set_product_qty_gross()
+        self.assertEqual(line.product_qty, 4)
+        line.loss_percentage = 100
+        with self.assertRaises(UserError):
+            line.set_product_qty_gross()
+
+    def test_production_program_editable_without_bom(self):
+        loose = self.env["product.product"].create(
+            {"name": "MRP Loose", "is_storable": True, "categ_id": self.categ.id}
+        )
+        mo = self.env["mrp.production"].create(
+            {
+                "product_id": loose.id,
+                "product_qty": 1,
+                "l10n_py_maquila_program_id": self.program.id,
+            }
+        )
+        self.assertFalse(mo.bom_id)
+        self.assertEqual(mo.l10n_py_maquila_program_id, self.program)
