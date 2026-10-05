@@ -35,7 +35,6 @@
         "views/maquila_ops_menu.xml",
     ],
     "demo": [
-        "demo/maquila_fiscal_demo.xml",
         "demo/maquila_ops_demo.xml",
     ],
     "installable": True,
