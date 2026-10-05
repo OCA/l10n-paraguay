@@ -12,6 +12,10 @@ class MrpProduction(models.Model):
         string="Maquila Program",
         compute="_compute_maquila_program",
         store=True,
+        readonly=False,
+        precompute=True,
+        help="Defaults to the program of the bill of materials; can be set by "
+        "hand for productions without a BoM.",
     )
 
     @api.depends("bom_id.l10n_py_maquila_program_id")

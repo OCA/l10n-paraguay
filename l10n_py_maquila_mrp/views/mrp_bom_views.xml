@@ -6,7 +6,7 @@
         <field name="model">mrp.bom</field>
         <field name="inherit_id" ref="mrp.mrp_bom_form_view" />
         <field name="arch" type="xml">
-            <xpath expr="//group[1]" position="after">
+            <xpath expr="//notebook" position="before">
                 <group string="Maquila" name="maquila">
                     <group>
                         <field name="l10n_py_maquila_program_id" />
@@ -31,6 +31,33 @@
             >
                 <field name="l10n_py_origin_type" optional="hide" />
                 <field name="l10n_py_origin_country" optional="hide" />
+                <!--
+                    Gross/net quantity helpers derived from GRAP's
+                    mrp_bom_line_net_qty (Copyright (C) 2023 GRAP,
+                    http://www.grap.coop, @author Quentin DUPONT).
+                -->
+                <field name="diff_product_qty_gross_net" column_invisible="1" />
+                <button
+                    name="set_product_qty_gross"
+                    icon="fa-arrow-left"
+                    type="object"
+                    invisible="diff_product_qty_gross_net == 0"
+                    title="Set the gross quantity from the net quantity and the loss percentage"
+                />
+                <field name="loss_percentage" />
+                <button
+                    name="set_product_qty_net"
+                    icon="fa-arrow-right"
+                    type="object"
+                    invisible="diff_product_qty_gross_net == 0"
+                    title="Set the net quantity from the gross quantity and the loss percentage"
+                />
+                <field name="product_qty_net" />
+            </xpath>
+            <xpath expr="//field[@name='bom_line_ids']/list" position="attributes">
+                <attribute
+                    name="decoration-warning"
+                >diff_product_qty_gross_net != 0</attribute>
             </xpath>
         </field>
     </record>
