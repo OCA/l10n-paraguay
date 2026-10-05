@@ -73,6 +73,47 @@ class TestMaquilaOps(TransactionCase):
         with self.assertRaises(UserError):
             adm.action_extend()
 
+    def _typed_admission(self, good_type, **kw):
+        vals = {
+            "name": f"DI-OPS-{good_type}",
+            "program_id": self.program.id,
+            "cnime_certificate": "CN-T",
+            "good_type": good_type,
+            "date_admission": "2026-01-15",
+            "line_ids": [(0, 0, {"product_id": self.product.id, "quantity": 1})],
+        }
+        vals.update(kw)
+        return self.env["l10n_py.maquila.admission"].create(vals)
+
+    def test_art14_raw_material_12_months_extendable(self):
+        adm = self._typed_admission("raw_material_input")
+        self.assertEqual(str(adm.date_deadline), "2027-01-15")
+        adm.action_admit()
+        adm.action_extend()
+        self.assertEqual(str(adm.date_extended), "2028-01-15")
+
+    def test_art14_container_12_months_from_arrival_no_extension(self):
+        adm = self._typed_admission("container_box", date_arrival="2026-03-01")
+        # counted from the arrival declaration, not from the import date
+        self.assertEqual(str(adm.date_deadline), "2027-03-01")
+        adm.action_admit()
+        with self.assertRaises(UserError):
+            adm.action_extend()
+
+    def test_art14_container_requires_arrival_date(self):
+        adm = self._typed_admission("container_box")
+        self.assertFalse(adm.date_deadline)
+        with self.assertRaises(UserError):
+            adm.action_admit()
+
+    def test_art14_capital_good_follows_program(self):
+        self.program.write({"cnime_resolution_date": "2010-06-30"})  # +20 years
+        adm = self._typed_admission("capital_good")
+        self.assertEqual(str(adm.date_deadline), "2030-06-30")
+        adm.action_admit()
+        with self.assertRaises(UserError):
+            adm.action_extend()
+
     # ---------- guarantee ----------
     def test_guarantee_amounts(self):
         guar = self.env["l10n_py.maquila.guarantee"].create(
