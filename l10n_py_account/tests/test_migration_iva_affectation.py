@@ -13,7 +13,7 @@ def _load_migrate_function():
     migration_path = (
         Path(__file__).resolve().parents[1]
         / "migrations"
-        / "18.0.1.1.0"
+        / "19.0.1.1.0"
         / "post-migrate.py"
     )
     spec = importlib.util.spec_from_file_location(
@@ -53,7 +53,7 @@ class TestMigrationIvaAffectation(TransactionCase):
         document, silently, after upgrading to this version."""
         tax = self._create_tax(amount=0, affectation="1")
         migrate = _load_migrate_function()
-        migrate(self.env.cr, "18.0.1.1.0")
+        migrate(self.env.cr, "19.0.1.1.0")
         tax.invalidate_recordset(["l10n_py_iva_affectation"])
         self.assertEqual(tax.l10n_py_iva_affectation, "3")
 
@@ -62,7 +62,7 @@ class TestMigrationIvaAffectation(TransactionCase):
         legitimately Gravado -- the migration must not touch it."""
         tax = self._create_tax(amount=10, affectation="1")
         migrate = _load_migrate_function()
-        migrate(self.env.cr, "18.0.1.1.0")
+        migrate(self.env.cr, "19.0.1.1.0")
         tax.invalidate_recordset(["l10n_py_iva_affectation"])
         self.assertEqual(tax.l10n_py_iva_affectation, "1")
 
@@ -72,6 +72,6 @@ class TestMigrationIvaAffectation(TransactionCase):
         the backfilled default '1'."""
         tax = self._create_tax(amount=0, affectation="2")
         migrate = _load_migrate_function()
-        migrate(self.env.cr, "18.0.1.1.0")
+        migrate(self.env.cr, "19.0.1.1.0")
         tax.invalidate_recordset(["l10n_py_iva_affectation"])
         self.assertEqual(tax.l10n_py_iva_affectation, "2")
