@@ -36,7 +36,7 @@ LOTE_LETRA_MAP = {"ventas": "V", "compras": "C", "ingresos": "I", "egresos": "E"
 class L10nPyLibro(models.Model):
     _name = "l10n_py.libro"
     _description = "Libro DNIT (RG 90/2021)"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ("mail.thread", "mail.activity.mixin")
     _order = "year desc, month desc, tipo_registro"
 
     company_id = fields.Many2one(

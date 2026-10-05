@@ -1,25 +1,25 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo noupdate="1">
     <!-- Tipos de identificación adicionais (Tabla 3 DNIT) -->
     <record id="it_diplomatico" model="l10n_latam.identification.type">
         <field name="name">Diplomático</field>
         <field name="description">Identificación Diplomática</field>
         <field name="country_id" ref="base.py" />
-        <field name="sequence">50</field>
+        <field name="sequence" eval="50" />
     </record>
 
     <record id="it_sin_nombre" model="l10n_latam.identification.type">
         <field name="name">Sin Nombre</field>
         <field name="description">Sin Nombre</field>
         <field name="country_id" ref="base.py" />
-        <field name="sequence">60</field>
+        <field name="sequence" eval="60" />
     </record>
 
     <record id="it_identificacion_tributaria" model="l10n_latam.identification.type">
         <field name="name">Identificación Tributaria</field>
         <field name="description">Identificación Tributaria (extranjero)</field>
         <field name="country_id" ref="base.py" />
-        <field name="sequence">70</field>
+        <field name="sequence" eval="70" />
     </record>
 
     <!-- Mapeamento Tabla 3 -->
