@@ -523,7 +523,7 @@ Authors
 Contributors
 ------------
 
-- selimovich <mirsadselimovich@gmail.com>
+-  selimovich <mirsadselimovich@gmail.com>
 
 Maintainers
 -----------
