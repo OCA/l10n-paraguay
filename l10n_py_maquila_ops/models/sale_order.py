@@ -16,6 +16,22 @@ class SaleOrder(models.Model):
         compute="_compute_is_maquila_export",
     )
 
+    l10n_py_maquila_cap_override = fields.Boolean(
+        string="Override Domestic Sales Cap",
+        groups="l10n_py_maquila_base.group_maquila_manager",
+        tracking=True,
+        copy=False,
+        help="Explicit exception to the Art. 18 domestic sales cap of pure "
+        "maquila. Only Maquila managers can set it; a reason is required and "
+        "the use is logged in the chatter when the order is confirmed.",
+    )
+    l10n_py_maquila_cap_override_reason = fields.Char(
+        string="Override Reason",
+        groups="l10n_py_maquila_base.group_maquila_manager",
+        tracking=True,
+        copy=False,
+    )
+
     @api.depends("l10n_py_maquila_program_id")
     def _compute_is_maquila_export(self):
         for order in self:
@@ -55,14 +71,52 @@ class SaleOrder(models.Model):
             # Art. 18 caps domestic sales only for the "pura" modality.
             if not (program and py_country and program.maquila_type == "pura"):
                 continue
-            if order.partner_id.country_id == py_country:
-                order._check_maquila_domestic_cap(program)
+            if order.partner_id.country_id != py_country:
+                continue
+            order_sudo = order.sudo()
+            if order_sudo.l10n_py_maquila_cap_override:
+                order._apply_maquila_cap_override()
+                continue
+            order._check_maquila_domestic_cap(program)
         return super().action_confirm()
+
+    def _apply_maquila_cap_override(self):
+        """Explicit and audited exception to the Art. 18 cap."""
+        self.ensure_one()
+        if not self.env.user.has_group("l10n_py_maquila_base.group_maquila_manager"):
+            raise UserError(
+                _("Only Maquila managers can override the domestic sales cap.")
+            )
+        reason = self.sudo().l10n_py_maquila_cap_override_reason
+        if not reason:
+            raise UserError(
+                _("A reason is required to override the domestic sales cap.")
+            )
+        self.message_post(
+            body=_(
+                "Art. 18 domestic sales cap overridden by %(user)s. Reason: "
+                "%(reason)s",
+                user=self.env.user.name,
+                reason=reason,
+            )
+        )
 
     def _check_maquila_domestic_cap(self, program):
         """Ley 7547/2025 Art. 18: pure maquila may sell to the domestic market
-        up to a percentage (10% by default) of the prior-year exported value.
-        Amounts are converted to the company currency before comparing."""
+        up to a percentage (10% by default) of the exported volume of the last
+        year. The cap only applies to the pure modality (the caller filters).
+        Amounts are converted to the company currency before comparing.
+
+        Open legal questions, deliberately not decided here:
+        - The law says "volumen exportado" (volume); the module measures the
+          exported FOB value because quantities of different products and
+          units cannot be added. Pending confirmation with the Secretaria
+          Ejecutiva / DNIT.
+        - "ultimo ano" is read as the previous calendar year; a rolling
+          12-month window is the alternative reading.
+        A pure maquila with no exports in that period has cap == 0, so any
+        domestic sale is blocked; the only way around is the explicit,
+        audited override (manager group + reason logged in the chatter)."""
         self.ensure_one()
         company = self.company_id
         company_currency = company.currency_id
@@ -85,9 +139,6 @@ class SaleOrder(models.Model):
             )
             for line in prior_exports
         )
-        # New maquiladora with no prior-year exports: nothing to cap against.
-        if not export_base:
-            return
         cap = export_base * pct / 100.0
         py_country = self.env.ref("base.py")
         other_domestic = self.search(
@@ -104,6 +155,16 @@ class SaleOrder(models.Model):
         current = self.currency_id._convert(
             self.amount_untaxed, company_currency, company, today
         )
+        if not cap:
+            raise UserError(
+                _(
+                    "Program %(program)s (pure maquila) has no exports in the "
+                    "last year, so the Art. 18 domestic sales cap is zero and "
+                    "domestic sales are not allowed. A Maquila manager can "
+                    "override this explicitly on the order.",
+                    program=program.code,
+                )
+            )
         if already + current > cap:
             raise UserError(
                 _(
