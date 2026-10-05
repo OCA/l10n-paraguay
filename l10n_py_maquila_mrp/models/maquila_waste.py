@@ -1,7 +1,7 @@
 # Copyright 2026 KMEE
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 
 
 class MaquilaWaste(models.Model):
@@ -81,7 +81,7 @@ class MaquilaWaste(models.Model):
     @api.depends("product_id", "date")
     def _compute_name(self):
         for rec in self:
-            product = rec.product_id.name or _("Waste")
+            product = rec.product_id.name or self.env._("Waste")
             rec.name = f"{product} - {rec.date or ''}"
 
     def action_process(self):

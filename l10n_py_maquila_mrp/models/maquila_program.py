@@ -1,7 +1,7 @@
 # Copyright 2026 KMEE
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -16,7 +16,7 @@ class MaquilaProgram(models.Model):
         self.ensure_one()
         if not self.analytic_account_id:
             raise UserError(
-                _(
+                self.env._(
                     "Program %(program)s has no analytic account configured.",
                     program=self.code,
                 )
@@ -39,7 +39,7 @@ class MaquilaProgram(models.Model):
         )
         if not productions:
             raise UserError(
-                _(
+                self.env._(
                     "Cannot compute the VAN for program %(program)s: there is no "
                     "completed production in the period, so the origin split of "
                     "the cost cannot be determined.",
@@ -53,7 +53,7 @@ class MaquilaProgram(models.Model):
                     lambda bl, p=move.product_id: bl.product_id == p
                 )[:1]
                 origin = bom_line.l10n_py_origin_type if bom_line else "imported"
-                cost = abs(sum(move.stock_valuation_layer_ids.mapped("value")))
+                cost = abs(move.value)
                 if origin == "national_py":
                     national += cost
                 elif origin == "national_mercosul":
