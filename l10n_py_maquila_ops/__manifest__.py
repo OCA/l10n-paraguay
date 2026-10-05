@@ -22,6 +22,7 @@
         "security/maquila_ops_security.xml",
         "data/account_fiscal_position_data.xml",
         "data/stock_location_data.xml",
+        "data/ir_cron_data.xml",
         "views/maquila_admission_views.xml",
         "views/maquila_export_views.xml",
         "views/maquila_guarantee_views.xml",

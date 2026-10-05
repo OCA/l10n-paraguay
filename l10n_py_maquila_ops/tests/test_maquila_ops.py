@@ -4,7 +4,7 @@
 from dateutil.relativedelta import relativedelta
 
 from odoo import fields
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
@@ -146,6 +146,74 @@ class TestMaquilaOps(TransactionCase):
         with self.assertRaises(UserError):
             adm.action_admit()
 
+    def _guarantee(self, **kw):
+        vals = {
+            "name": "Ops Guar T",
+            "program_id": self.program.id,
+            "guarantee_type": "bank",
+            "amount": 100000,
+            "date_start": fields.Date.today() - relativedelta(months=1),
+            "date_end": fields.Date.today() + relativedelta(years=1),
+        }
+        vals.update(kw)
+        return self.env["l10n_py.maquila.guarantee"].create(vals)
+
+    def test_guarantee_expiry_cron(self):
+        old = self._guarantee(
+            name="Old",
+            date_start=fields.Date.today() - relativedelta(years=2),
+            date_end=fields.Date.today() - relativedelta(days=1),
+        )
+        live = self._guarantee(name="Live")
+        self.env["l10n_py.maquila.guarantee"]._cron_expire_guarantees()
+        self.assertEqual(old.state, "expired")
+        self.assertEqual(live.state, "active")
+
+    def test_expired_guarantee_cannot_cover_admission(self):
+        guar = self._guarantee(
+            date_start=fields.Date.today() - relativedelta(years=2),
+            date_end=fields.Date.today() - relativedelta(days=1),
+        )
+        adm = self._admission(cif=1000, guarantee=guar, cert="CN-EXP")
+        with self.assertRaises(UserError):
+            adm.action_admit()
+        guar.state = "expired"
+        with self.assertRaises(UserError):
+            adm.action_admit()
+
+    def test_guarantee_scope(self):
+        op_guar = self._guarantee(name="Per operation")
+        self._admission(cif=1000, guarantee=op_guar, cert="CN-S1")
+        with self.assertRaises(ValidationError):
+            self._admission(cif=1000, guarantee=op_guar, cert="CN-S2")
+        global_guar = self._guarantee(name="Global", scope="global")
+        self._admission(cif=1000, guarantee=global_guar, cert="CN-S3")
+        self._admission(cif=1000, guarantee=global_guar, cert="CN-S4")
+        self.assertEqual(len(global_guar.admission_ids), 2)
+
+    def test_guarantee_amount_used_converted(self):
+        other = self.env.ref("base.EUR")
+        other.active = True
+        self.env["res.currency.rate"].create(
+            {
+                "currency_id": other.id,
+                "company_id": self.company.id,
+                "name": fields.Date.today() - relativedelta(days=30),
+                "rate": 0.5,  # 1 company-currency unit = 0.5 EUR
+            }
+        )
+        guar = self._guarantee(
+            currency_id=self.company.currency_id.id, scope="global", amount=10**9
+        )
+        adm = self._admission(cif=1000, guarantee=guar, cert="CN-CUR")
+        adm.currency_id = other
+        adm.action_admit()
+        expected = other._convert(
+            1000, self.company.currency_id, self.company, adm.date_admission
+        )
+        self.assertAlmostEqual(guar.amount_used, expected)
+        self.assertNotEqual(guar.amount_used, 1000)
+
     # ---------- export ----------
     def test_export_traceability(self):
         exp = self.env["l10n_py.maquila.export"].create(
@@ -276,6 +344,7 @@ class TestMaquilaOps(TransactionCase):
             {
                 "name": "Maquila Manager",
                 "login": "maquila_cap_manager",
+                "email": "maquila.manager@example.com",
                 "groups_id": [
                     (
                         6,
@@ -395,7 +464,14 @@ class TestMaquilaOps(TransactionCase):
         vat10 = (
             self.env["account.tax"]
             .with_company(company)
-            .search([("type_tax_use", "=", "sale"), ("amount", "=", 10)], limit=1)
+            .search(
+                [
+                    ("company_id", "=", company.id),
+                    ("type_tax_use", "=", "sale"),
+                    ("amount", "=", 10),
+                ],
+                limit=1,
+            )
         )
         self.assertTrue(vat10, "the l10n_py chart must provide a 10% sale tax")
 
