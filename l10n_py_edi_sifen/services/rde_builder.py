@@ -482,8 +482,8 @@ class RDeBuilder:
             if iva_tipo == 4:
                 prop_iva = Decimal(str(item_data.get("ivaBase", 100)))
                 base_exenta = (
-                    Decimal("100") * total_item * (Decimal("100") - prop_iva)
-                ) / (Decimal("10000") + (Decimal(str(iva_rate)) * prop_iva))
+                    Decimal(100) * total_item * (Decimal(100) - prop_iva)
+                ) / (Decimal(10000) + (Decimal(str(iva_rate)) * prop_iva))
             else:
                 base_exenta = Decimal(0)
 

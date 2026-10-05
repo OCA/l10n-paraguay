@@ -153,13 +153,13 @@ class TestRDeBuilder(TransactionCase):
         data["totales"]["totalExento"] = 30000
         data["totales"]["totalExonerado"] = 70000
         gtotsub = self._build(invoice=data).DE.gTotSub
-        self.assertEqual(gtotsub.dSubExe, Decimal("30000"))
-        self.assertEqual(gtotsub.dSubExo, Decimal("70000"))
+        self.assertEqual(gtotsub.dSubExe, Decimal(30000))
+        self.assertEqual(gtotsub.dSubExo, Decimal(70000))
 
     def test_build_gtotsub_defaults_exonerado_to_zero(self):
         """Sin totalExonerado en los datos, dSubExo debe ser 0."""
         gtotsub = self._build().DE.gTotSub
-        self.assertEqual(gtotsub.dSubExo, Decimal("0"))
+        self.assertEqual(gtotsub.dSubExo, Decimal(0))
 
     def test_build_item_exonerado_base_exenta_zero(self):
         """Item exonerado (ivaTipo=2): dBasExe = 0 (NT13, validación 283).
@@ -183,7 +183,7 @@ class TestRDeBuilder(TransactionCase):
         ]
         item = self._build(invoice=data).DE.gDtipDE.gCamItem[0]
         self.assertEqual(int(item.gCamIVA.iAfecIVA), 2)
-        self.assertEqual(item.gCamIVA.dBasExe, Decimal("0"))
+        self.assertEqual(item.gCamIVA.dBasExe, Decimal(0))
         self.assertEqual(item.gCamIVA.dTasaIVA, 0)
 
     def test_build_item_gravado_parcial_base_exenta_formula(self):
@@ -208,7 +208,7 @@ class TestRDeBuilder(TransactionCase):
         # [100 * 110000 * 50] / [10000 + 500] = 52380.95...
         self.assertEqual(
             item.gCamIVA.dBasExe.quantize(Decimal("0.01")),
-            (Decimal("550000000") / Decimal("10500")).quantize(Decimal("0.01")),
+            (Decimal(550000000) / Decimal(10500)).quantize(Decimal("0.01")),
         )
 
     def test_build_serializes_to_xml(self):
