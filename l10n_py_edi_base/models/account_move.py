@@ -871,7 +871,7 @@ class AccountMove(models.Model):
                 # Sin guard, la línea caería en el default (gravado 10%) y
                 # declararía una base gravada inexistente ante el SIFEN.
                 raise UserError(
-                    _(
+                    self.env._(
                         "La línea '%s' no tiene ningún impuesto: cada ítem del "
                         "DE debe declarar su afectación de IVA (gravado, "
                         "exonerado, exento o gravado parcial)."
@@ -1066,7 +1066,7 @@ class AccountMove(models.Model):
         mantener la complejidad ciclomática de ese método bajo control."""
         errors = []
         if not self.l10n_py_nre_motive:
-            errors.append(_("Nota de Remisión: el motivo es obligatorio."))
+            errors.append(self.env._("Nota de Remisión: el motivo es obligatorio."))
         # Motivo "1" (traslado por venta) sin doc asociado → requer data estimada
         if (
             self.l10n_py_nre_motive == "1"
@@ -1074,7 +1074,7 @@ class AccountMove(models.Model):
             and not self.l10n_py_nre_estimated_invoice_date
         ):
             errors.append(
-                _(
+                self.env._(
                     "NRE traslado por venta sin documento "
                     "asociado: debe indicar fecha estimada "
                     "de facturación."
@@ -1090,7 +1090,7 @@ class AccountMove(models.Model):
                 and not (inv_date.month == 12 and est_date.month == 1)
             ):
                 errors.append(
-                    _(
+                    self.env._(
                         "La fecha estimada de facturación no puede "
                         "exceder el mes siguiente al de emisión."
                     )
@@ -1101,7 +1101,7 @@ class AccountMove(models.Model):
             company_ruc = self.company_id.l10n_py_ruc or ""
             if partner_ruc != company_ruc:
                 errors.append(
-                    _(
+                    self.env._(
                         "Traslado entre locales: el RUC del "
                         "receptor debe coincidir con el del emisor."
                     )
@@ -1161,12 +1161,12 @@ class AccountMove(models.Model):
         """Validaciones específicas de la Nota de Remisión (code=7)."""
         errors = []
         if not self.l10n_py_nre_motive:
-            errors.append(_("Nota de Remisión: el motivo es obligatorio."))
+            errors.append(self.env._("Nota de Remisión: el motivo es obligatorio."))
         # Motivo "1" (traslado por venta) sin doc asociado → requer data estimada
         if self.l10n_py_nre_motive == "1" and not docs:
             if not self.l10n_py_nre_estimated_invoice_date:
                 errors.append(
-                    _(
+                    self.env._(
                         "NRE traslado por venta sin documento "
                         "asociado: debe indicar fecha estimada "
                         "de facturación."
@@ -1182,7 +1182,7 @@ class AccountMove(models.Model):
                 and not (inv_date.month == 12 and est_date.month == 1)
             ):
                 errors.append(
-                    _(
+                    self.env._(
                         "La fecha estimada de facturación no puede "
                         "exceder el mes siguiente al de emisión."
                     )
@@ -1193,7 +1193,7 @@ class AccountMove(models.Model):
             company_ruc = self.company_id.l10n_py_ruc or ""
             if partner_ruc != company_ruc:
                 errors.append(
-                    _(
+                    self.env._(
                         "Traslado entre locales: el RUC del "
                         "receptor debe coincidir con el del emisor."
                     )
@@ -1210,14 +1210,14 @@ class AccountMove(models.Model):
             and (self.l10n_py_exchange_rate or 0) <= 0
         ):
             errors.append(
-                _(
+                self.env._(
                     "Exportación en moneda extranjera requiere tipo de "
                     "cambio (l10n_py_exchange_rate) mayor a cero."
                 )
             )
         if not self.partner_id.street:
             errors.append(
-                _(
+                self.env._(
                     "Exportación: la dirección del receptor del "
                     "exterior (dDirRec) es obligatoria."
                 )
@@ -1278,7 +1278,7 @@ class AccountMove(models.Model):
             for tax in line.tax_ids:
                 if tax.l10n_py_iva_affectation == "4":
                     errors.append(
-                        _(
+                        self.env._(
                             "El producto %(product)s usa el impuesto "
                             "'%(tax)s' con afectación IVA 'Gravado "
                             "parcial', que este módulo todavía no sabe "
