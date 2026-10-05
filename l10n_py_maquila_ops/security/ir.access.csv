@@ -1,0 +1,22 @@
+id,name,model_id,group_id/id,operation,domain
+access_maquila_admission_user,l10n_py.maquila.admission user,l10n_py.maquila.admission,l10n_py_maquila_base.group_maquila_user,r,
+access_maquila_admission_manager,l10n_py.maquila.admission manager,l10n_py.maquila.admission,l10n_py_maquila_base.group_maquila_manager,crud,
+ir_rule_maquila_admission_company,Maquila Admission: multi-company,l10n_py.maquila.admission,,crud,"
+            ['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]
+        "
+access_maquila_admission_line_user,l10n_py.maquila.admission.line user,l10n_py.maquila.admission.line,l10n_py_maquila_base.group_maquila_user,r,
+access_maquila_admission_line_manager,l10n_py.maquila.admission.line manager,l10n_py.maquila.admission.line,l10n_py_maquila_base.group_maquila_manager,crud,
+access_maquila_export_user,l10n_py.maquila.export user,l10n_py.maquila.export,l10n_py_maquila_base.group_maquila_user,r,
+access_maquila_export_manager,l10n_py.maquila.export manager,l10n_py.maquila.export,l10n_py_maquila_base.group_maquila_manager,crud,
+ir_rule_maquila_export_company,Maquila Export: multi-company,l10n_py.maquila.export,,crud,"
+            ['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]
+        "
+access_maquila_export_line_user,l10n_py.maquila.export.line user,l10n_py.maquila.export.line,l10n_py_maquila_base.group_maquila_user,r,
+access_maquila_export_line_manager,l10n_py.maquila.export.line manager,l10n_py.maquila.export.line,l10n_py_maquila_base.group_maquila_manager,crud,
+access_maquila_guarantee_user,l10n_py.maquila.guarantee user,l10n_py.maquila.guarantee,l10n_py_maquila_base.group_maquila_user,r,
+access_maquila_guarantee_manager,l10n_py.maquila.guarantee manager,l10n_py.maquila.guarantee,l10n_py_maquila_base.group_maquila_manager,crud,
+ir_rule_maquila_guarantee_company,Maquila Guarantee: multi-company,l10n_py.maquila.guarantee,,crud,"
+            ['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]
+        "
+access_maquila_tum_wizard_manager,l10n_py.maquila.tum.wizard manager,l10n_py.maquila.tum.wizard,l10n_py_maquila_base.group_maquila_manager,crud,
+access_maquila_tax_credit_wizard_manager,l10n_py.maquila.tax.credit.wizard manager,l10n_py.maquila.tax.credit.wizard,l10n_py_maquila_base.group_maquila_manager,crud,

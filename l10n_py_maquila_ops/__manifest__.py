@@ -4,7 +4,7 @@
 {
     "name": "Paraguay - Maquila Operations",
     "summary": "Temporary admission, export, guarantees and fiscal ops for Maquila",
-    "version": "19.0.1.0.0",
+    "version": "20.0.1.0.0",
     "category": "Localization",
     "author": "KMEE, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/l10n-paraguay",
@@ -18,8 +18,7 @@
         "mail",
     ],
     "data": [
-        "security/ir.model.access.csv",
-        "security/maquila_ops_security.xml",
+        "security/ir.access.csv",
         "data/account_fiscal_position_data.xml",
         "data/stock_location_data.xml",
         "data/ir_cron_data.xml",
