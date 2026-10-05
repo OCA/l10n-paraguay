@@ -12,6 +12,10 @@ class SaleOrder(models.Model):
         "l10n_py.maquila.program",
         string="Maquila Program",
     )
+    l10n_py_maquila_type = fields.Selection(
+        related="l10n_py_maquila_program_id.maquila_type",
+        string="Maquila Type",
+    )
     l10n_py_is_maquila_export = fields.Boolean(
         compute="_compute_is_maquila_export",
     )
