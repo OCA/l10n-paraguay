@@ -2,7 +2,7 @@
 
 from datetime import date
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 FECHA_MINIMA_DNIT = date(2021, 1, 1)
@@ -149,7 +149,9 @@ class L10nPyLibroLine(models.Model):
                 value = line[field_name]
                 if value and value < 0:
                     raise ValidationError(
-                        _("Los montos de la línea del libro no pueden ser negativos.")
+                        self.env._(
+                            "Los montos de la línea del libro no pueden ser negativos."
+                        )
                     )
 
     def write(self, vals):
@@ -257,14 +259,14 @@ class L10nPyLibroLine(models.Model):
         # libre en Compras 101/107 (especificacao:242-246): la exigencia de
         # *presencia* se mantiene, sólo el valor "11" deja de ser forzado.
         if not self.f_tipo_identificacion or not self.f_numero_identificacion:
-            return [_("Identificación es obligatoria.")]
+            return [self.env._("Identificación es obligatoria.")]
         if (
             tipo == "compras"
             and codigo not in COMPRAS_IDENT_LIBRE
             and self.f_tipo_identificacion != "11"
         ):
             return [
-                _(
+                self.env._(
                     "Tipo de identificación debe ser 11 (RUC), excepto para "
                     "los tipos 101/107 (%(codigo)s).",
                     codigo=codigo,
@@ -285,7 +287,7 @@ class L10nPyLibroLine(models.Model):
             self.f_tipo_identificacion not in nombre_exempt
             and not self.f_nombre_razon_social
         ):
-            problems.append(_("Nombre/razón social es obligatorio."))
+            problems.append(self.env._("Nombre/razón social es obligatorio."))
 
         # D4 - número de comprobante requerido excepto 112/106 (Ventas,
         # :164-167) o 112/106/107 (Compras, :268-274).
@@ -293,11 +295,11 @@ class L10nPyLibroLine(models.Model):
             VENTAS_NUMERO_EXEMPT if tipo == "ventas" else COMPRAS_NUMERO_EXEMPT
         )
         if codigo not in numero_exempt and not self.f_numero_comprobante:
-            problems.append(_("Número de comprobante es obligatorio."))
+            problems.append(self.env._("Número de comprobante es obligatorio."))
 
         # D4 - timbrado fijo "0" obligatorio para Compras 107, :263-267.
         if tipo == "compras" and codigo == "107" and self.f_timbrado != "0":
-            problems.append(_("El timbrado debe ser '0' para el tipo 107."))
+            problems.append(self.env._("El timbrado debe ser '0' para el tipo 107."))
         return problems
 
     def _check_fecha_ventas_compras(self):
@@ -308,7 +310,9 @@ class L10nPyLibroLine(models.Model):
             and self.f_fecha_emision < FECHA_MINIMA_DNIT
             and self.f_condicion != "2"
         ):
-            return [_("La fecha de emisión no puede ser anterior al 01/01/2021.")]
+            return [
+                self.env._("La fecha de emisión no puede ser anterior al 01/01/2021.")
+            ]
         return []
 
     def _check_montos_ventas_compras(self, tipo, codigo):
@@ -320,7 +324,7 @@ class L10nPyLibroLine(models.Model):
                 [self.f_monto_gravado_10, self.f_monto_gravado_5, self.f_monto_exento]
             ):
                 problems.append(
-                    _(
+                    self.env._(
                         "Para el tipo %(codigo)s los montos gravados "
                         "10/5/exento deben estar en cero.",
                         codigo=codigo,
@@ -329,7 +333,7 @@ class L10nPyLibroLine(models.Model):
         else:
             problems += self._check_monto_total_vs_move()
         if not self.f_monto_total or self.f_monto_total <= 0:
-            problems.append(_("El monto total debe ser mayor a 0."))
+            problems.append(self.env._("El monto total debe ser mayor a 0."))
         return problems
 
     def _check_monto_total_vs_move(self):
@@ -348,7 +352,7 @@ class L10nPyLibroLine(models.Model):
             target = self.libro_id._get_total_in_pyg(self.move_id)
             if abs(suma - target) > 1:
                 problems.append(
-                    _(
+                    self.env._(
                         "La suma de los montos gravados (10%%/5%%/exento) "
                         "no coincide con el monto total del comprobante "
                         "de origen."
@@ -356,14 +360,14 @@ class L10nPyLibroLine(models.Model):
                 )
             if abs((self.f_monto_total or 0) - target) > 1:
                 problems.append(
-                    _(
+                    self.env._(
                         "El monto total no coincide con el monto total "
                         "del comprobante de origen."
                     )
                 )
         elif abs(suma - (self.f_monto_total or 0)) > 1:
             problems.append(
-                _(
+                self.env._(
                     "El monto total no coincide con la suma de los "
                     "montos gravados (10%%/5%%/exento)."
                 )
@@ -382,7 +386,7 @@ class L10nPyLibroLine(models.Model):
             self.f_comprobante_asociado_numero and self.f_comprobante_asociado_timbrado
         ):
             return [
-                _(
+                self.env._(
                     "Número y timbrado del comprobante asociado son "
                     "obligatorios para Notas de Crédito/Débito."
                 )
@@ -403,7 +407,7 @@ class L10nPyLibroLine(models.Model):
             or current_timbrado != self.f_comprobante_asociado_timbrado
         ):
             return [
-                _(
+                self.env._(
                     "El comprobante asociado difiere del documento de "
                     "origen actual; regenere la línea."
                 )
@@ -425,7 +429,9 @@ class L10nPyLibroLine(models.Model):
                 and self.move_id.l10n_py_libro_supplier_number
             )
         ):
-            problems.append(_("Timbrado/número del proveedor ausente o inconsistente."))
+            problems.append(
+                self.env._("Timbrado/número del proveedor ausente o inconsistente.")
+            )
 
         # D2 - "Onde entra": timbrado propio (autorización) obligatorio para
         # documentos propios de Ventas; si se retira después de generado, el
@@ -437,7 +443,7 @@ class L10nPyLibroLine(models.Model):
             and not self.move_id.l10n_py_authorization_id
         ):
             problems.append(
-                _("Autorización (timbrado) del comprobante propio ausente.")
+                self.env._("Autorización (timbrado) del comprobante propio ausente.")
             )
         return problems
 
@@ -464,29 +470,29 @@ class L10nPyLibroLine(models.Model):
             )
             if abs(suma - (self.f_monto_total or 0)) > 1:
                 problems.append(
-                    _(
+                    self.env._(
                         "El monto total no coincide con la suma de monto "
                         "gravado + no gravado/exonerado."
                     )
                 )
         if not self.f_monto_total or self.f_monto_total <= 0:
-            problems.append(_("El monto total debe ser mayor a 0."))
+            problems.append(self.env._("El monto total debe ser mayor a 0."))
 
         # D4 - campo 3 (fecha/período), :370-377: dd/mm/aaaa excepto 208
         # (mm/aaaa); no anterior a 01/01/2021, sin excepción de crédito.
         if codigo == "208":
             if not self.f_periodo_mm_aaaa or len(self.f_periodo_mm_aaaa or "") != 7:
                 problems.append(
-                    _("El período mm/aaaa es obligatorio para el tipo 208.")
+                    self.env._("El período mm/aaaa es obligatorio para el tipo 208.")
                 )
         elif self.f_fecha_emision and self.f_fecha_emision < FECHA_MINIMA_DNIT:
             problems.append(
-                _("La fecha de emisión no puede ser anterior al 01/01/2021.")
+                self.env._("La fecha de emisión no puede ser anterior al 01/01/2021.")
             )
 
         # D4 - campo 4 (número), :378-380: no requerido p/208.
         if codigo != "208" and not self.f_numero_comprobante:
-            problems.append(_("Número de comprobante es obligatorio."))
+            problems.append(self.env._("Número de comprobante es obligatorio."))
 
         # D4 - campo 5 (tipo identificación pagador), :383-389: p/210 sólo
         # 11/12/13; p/208 fijo 11.
@@ -495,14 +501,16 @@ class L10nPyLibroLine(models.Model):
             and self.f_tipo_identificacion not in INGRESOS_IDENT_210_ALLOWED
         ):
             problems.append(
-                _("Tipo de identificación debe ser 11, 12 o 13 para el tipo 210.")
+                self.env._(
+                    "Tipo de identificación debe ser 11, 12 o 13 para el tipo 210."
+                )
             )
         elif (
             codigo in INGRESOS_IDENT_FIXED
             and self.f_tipo_identificacion != INGRESOS_IDENT_FIXED[codigo]
         ):
             problems.append(
-                _(
+                self.env._(
                     "Tipo de identificación debe ser %(esperado)s para el "
                     "tipo %(codigo)s.",
                     esperado=INGRESOS_IDENT_FIXED[codigo],
@@ -515,10 +523,12 @@ class L10nPyLibroLine(models.Model):
             self.f_tipo_identificacion not in ("11", "12")
             and not self.f_nombre_razon_social
         ):
-            problems.append(_("Nombre/razón social es obligatorio."))
+            problems.append(self.env._("Nombre/razón social es obligatorio."))
 
         if codigo == "210" and not self.f_especificar_tipo_documento:
-            problems.append(_("Especificar Tipo de Documento es obligatorio (210)."))
+            problems.append(
+                self.env._("Especificar Tipo de Documento es obligatorio (210).")
+            )
 
         # D4 - campos 14/15 (comprobante asociado), :424-433: no requeridos
         # excepto 203.
@@ -526,7 +536,7 @@ class L10nPyLibroLine(models.Model):
             self.f_comprobante_asociado_numero and self.f_comprobante_asociado_timbrado
         ):
             problems.append(
-                _(
+                self.env._(
                     "Número y timbrado del comprobante asociado son "
                     "obligatorios para el tipo 203."
                 )
@@ -538,42 +548,44 @@ class L10nPyLibroLine(models.Model):
         problems = []
         codigo = self.f_tipo_comprobante
         if not self.f_monto_total or self.f_monto_total <= 0:
-            problems.append(_("El monto total debe ser mayor a 0."))
+            problems.append(self.env._("El monto total debe ser mayor a 0."))
         if codigo != "207" and self.f_imputa_iva == "S":
-            problems.append(_("Imputa al IVA solo puede ser 'S' para el tipo 207."))
+            problems.append(
+                self.env._("Imputa al IVA solo puede ser 'S' para el tipo 207.")
+            )
 
         # D4 - campo 3 (fecha/período), :452-460: dd/mm/aaaa excepto 208 y
         # 206 (mm/aaaa); no anterior a 01/01/2021, sin excepción de crédito.
         if codigo in ("208", "206"):
             if not self.f_periodo_mm_aaaa or len(self.f_periodo_mm_aaaa or "") != 7:
                 problems.append(
-                    _(
+                    self.env._(
                         "El período mm/aaaa es obligatorio para %(codigo)s.",
                         codigo=codigo,
                     )
                 )
         elif self.f_fecha_emision and self.f_fecha_emision < FECHA_MINIMA_DNIT:
             problems.append(
-                _("La fecha de emisión no puede ser anterior al 01/01/2021.")
+                self.env._("La fecha de emisión no puede ser anterior al 01/01/2021.")
             )
 
         # D4 - campo 4 (número/transacción), :461-467: no requerido p/
         # 205,206,207,208.
         if codigo not in ("205", "206", "207", "208") and not self.f_numero_comprobante:
-            problems.append(_("Número de comprobante es obligatorio."))
+            problems.append(self.env._("Número de comprobante es obligatorio."))
 
         # D4 - campos 5/6 (tipo/número de identificación), :468-493: no
         # requeridos p/206,207,211; fijo 11 p/204,205; fijo 17 p/202.
         if codigo in EGRESOS_IDENT_EXEMPT:
             pass
         elif not self.f_tipo_identificacion or not self.f_numero_identificacion:
-            problems.append(_("Identificación es obligatoria."))
+            problems.append(self.env._("Identificación es obligatoria."))
         elif (
             codigo in EGRESOS_IDENT_FIXED
             and self.f_tipo_identificacion != EGRESOS_IDENT_FIXED[codigo]
         ):
             problems.append(
-                _(
+                self.env._(
                     "Tipo de identificación debe ser %(esperado)s para el "
                     "tipo %(codigo)s.",
                     esperado=EGRESOS_IDENT_FIXED[codigo],
@@ -587,13 +599,13 @@ class L10nPyLibroLine(models.Model):
             and self.f_tipo_identificacion not in EGRESOS_NOMBRE_EXEMPT_IDENT
             and not self.f_nombre_razon_social
         ):
-            problems.append(_("Nombre/razón social es obligatorio."))
+            problems.append(self.env._("Nombre/razón social es obligatorio."))
 
         # D4 - campos 13/14 (nº cuenta/banco), :521-530: no requeridos
         # excepto 207,211.
         if codigo in ("207", "211") and not (self.f_numero_cuenta and self.f_banco):
             problems.append(
-                _(
+                self.env._(
                     "Número de cuenta y banco son obligatorios para %(codigo)s.",
                     codigo=codigo,
                 )
@@ -601,12 +613,16 @@ class L10nPyLibroLine(models.Model):
 
         # D4 - campo 15 (empleador IPS), :531-533: no requerido excepto 206.
         if codigo == "206" and not self.f_empleador_ips:
-            problems.append(_("Empleador IPS es obligatorio para el tipo 206."))
+            problems.append(
+                self.env._("Empleador IPS es obligatorio para el tipo 206.")
+            )
 
         # D4 - campo 16 (especificar tipo documento), :534-536: requerido
         # p/209.
         if codigo == "209" and not self.f_especificar_tipo_documento:
-            problems.append(_("Especificar Tipo de Documento es obligatorio (209)."))
+            problems.append(
+                self.env._("Especificar Tipo de Documento es obligatorio (209).")
+            )
 
         # D4 - campos 17/18 (comprobante asociado), :537-546: no requeridos
         # excepto 201.
@@ -614,7 +630,7 @@ class L10nPyLibroLine(models.Model):
             self.f_comprobante_asociado_numero and self.f_comprobante_asociado_timbrado
         ):
             problems.append(
-                _(
+                self.env._(
                     "Número y timbrado del comprobante asociado son "
                     "obligatorios para el tipo 201."
                 )
@@ -630,7 +646,7 @@ class L10nPyLibroLine(models.Model):
         if any(value == "S" for value in obligaciones):
             return []
         return [
-            _(
+            self.env._(
                 "Debe marcarse al menos una obligación imputada "
                 "(IVA/IRE/IRP-RSP según el registro)."
             )

@@ -1,6 +1,6 @@
 {
     "name": "Paraguay - Libros DNIT (RG 90/2021)",
-    "version": "18.0.1.0.0",
+    "version": "19.0.1.0.0",
     "category": "Accounting/Localizations",
     "summary": "Registro de comprobantes Ventas/Compras/Ingresos/Egresos (DNIT)",
     "author": "KMEE, Odoo Community Association (OCA)",
