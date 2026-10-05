@@ -318,8 +318,8 @@ class TestAccountMove(TransactionCase):
         auth_nc = self.Authorization.create(
             {
                 "name": "77889900",
-                "date_from": date.today() - timedelta(days=30),
-                "date_to": date.today() + timedelta(days=335),
+                "date_from": fields.Date.today() - timedelta(days=30),
+                "date_to": fields.Date.today() + timedelta(days=335),
                 "invoice_number_from": 1,
                 "invoice_number_to": 10000,
                 "establishment": "001",
@@ -357,6 +357,22 @@ class TestAccountMove(TransactionCase):
 
     def test_sale_requires_timbrado(self):
         """F02: Factura de venta sin timbrado → UserError al confirmar"""
+        # With exactly one valid authorization for the document type it is
+        # selected automatically; a second one makes the choice ambiguous.
+        today = fields.Date.today()
+        self.Authorization.create(
+            {
+                "name": "33445577",
+                "date_from": today - timedelta(days=30),
+                "date_to": today + timedelta(days=335),
+                "invoice_number_from": 1,
+                "invoice_number_to": 10000,
+                "establishment": "001",
+                "expedition_point": "002",
+                "l10n_latam_document_type_id": self.doc_type_invoice.id,
+                "company_id": self.company.id,
+            }
+        )
         invoice = self._create_invoice(l10n_py_authorization_id=False)
         with self.assertRaises(UserError):
             invoice.action_post()
