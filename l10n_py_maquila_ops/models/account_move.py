@@ -17,7 +17,7 @@ class AccountMove(models.Model):
         store=True,
     )
 
-    @api.depends("l10n_py_maquila_program_id")
+    @api.depends("l10n_py_maquila_program_id", "move_type")
     def _compute_maquila_export(self):
         for move in self:
             move.l10n_py_is_maquila_export = bool(
