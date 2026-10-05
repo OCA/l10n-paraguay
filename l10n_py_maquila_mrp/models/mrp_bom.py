@@ -4,7 +4,7 @@
 # @author Quentin DUPONT.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -72,7 +72,7 @@ class MrpBomLine(models.Model):
         for bom_line in self.filtered(lambda x: x.product_qty_net):
             if bom_line.loss_percentage == 100:
                 raise UserError(
-                    _(
+                    self.env._(
                         "Setting gross quantity with 100%% loss makes no sense.\n"
                         "Change this value."
                     )

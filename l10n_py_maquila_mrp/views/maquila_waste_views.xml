@@ -154,7 +154,7 @@
                     domain="[('destination', '=', 'reexport')]"
                 />
                 <separator />
-                <group expand="0" string="Group By">
+                <group>
                     <filter
                         name="group_program"
                         string="Program"
