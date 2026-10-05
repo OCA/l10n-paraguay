@@ -1,6 +1,6 @@
 # l10n_py_libros/models/res_company.py
 
-from odoo import _, fields, models
+from odoo import fields, models
 from odoo.exceptions import UserError
 
 
@@ -40,7 +40,7 @@ class ResCompany(models.Model):
                     )
                     if blocking:
                         raise UserError(
-                            _(
+                            self.env._(
                                 "Existem libros de Ventas/Compras já gerados. "
                                 "Reabra-os antes de trocar a direção NC/ND, e "
                                 "gere-os novamente depois."

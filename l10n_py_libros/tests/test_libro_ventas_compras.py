@@ -251,8 +251,16 @@ class TestLibroVentasCompras(LibroCommonCase):
         self.assertFalse(line.manual_override)
         self.assertEqual(line.f_imputa_ire, "N")
 
+    def _foreign_currency(self):
+        """Return a currency different from the company currency."""
+        currency = self.env.ref("base.USD")
+        if currency == self.company.currency_id:
+            currency = self.env.ref("base.EUR")
+        currency.active = True
+        return currency
+
     def test_moeda_estrangeira_com_taxa_manual(self):
-        currency_usd = self.env.ref("base.USD")
+        currency_usd = self._foreign_currency()
         invoice = self._create_invoice(
             "out_invoice",
             [(self.product, self.tax_10, 100.0)],
@@ -272,7 +280,7 @@ class TestLibroVentasCompras(LibroCommonCase):
         # ser absorvido pelo maior balde não-zero para que 9+10+11 == 12
         # exatamente, e o total deve bater com move.amount_total convertido
         # com tolerancia de 1 guaraní.
-        currency_usd = self.env.ref("base.USD")
+        currency_usd = self._foreign_currency()
         invoice = self._create_invoice(
             "out_invoice",
             [

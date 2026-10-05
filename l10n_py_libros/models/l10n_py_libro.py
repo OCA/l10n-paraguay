@@ -7,7 +7,7 @@ import io
 import zipfile
 from datetime import date
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 from .l10n_py_libro_serializer import serialize_line
@@ -91,13 +91,10 @@ class L10nPyLibro(models.Model):
     lote_manual_override = fields.Char(size=5)
     lote_generation_seq = fields.Integer(default=0)
 
-    _sql_constraints = [
-        (
-            "libro_period_unique",
-            "unique(company_id, tipo_registro, obligacion, year, month)",
-            "Ya existe un libro para esta empresa/tipo de registro/obligación/período.",
-        ),
-    ]
+    _libro_period_unique = models.Constraint(
+        "unique(company_id, tipo_registro, obligacion, year, month)",
+        "Ya existe un libro para esta empresa/tipo de registro/obligación/período.",
+    )
 
     def _default_lote_letra(self):
         tipo = self.env.context.get("default_tipo_registro")
@@ -109,11 +106,13 @@ class L10nPyLibro(models.Model):
             if libro.obligacion == "955":
                 if not libro.month or not (1 <= libro.month <= 12):
                     raise ValidationError(
-                        _("El mes es obligatorio (1-12) para la obligación 955.")
+                        self.env._(
+                            "El mes es obligatorio (1-12) para la obligación 955."
+                        )
                     )
             elif libro.obligacion == "956" and libro.month not in (0, False):
                 raise ValidationError(
-                    _("La obligación 956 (anual) no usa el mes: déjelo en 0.")
+                    self.env._("La obligación 956 (anual) no usa el mes: déjelo en 0.")
                 )
 
     @api.constrains("lote_manual_override")
@@ -122,7 +121,9 @@ class L10nPyLibro(models.Model):
             value = libro.lote_manual_override
             if value and (len(value) > 5 or not value.isalnum()):
                 raise ValidationError(
-                    _("El lote manual debe tener hasta 5 caracteres alfanuméricos.")
+                    self.env._(
+                        "El lote manual debe tener hasta 5 caracteres alfanuméricos."
+                    )
                 )
 
     @api.depends("year", "month", "obligacion")
@@ -378,7 +379,7 @@ class L10nPyLibro(models.Model):
 
     def action_reopen(self):
         for libro in self:
-            libro.message_post(body=_("Libro reaberto para edição."))
+            libro.message_post(body=self.env._("Libro reaberto para edição."))
             libro.state = "generated"
 
     def action_confirm(self):
@@ -386,14 +387,16 @@ class L10nPyLibro(models.Model):
             libro.line_ids._compute_state()
             if libro.error_line_count:
                 raise UserError(
-                    _(
+                    self.env._(
                         "Existem %(count)s línea(s) en estado erro. Corríjalas "
                         "antes de confirmar el libro.",
                         count=libro.error_line_count,
                     )
                 )
             if not libro.line_ids:
-                libro.message_post(body=_("Confirmado sin líneas (período vacío)."))
+                libro.message_post(
+                    body=self.env._("Confirmado sin líneas (período vacío).")
+                )
             libro.state = "confirmed"
 
     # ============== SERIALIZACIÓN / ZIP ==============
@@ -426,7 +429,7 @@ class L10nPyLibro(models.Model):
             libro.line_ids._compute_state()
             if libro.error_line_count:
                 raise UserError(
-                    _(
+                    self.env._(
                         "Existem %(count)s línea(s) en estado erro. Corríjalas "
                         "antes de descargar el archivo.",
                         count=libro.error_line_count,
@@ -437,7 +440,7 @@ class L10nPyLibro(models.Model):
             lines = libro.line_ids
             if libro.lote_manual_override and len(lines) > MAX_LINES_PER_FILE:
                 raise UserError(
-                    _(
+                    self.env._(
                         "XXXXX manual não suporta múltiplos sub-lotes neste "
                         "período; limpe o override ou gere um valor por "
                         "sub-lote manualmente depois."
@@ -450,12 +453,16 @@ class L10nPyLibro(models.Model):
             seq = libro.lote_generation_seq
             if not libro.lote_manual_override:
                 if seq > 99:
-                    raise UserError(_("Se agotó la secuencia de generación (00-99)."))
+                    raise UserError(
+                        self.env._("Se agotó la secuencia de generación (00-99).")
+                    )
                 libro.lote_generation_seq = seq + 1
             ext = "csv" if libro.formato_archivo == "csv" else "txt"
             for idx, chunk in enumerate(chunks):
                 if idx > 99:
-                    raise UserError(_("Se agotó el número de sub-lotes (00-99)."))
+                    raise UserError(
+                        self.env._("Se agotó el número de sub-lotes (00-99).")
+                    )
                 if libro.lote_manual_override:
                     xxxxx = libro.lote_manual_override
                 else:

@@ -29,7 +29,7 @@
                     name="con_errores"
                     domain="[('error_line_count', '&gt;', 0)]"
                 />
-                <group expand="0" string="Agrupar por">
+                <group>
                     <filter
                         string="Tipo de registro"
                         name="group_tipo"
@@ -144,11 +144,7 @@
                         </page>
                     </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" />
-                    <field name="activity_ids" />
-                    <field name="message_ids" />
-                </div>
+                <chatter />
             </form>
         </field>
     </record>

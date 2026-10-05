@@ -18,13 +18,10 @@ class L10nPyLibroIdentificationTypeMap(models.Model):
     codigo_tabla3 = fields.Char(string="Código Tabla 3", required=True, size=2)
     active = fields.Boolean(default=True)
 
-    _sql_constraints = [
-        (
-            "ident_type_unique",
-            "unique(l10n_latam_identification_type_id)",
-            "Cada tipo de identificación só pode ter um mapeamento Tabla 3.",
-        ),
-    ]
+    _ident_type_unique = models.Constraint(
+        "unique(l10n_latam_identification_type_id)",
+        "Cada tipo de identificación só pode ter um mapeamento Tabla 3.",
+    )
 
     def _get_codigo(self, identification_type):
         if not identification_type:
