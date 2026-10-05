@@ -5,7 +5,7 @@ import json
 
 from dateutil.relativedelta import relativedelta
 
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -15,6 +15,7 @@ class MaquilaCnimeReport(models.Model):
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "period_start desc"
 
+    name = fields.Char(compute="_compute_name", store=True)
     program_id = fields.Many2one(
         "l10n_py.maquila.program",
         required=True,
@@ -43,8 +44,11 @@ class MaquilaCnimeReport(models.Model):
     employment_count = fields.Integer()
     van_total = fields.Monetary(string="VAN Total", readonly=True)
     currency_id = fields.Many2one(
-        "res.currency",
-        default=lambda self: self.env.ref("base.USD"),
+        related="company_id.currency_id",
+        string="Currency",
+        store=True,
+        help="Company currency: the VAN is built from analytic amounts, which "
+        "are always in the company currency.",
     )
     submission_date = fields.Datetime(tracking=True)
     submission_protocol = fields.Char(tracking=True)
@@ -52,6 +56,16 @@ class MaquilaCnimeReport(models.Model):
         related="program_id.company_id",
         store=True,
     )
+
+    @api.depends("program_id.code", "period_start", "period_end")
+    def _compute_name(self):
+        for report in self:
+            report.name = _(
+                "CNIME %(program)s %(start)s - %(end)s",
+                program=report.program_id.code or "",
+                start=report.period_start or "",
+                end=report.period_end or "",
+            )
 
     def _generate_report_data(self):
         """Compile the report snapshot. Called explicitly by action_generate,
@@ -78,6 +92,7 @@ class MaquilaCnimeReport(models.Model):
                             "product": line.product_id.name,
                             "quantity": line.quantity,
                             "fob_value": line.fob_value,
+                            "currency": line.currency_id.name,
                         }
                     )
             report.import_data = (
@@ -101,6 +116,7 @@ class MaquilaCnimeReport(models.Model):
                             "product": line.product_id.name,
                             "quantity": line.quantity,
                             "fob_value": line.fob_value,
+                            "currency": line.currency_id.name,
                         }
                     )
             report.export_data = (
@@ -225,7 +241,10 @@ class MaquilaCnimeReport(models.Model):
         self.write({"state": "draft"})
 
     def action_generate_simex_payload(self):
-        """Generate SIMEX payload (stub for future integration)."""
+        """Generate a draft payload (stub for a future SIMEX integration).
+
+        The layout is internal: it is not validated against the official SIMEX
+        format, so it must not be filed as is."""
         self.ensure_one()
         # SIMEX integration stub - offline payload generation
         payload = {
@@ -241,7 +260,10 @@ class MaquilaCnimeReport(models.Model):
         }
         # Log payload for debugging
         self.message_post(
-            body=_("SIMEX payload generated (offline mode):\n%s")
+            body=_(
+                "Draft SIMEX payload (internal layout, not validated against "
+                "the official SIMEX format):\n%s"
+            )
             % json.dumps(payload, indent=2, default=str),
         )
         return {

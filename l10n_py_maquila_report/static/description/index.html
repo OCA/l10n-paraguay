@@ -372,10 +372,10 @@ ul.auto-toc {
 <p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/OCA/l10n-paraguay/tree/18.0/l10n_py_maquila_report"><img alt="OCA/l10n-paraguay" src="https://img.shields.io/badge/github-OCA%2Fl10n--paraguay-lightgray.png?logo=github" /></a> <a class="reference external image-reference" href="https://translation.odoo-community.org/projects/l10n-paraguay-18-0/l10n-paraguay-18-0-l10n_py_maquila_report"><img alt="Translate me on Weblate" src="https://img.shields.io/badge/weblate-Translate%20me-F47D42.png" /></a> <a class="reference external image-reference" href="https://runboat.odoo-community.org/builds?repo=OCA/l10n-paraguay&amp;target_branch=18.0"><img alt="Try me on Runboat" src="https://img.shields.io/badge/runboat-Try%20me-875A7B.png" /></a></p>
 <p>Reporting for Paraguay’s Maquila regime (Ley 7547/2025):</p>
 <ul class="simple">
-<li><strong>CNIME periodic report</strong>: a snapshot of imports, exports, production,
-waste, period-end stock balance, VAN and employment for a program and
-period. The snapshot is compiled by <em>Generate</em> and frozen once
-submitted.</li>
+<li><strong>CNIME periodic report</strong>: a snapshot of imports, exports,
+production, waste, period-end stock balance, VAN and employment for a
+program and period. The snapshot is compiled by <em>Generate</em> and frozen
+once submitted.</li>
 <li><strong>Maquila dashboard</strong> (kanban) of active programs.</li>
 <li><strong>SIFEN legend</strong>: adds the maquila legend (Ley 7547/2025) to the
 electronic document data.</li>
@@ -383,6 +383,10 @@ electronic document data.</li>
 </ul>
 <p>The VAN reported here uses the same computation as the MRP VAN wizard,
 so both report the same figure for a given program and period.</p>
+<p>The SIMEX payload is a draft in an internal layout: it is not validated
+against the official SIMEX format and must not be filed as is. Amounts
+of the report are in the company currency (the VAN comes from analytic
+amounts); import and export lines carry their own currency.</p>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
