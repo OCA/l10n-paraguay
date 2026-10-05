@@ -28,13 +28,10 @@ class L10nPyLibroDocumentTypeMap(models.Model):
     aplica_egresos = fields.Boolean(default=False)
     active = fields.Boolean(default=True)
 
-    _sql_constraints = [
-        (
-            "codigo_tabla4_unique",
-            "unique(codigo_tabla4)",
-            "El código Tabla 4 debe ser único.",
-        ),
-    ]
+    _codigo_tabla4_unique = models.Constraint(
+        "unique(codigo_tabla4)",
+        "El código Tabla 4 debe ser único.",
+    )
 
     def _get_codigos_for_tipo_registro(self, tipo_registro):
         """Return list of codigo_tabla4 applicable to a given tipo_registro."""
