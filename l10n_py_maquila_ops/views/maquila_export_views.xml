@@ -136,7 +136,7 @@
                     domain="[('state', '=', 'dispatched')]"
                 />
                 <separator />
-                <group expand="0" string="Group By">
+                <group>
                     <filter
                         name="group_state"
                         string="State"

@@ -1,7 +1,7 @@
 # Copyright 2026 KMEE
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -85,17 +85,16 @@ class SaleOrder(models.Model):
         self.ensure_one()
         if not self.env.user.has_group("l10n_py_maquila_base.group_maquila_manager"):
             raise UserError(
-                _("Only Maquila managers can override the domestic sales cap.")
+                self.env._("Only Maquila managers can override the domestic sales cap.")
             )
         reason = self.sudo().l10n_py_maquila_cap_override_reason
         if not reason:
             raise UserError(
-                _("A reason is required to override the domestic sales cap.")
+                self.env._("A reason is required to override the domestic sales cap.")
             )
         self.message_post(
-            body=_(
-                "Art. 18 domestic sales cap overridden by %(user)s. Reason: "
-                "%(reason)s",
+            body=self.env._(
+                "Art. 18 domestic sales cap overridden by %(user)s. Reason: %(reason)s",
                 user=self.env.user.name,
                 reason=reason,
             )
@@ -157,7 +156,7 @@ class SaleOrder(models.Model):
         )
         if not cap:
             raise UserError(
-                _(
+                self.env._(
                     "Program %(program)s (pure maquila) has no exports in the "
                     "last year, so the Art. 18 domestic sales cap is zero and "
                     "domestic sales are not allowed. A Maquila manager can "
@@ -167,7 +166,7 @@ class SaleOrder(models.Model):
             )
         if already + current > cap:
             raise UserError(
-                _(
+                self.env._(
                     "Domestic sales for program %(program)s would exceed the "
                     "%(pct)s%% cap of prior-year exports (cap: %(cap).2f %(cur)s).",
                     program=program.code,

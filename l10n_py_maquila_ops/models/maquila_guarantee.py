@@ -1,7 +1,7 @@
 # Copyright 2026 KMEE
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -109,7 +109,7 @@ class MaquilaGuarantee(models.Model):
         for rec in self:
             if rec.scope == "operation" and len(rec.admission_ids) > 1:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "A per-operation guarantee covers a single admission. "
                         "Use a global guarantee for several operations."
                     )

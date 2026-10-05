@@ -345,7 +345,7 @@ class TestMaquilaOps(TransactionCase):
                 "name": "Maquila Manager",
                 "login": "maquila_cap_manager",
                 "email": "maquila.manager@example.com",
-                "groups_id": [
+                "group_ids": [
                     (
                         6,
                         0,
@@ -382,7 +382,7 @@ class TestMaquilaOps(TransactionCase):
             {
                 "name": "Plain Salesman",
                 "login": "maquila_plain_sales",
-                "groups_id": [
+                "group_ids": [
                     (
                         6,
                         0,

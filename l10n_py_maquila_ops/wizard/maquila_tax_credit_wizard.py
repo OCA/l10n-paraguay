@@ -1,7 +1,7 @@
 # Copyright 2026 KMEE
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, fields, models
+from odoo import fields, models
 from odoo.exceptions import UserError
 
 
@@ -43,11 +43,11 @@ class MaquilaTaxCreditWizard(models.TransientModel):
     def action_execute(self):
         self.ensure_one()
         if self.action_type == "transfer" and not self.transfer_partner_id:
-            raise UserError(_("Please select a partner for the transfer."))
+            raise UserError(self.env._("Please select a partner for the transfer."))
         if not self.amount:
-            raise UserError(_("Amount must be greater than zero."))
+            raise UserError(self.env._("Amount must be greater than zero."))
 
-        ref = _(
+        ref = self.env._(
             "IVA Credit %(action_type)s - %(program)s - %(date)s",
             action_type=self.action_type,
             program=self.program_id.code,
@@ -58,9 +58,9 @@ class MaquilaTaxCreditWizard(models.TransientModel):
             limit=1,
         )
         if not journal:
-            raise UserError(_("No miscellaneous journal found."))
+            raise UserError(self.env._("No miscellaneous journal found."))
         if not self.debit_account_id or not self.credit_account_id:
-            raise UserError(_("Please select both debit and credit accounts."))
+            raise UserError(self.env._("Please select both debit and credit accounts."))
         company = self.env.company
         today = fields.Date.today()
         amount = self.currency_id._convert(

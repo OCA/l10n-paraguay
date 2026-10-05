@@ -1,7 +1,7 @@
 # Copyright 2026 KMEE
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -87,16 +87,16 @@ class MaquilaTumWizard(models.TransientModel):
         """Generate the TUM accounting entry."""
         self.ensure_one()
         if not self.tum_amount:
-            raise UserError(_("TUM amount is zero. Nothing to generate."))
+            raise UserError(self.env._("TUM amount is zero. Nothing to generate."))
         journal = self.env["account.journal"].search(
             [("type", "=", "general"), ("company_id", "=", self.env.company.id)],
             limit=1,
         )
         if not journal:
-            raise UserError(_("No miscellaneous journal found."))
+            raise UserError(self.env._("No miscellaneous journal found."))
         if not self.debit_account_id or not self.credit_account_id:
-            raise UserError(_("Please select both debit and credit accounts."))
-        ref = _(
+            raise UserError(self.env._("Please select both debit and credit accounts."))
+        ref = self.env._(
             "TUM 1%% - %(program)s - %(period_end)s",
             program=self.program_id.code,
             period_end=self.period_end,
