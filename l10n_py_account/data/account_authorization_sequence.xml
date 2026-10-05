@@ -6,6 +6,5 @@
         <field name="code">account.authorization</field>
         <field name="prefix">AUTH-</field>
         <field name="padding">5</field>
-        <field name="company_id" ref="base.main_company" />
     </record>
 </odoo>
