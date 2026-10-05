@@ -139,7 +139,7 @@
                     domain="[('state', '=', 'submitted')]"
                 />
                 <separator />
-                <group expand="0" string="Group By">
+                <group>
                     <filter
                         string="Program"
                         name="group_program"

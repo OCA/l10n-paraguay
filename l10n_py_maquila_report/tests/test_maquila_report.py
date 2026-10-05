@@ -122,7 +122,6 @@ class TestMaquilaReport(TransactionCase):
         supplier = self.env.ref("stock.stock_location_suppliers")
         move = self.env["stock.move"].create(
             {
-                "name": "rep receipt",
                 "product_id": self.product.id,
                 "product_uom_qty": qty,
                 "product_uom": self.product.uom_id.id,
