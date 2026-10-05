@@ -17,6 +17,7 @@
                         <group>
                             <field name="program_id" />
                             <field name="guarantee_type" />
+                            <field name="scope" />
                             <field name="issuer" />
                         </group>
                         <group>
