@@ -4,7 +4,7 @@
 {
     "name": "Paraguay - Maquila Reports",
     "summary": "CNIME reports, dashboard, SIFEN extension, and SIMEX for Maquila",
-    "version": "19.0.1.0.0",
+    "version": "20.0.1.0.0",
     "category": "Localization",
     "author": "KMEE, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/l10n-paraguay",
@@ -16,8 +16,7 @@
         "l10n_py_edi_base",
     ],
     "data": [
-        "security/ir.model.access.csv",
-        "security/maquila_report_security.xml",
+        "security/ir.access.csv",
         "views/maquila_cnime_report_views.xml",
         "views/maquila_dashboard.xml",
         "views/maquila_program_views.xml",

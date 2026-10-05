@@ -124,7 +124,7 @@ class TestMaquilaReport(TransactionCase):
             {
                 "product_id": self.product.id,
                 "product_uom_qty": qty,
-                "product_uom": self.product.uom_id.id,
+                "uom_id": self.product.uom_id.id,
                 "location_id": supplier.id,
                 "location_dest_id": loc.id,
                 "company_id": self.company.id,
