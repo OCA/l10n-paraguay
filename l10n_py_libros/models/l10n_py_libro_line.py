@@ -199,7 +199,7 @@ class L10nPyLibroLine(models.Model):
                 continue
             line.with_context(l10n_py_libro_regenerating=True).write(
                 {
-                    "f_monto_total": abs(int(round(source.amount_total or 0))),
+                    "f_monto_total": abs(round(source.amount_total or 0)),
                     "f_fecha_emision": source.invoice_date or source.date,
                     "f_nombre_razon_social": source.partner_id.name,
                 }

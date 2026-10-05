@@ -117,21 +117,24 @@ class AccountMove(models.Model):
                 if (
                     move.move_type in ("in_invoice", "in_refund")
                     and move.state == "draft"
+                    and move._l10n_py_libro_electronic_should_copy(None)
                 ):
-                    if move._l10n_py_libro_electronic_should_copy(None):
-                        partner = self.env["res.partner"].browse(vals["partner_id"])
-                        new_value = partner.with_company(
-                            move.company_id.id
-                        ).l10n_py_libro_electronic
-                        super(AccountMove, move).write(
-                            {"l10n_py_libro_electronic": new_value}
-                        )
+                    partner = self.env["res.partner"].browse(vals["partner_id"])
+                    new_value = partner.with_company(
+                        move.company_id.id
+                    ).l10n_py_libro_electronic
+                    super(AccountMove, move).write(
+                        {"l10n_py_libro_electronic": new_value}
+                    )
         return super().write(vals)
 
     @api.onchange("partner_id")
     def _onchange_partner_id_l10n_py_libro_electronic(self):
-        if self.move_type in ("in_invoice", "in_refund") and self.partner_id:
-            if self._l10n_py_libro_electronic_should_copy(None):
-                self.l10n_py_libro_electronic = self.partner_id.with_company(
-                    self.company_id.id
-                ).l10n_py_libro_electronic
+        if (
+            self.move_type in ("in_invoice", "in_refund")
+            and self.partner_id
+            and self._l10n_py_libro_electronic_should_copy(None)
+        ):
+            self.l10n_py_libro_electronic = self.partner_id.with_company(
+                self.company_id.id
+            ).l10n_py_libro_electronic

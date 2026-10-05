@@ -1,4 +1,3 @@
-import base64
 import io
 import zipfile
 
@@ -39,7 +38,7 @@ class TestLibroSerializer(LibroCommonCase):
         self.assertEqual(len(libro.l10n_py_libro_attachment_ids), 2)
         total_lines = 0
         for attachment in libro.l10n_py_libro_attachment_ids:
-            content = base64.b64decode(attachment.datas)
+            content = attachment.raw
             with zipfile.ZipFile(io.BytesIO(content)) as zip_file:
                 names = zip_file.namelist()
                 self.assertEqual(len(names), 1)

@@ -64,7 +64,7 @@ class TestLibroVentasCompras(LibroCommonCase):
         self.assertEqual(line.f_monto_gravado_10, 0)
         self.assertEqual(line.f_monto_gravado_5, 0)
         self.assertEqual(line.f_monto_exento, 0)
-        self.assertEqual(line.f_monto_total, int(round(invoice.amount_total)))
+        self.assertEqual(line.f_monto_total, round(invoice.amount_total))
         self.assertEqual(line.state, "ok", line.error_message)
 
     def test_ventas_excluye_aceptado_sifen(self):
