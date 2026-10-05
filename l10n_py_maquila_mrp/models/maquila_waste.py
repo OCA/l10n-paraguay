@@ -7,7 +7,7 @@ from odoo import api, fields, models
 class MaquilaWaste(models.Model):
     _name = "l10n_py.maquila.waste"
     _description = "Maquila Waste Management"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ("mail.thread", "mail.activity.mixin")
     _rec_name = "name"
 
     name = fields.Char(compute="_compute_name", store=True)
