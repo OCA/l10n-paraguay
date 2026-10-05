@@ -264,11 +264,69 @@ class TestMaquilaOps(TransactionCase):
         with self.assertRaises(UserError):
             order.action_confirm()
 
-    def test_domestic_sale_no_prior_export_allowed(self):
-        # New maquiladora with no prior-year exports: no cap to enforce.
+    def test_domestic_sale_no_prior_export_blocked(self):
+        # Pure maquila without exports in the last year: cap == 0 (Art. 18).
         order = self._domestic_sale(200)
+        with self.assertRaises(UserError):
+            order.action_confirm()
+        self.assertNotEqual(order.state, "sale")
+
+    def test_domestic_sale_cap_override_audited(self):
+        manager = self.env["res.users"].create(
+            {
+                "name": "Maquila Manager",
+                "login": "maquila_cap_manager",
+                "groups_id": [
+                    (
+                        6,
+                        0,
+                        [
+                            self.env.ref("base.group_user").id,
+                            self.env.ref("sales_team.group_sale_manager").id,
+                            self.env.ref(
+                                "l10n_py_maquila_base.group_maquila_manager"
+                            ).id,
+                        ],
+                    )
+                ],
+            }
+        )
+        order = self._domestic_sale(200).with_user(manager)
+        order.l10n_py_maquila_cap_override = True
+        # an override without reason is refused
+        with self.assertRaises(UserError):
+            order.action_confirm()
+        order.l10n_py_maquila_cap_override_reason = "Authorized by Secretaria Ejecutiva"
         order.action_confirm()
         self.assertEqual(order.state, "sale")
+        self.assertTrue(any("overridden" in (m.body or "") for m in order.message_ids))
+
+    def test_domestic_sale_cap_override_denied_without_group(self):
+        order = self._domestic_sale(200)
+        order.sudo().write(
+            {
+                "l10n_py_maquila_cap_override": True,
+                "l10n_py_maquila_cap_override_reason": "no group",
+            }
+        )
+        user = self.env["res.users"].create(
+            {
+                "name": "Plain Salesman",
+                "login": "maquila_plain_sales",
+                "groups_id": [
+                    (
+                        6,
+                        0,
+                        [
+                            self.env.ref("base.group_user").id,
+                            self.env.ref("sales_team.group_sale_manager").id,
+                        ],
+                    )
+                ],
+            }
+        )
+        with self.assertRaises(UserError):
+            order.with_user(user).action_confirm()
 
     def test_domestic_cap_skipped_for_non_pura(self):
         # A separate program so it does not affect the shared "pura" one.
