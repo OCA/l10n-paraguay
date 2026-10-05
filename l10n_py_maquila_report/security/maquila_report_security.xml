@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <record id="ir_rule_maquila_cnime_report_company" model="ir.rule">
         <field name="name">Maquila CNIME Report: multi-company</field>

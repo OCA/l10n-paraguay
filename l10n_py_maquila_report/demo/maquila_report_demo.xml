@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <!-- CNIME Report: March 2026 - Program 1 (generated) -->
     <record id="cnime_report_march_p1" model="l10n_py.maquila.cnime.report">

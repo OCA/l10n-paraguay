@@ -12,7 +12,7 @@ from odoo.exceptions import UserError
 class MaquilaCnimeReport(models.Model):
     _name = "l10n_py.maquila.cnime.report"
     _description = "CNIME Periodic Report"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ("mail.thread", "mail.activity.mixin")
     _order = "period_start desc"
 
     name = fields.Char(compute="_compute_name", store=True)
@@ -45,7 +45,6 @@ class MaquilaCnimeReport(models.Model):
     van_total = fields.Monetary(string="VAN Total", readonly=True)
     currency_id = fields.Many2one(
         related="company_id.currency_id",
-        string="Currency",
         store=True,
         help="Company currency: the VAN is built from analytic amounts, which "
         "are always in the company currency.",

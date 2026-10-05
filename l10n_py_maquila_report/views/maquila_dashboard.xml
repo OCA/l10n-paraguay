@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <record id="view_maquila_dashboard_kanban" model="ir.ui.view">
         <field name="name">l10n_py.maquila.program.dashboard.kanban</field>
