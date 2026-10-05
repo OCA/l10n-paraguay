@@ -2,7 +2,7 @@
 
 import re
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 SUPPLIER_NUMBER_RE = re.compile(r"^\d{3}-\d{3}-\d{7}$")
@@ -45,7 +45,7 @@ class AccountMove(models.Model):
             value = move.l10n_py_libro_supplier_timbrado
             if value and not (value.isdigit() and len(value) == 8):
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "El timbrado del proveedor debe tener exactamente "
                         "8 dígitos numéricos (%(value)s).",
                         value=value,
@@ -58,7 +58,7 @@ class AccountMove(models.Model):
             value = move.l10n_py_libro_supplier_number
             if value and not SUPPLIER_NUMBER_RE.match(value):
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "El número de comprobante del proveedor debe seguir "
                         "el formato EEE-PPP-NNNNNNN (%(value)s).",
                         value=value,

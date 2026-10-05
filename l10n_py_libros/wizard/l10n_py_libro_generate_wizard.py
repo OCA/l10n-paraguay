@@ -1,6 +1,6 @@
 # l10n_py_libros/wizard/l10n_py_libro_generate_wizard.py
 
-from odoo import _, fields, models
+from odoo import fields, models
 
 TIPO_REGISTROS = ("ventas", "compras", "ingresos", "egresos")
 
@@ -59,7 +59,7 @@ class L10nPyLibroGenerateWizard(models.TransientModel):
         libros = self.env["l10n_py.libro"].browse([lib.id for lib in resultados])
         return {
             "type": "ir.actions.act_window",
-            "name": _("Libros generados"),
+            "name": self.env._("Libros generados"),
             "res_model": "l10n_py.libro",
             "view_mode": "list,form",
             "domain": [("id", "in", libros.ids)],
