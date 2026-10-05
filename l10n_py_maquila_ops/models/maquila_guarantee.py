@@ -8,7 +8,7 @@ from odoo.exceptions import ValidationError
 class MaquilaGuarantee(models.Model):
     _name = "l10n_py.maquila.guarantee"
     _description = "Maquila Customs Guarantee"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ("mail.thread", "mail.activity.mixin")
 
     name = fields.Char(required=True, tracking=True)
     program_id = fields.Many2one(

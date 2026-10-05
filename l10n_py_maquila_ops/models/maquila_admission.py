@@ -10,7 +10,7 @@ from odoo.exceptions import UserError, ValidationError
 class MaquilaAdmission(models.Model):
     _name = "l10n_py.maquila.admission"
     _description = "Maquila Temporary Admission"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ("mail.thread", "mail.activity.mixin")
     _order = "date_admission desc"
 
     name = fields.Char(
@@ -92,7 +92,6 @@ class MaquilaAdmission(models.Model):
     )
     supplier_id = fields.Many2one(
         "res.partner",
-        string="Supplier",
     )
     currency_id = fields.Many2one(
         "res.currency",

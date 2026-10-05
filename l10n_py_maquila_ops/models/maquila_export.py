@@ -8,7 +8,7 @@ from odoo.exceptions import UserError
 class MaquilaExport(models.Model):
     _name = "l10n_py.maquila.export"
     _description = "Maquila Export Dispatch"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ("mail.thread", "mail.activity.mixin")
     _order = "date_export desc"
 
     name = fields.Char(required=True, tracking=True)

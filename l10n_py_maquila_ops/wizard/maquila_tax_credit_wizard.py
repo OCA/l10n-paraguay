@@ -33,11 +33,9 @@ class MaquilaTaxCreditWizard(models.TransientModel):
     amount = fields.Monetary(required=True)
     debit_account_id = fields.Many2one(
         "account.account",
-        string="Debit Account",
     )
     credit_account_id = fields.Many2one(
         "account.account",
-        string="Credit Account",
     )
 
     def action_execute(self):
