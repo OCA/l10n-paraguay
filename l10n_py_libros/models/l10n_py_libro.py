@@ -1,6 +1,5 @@
 # l10n_py_libros/models/l10n_py_libro.py
 
-import base64
 import calendar
 import csv
 import io
@@ -210,18 +209,14 @@ class L10nPyLibro(models.Model):
         )
 
     def _get_amounts_in_pyg(self, move):
-        b10 = int(
-            round(
-                self._convert_amount_to_pyg(move, move.l10n_py_amount_subtotal_10 or 0)
-            )
+        b10 = round(
+            self._convert_amount_to_pyg(move, move.l10n_py_amount_subtotal_10 or 0)
         )
-        b5 = int(
-            round(
-                self._convert_amount_to_pyg(move, move.l10n_py_amount_subtotal_5 or 0)
-            )
+        b5 = round(
+            self._convert_amount_to_pyg(move, move.l10n_py_amount_subtotal_5 or 0)
         )
-        exento = int(
-            round(self._convert_amount_to_pyg(move, move.l10n_py_amount_exempt or 0))
+        exento = round(
+            self._convert_amount_to_pyg(move, move.l10n_py_amount_exempt or 0)
         )
         # D1 item 3 - cada balde é convertido/arredondado independentemente,
         # o que pode deixar um resíduo de arredondamento (moeda estrangeira,
@@ -240,7 +235,7 @@ class L10nPyLibro(models.Model):
         return b10, b5, exento
 
     def _get_total_in_pyg(self, move):
-        return int(round(self._convert_amount_to_pyg(move, move.amount_total or 0)))
+        return round(self._convert_amount_to_pyg(move, move.amount_total or 0))
 
     def _build_line_vals(self, move, target_tipo):
         is_own = move.move_type in ("out_invoice", "out_refund")
@@ -249,7 +244,7 @@ class L10nPyLibro(models.Model):
         company = move.company_id
 
         id_map = self.env["l10n_py.libro.identification.type.map"]
-        tipo_ident = id_map._get_codigo(partner.l10n_latam_identification_type_id)
+        tipo_ident = id_map._get_codigo(partner)
 
         vals = {
             "f_tipo_comprobante": codigo_tabla4,
@@ -477,7 +472,7 @@ class L10nPyLibro(models.Model):
                 attachment = self.env["ir.attachment"].create(
                     {
                         "name": zip_name,
-                        "datas": base64.b64encode(buf.getvalue()),
+                        "raw": buf.getvalue(),
                         "res_model": "l10n_py.libro",
                         "res_id": libro.id,
                     }

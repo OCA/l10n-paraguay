@@ -1,6 +1,9 @@
 from datetime import date, timedelta
 
+from odoo import fields
 from odoo.tests.common import TransactionCase
+
+from odoo.addons.l10n_py_account.tests.common import create_py_company
 
 
 class LibroCommonCase(TransactionCase):
@@ -16,14 +19,15 @@ class LibroCommonCase(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.company = cls.env.ref("base.main_company")
         cls.country_py = cls.env.ref("base.py")
-        cls.company.write(
-            {
-                "country_id": cls.country_py.id,
-                "account_fiscal_country_id": cls.country_py.id,
-                "l10n_py_ruc": "80009401",
-            }
+        cls.company = create_py_company(
+            cls, name="Libros Test Empresa SA", l10n_py_ruc="80009401"
+        )
+        cls.env["account.chart.template"].try_loading(
+            "py", company=cls.company, install_demo=False
+        )
+        cls.tax_group = cls.env["account.tax.group"].create(
+            {"name": "IVA Libros Test", "country_id": cls.country_py.id}
         )
 
         cls.doc_type_factura = cls.env.ref("l10n_py_account.dc_py_f")
@@ -79,7 +83,7 @@ class LibroCommonCase(TransactionCase):
             }
         )
 
-        today = date.today()
+        today = fields.Date.today()
         cls.authorization = cls.env["account.authorization"].create(
             {
                 "name": "19191919",
@@ -126,6 +130,8 @@ class LibroCommonCase(TransactionCase):
 
         cls.tax_10 = cls.env["account.tax"].create(
             {
+                "company_id": cls.company.id,
+                "tax_group_id": cls.tax_group.id,
                 "name": "IVA 10% Libros Test",
                 "amount": 10.0,
                 "amount_type": "percent",
@@ -135,6 +141,8 @@ class LibroCommonCase(TransactionCase):
         )
         cls.tax_5 = cls.env["account.tax"].create(
             {
+                "company_id": cls.company.id,
+                "tax_group_id": cls.tax_group.id,
                 "name": "IVA 5% Libros Test",
                 "amount": 5.0,
                 "amount_type": "percent",
@@ -144,6 +152,8 @@ class LibroCommonCase(TransactionCase):
         )
         cls.tax_exempt = cls.env["account.tax"].create(
             {
+                "company_id": cls.company.id,
+                "tax_group_id": cls.tax_group.id,
                 "name": "Exento Libros Test",
                 "amount": 0.0,
                 "amount_type": "percent",
@@ -152,6 +162,8 @@ class LibroCommonCase(TransactionCase):
         )
         cls.tax_10_purchase = cls.env["account.tax"].create(
             {
+                "company_id": cls.company.id,
+                "tax_group_id": cls.tax_group.id,
                 "name": "IVA 10% Compras Libros Test",
                 "amount": 10.0,
                 "amount_type": "percent",
@@ -161,6 +173,8 @@ class LibroCommonCase(TransactionCase):
         )
         cls.tax_5_purchase = cls.env["account.tax"].create(
             {
+                "company_id": cls.company.id,
+                "tax_group_id": cls.tax_group.id,
                 "name": "IVA 5% Compras Libros Test",
                 "amount": 5.0,
                 "amount_type": "percent",
@@ -170,6 +184,8 @@ class LibroCommonCase(TransactionCase):
         )
         cls.tax_exempt_purchase = cls.env["account.tax"].create(
             {
+                "company_id": cls.company.id,
+                "tax_group_id": cls.tax_group.id,
                 "name": "Exento Compras Libros Test",
                 "amount": 0.0,
                 "amount_type": "percent",
