@@ -30,19 +30,35 @@ Paraguay - Maquila Operations
 
 Operations of Paraguay's Maquila regime (Ley 7547/2025):
 
-- **Temporary admission** of goods (Art. 14: 12 + 12 months) with a
-  customs guarantee, CIF control and per-line remaining balance.
-- **Export dispatches** with traceability to the source admissions.
-- **Customs guarantees** (bank, insurance, deposit, mortgage) with
-  available balance control.
-- **Fiscal positions** for temporary admission and exempt export.
-- Wizards for the **Tributo Único Maquilador (TUM, 1%)**, the **IVA
-  credit** (compensate/transfer) and the **VAN** period computation.
-- **Domestic-market sales** control (Art. 18): pure maquila may sell up
-  to 10% of the prior-year exported value.
+-  **Temporary admission** of goods with a customs guarantee, CIF
+   control and per-line remaining balance. The stay follows Ley
+   7547/2025 Art. 14 by type of good: raw materials and inputs 12 months
+   from the import date (extendable once, up to the same period);
+   containers and trailer boxes 12 months from the arrival declaration
+   (no extension); other goods while the program is in force.
+-  **Export dispatches** with traceability to the source admissions.
+-  **Customs guarantees** (bank, insurance, deposit, mortgage), per
+   operation or global (Decreto 5714/2026 Art. 28), with available
+   balance control and automatic expiry. Form and validity of the
+   guarantee follow art. 293 of the Customs Code and are not validated
+   by the module.
+-  **Fiscal positions** for temporary admission and exempt export.
+-  Wizards for the **Tributo Único Maquilador (TUM, 1%)**, the **IVA
+   credit** (compensate/transfer) and the **VAN** period computation.
+-  **Domestic-market sales** control (Ley 7547/2025 Art. 18): only pure
+   maquila is capped, at 10% of what it exported in the last year. A
+   pure maquila with no exports in that period has a zero cap and cannot
+   sell domestically, unless a Maquila manager sets an explicit, logged
+   override on the order.
 
 All monetary comparisons and accounting entries are converted to the
 company currency.
+
+Open legal questions (not decided by the module): the law caps sales at
+10% of the "volumen exportado en el ultimo ano"; the module measures the
+exported FOB value (quantities of different products and units cannot be
+added) and reads "ultimo ano" as the previous calendar year. Both
+readings must be confirmed with the Secretaria Ejecutiva / DNIT.
 
 **Table of contents**
 
@@ -55,8 +71,10 @@ Usage
 1. Register a **customs guarantee** for the program.
 2. Create a **temporary admission** with its CIF amount and lines;
    admitting it checks the CNIME certificate and that the guarantee
-   covers the CIF (converted to the guarantee currency). Use *Extend 12
-   Months* for the Art. 14 extension.
+   covers the CIF (converted to the guarantee currency). Pick the type
+   of good (it defines the Art. 14 deadline); for containers and trailer
+   boxes also fill in the arrival declaration date. *Extend 12 Months*
+   is only available for raw materials and inputs.
 3. Create an **export** and link it to its source admissions before
    confirming.
 4. Use the **TUM**, **IVA credit** and **VAN** wizards to compute and
@@ -87,10 +105,10 @@ Authors
 Contributors
 ------------
 
-- KMEE INFORMÁTICA LTDA
+-  KMEE INFORMÁTICA LTDA
 
-  - Luis Felipe Mileo <mileo@kmee.com.br>
-  - André Marcos Ferreira <andre.ferreira@kmee.com.br>
+   -  Luis Felipe Mileo <mileo@kmee.com.br>
+   -  André Marcos Ferreira <andre.ferreira@kmee.com.br>
 
 Maintainers
 -----------
