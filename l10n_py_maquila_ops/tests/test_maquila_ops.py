@@ -191,6 +191,29 @@ class TestMaquilaOps(TransactionCase):
         self._admission(cif=1000, guarantee=global_guar, cert="CN-S4")
         self.assertEqual(len(global_guar.admission_ids), 2)
 
+    def test_guarantee_not_yet_valid_rejected(self):
+        guar = self._guarantee(
+            name="Future", date_start=fields.Date.today() + relativedelta(days=5)
+        )
+        adm = self._admission(cif=1000, guarantee=guar, cert="CN-FUT")
+        with self.assertRaises(UserError):
+            adm.action_admit()
+
+    def test_operation_guarantee_released_by_closed_admission(self):
+        guar = self._guarantee(name="Reusable")
+        first = self._admission(cif=1000, guarantee=guar, cert="CN-R1")
+        first.state = "closed"
+        self._admission(cif=1000, guarantee=guar, cert="CN-R2")
+        with self.assertRaises(ValidationError):
+            self._admission(cif=1000, guarantee=guar, cert="CN-R3")
+
+    def test_cap_override_fields_in_sale_order_form(self):
+        manager_group = self.env.ref("l10n_py_maquila_base.group_maquila_manager")
+        self.env.user.write({"groups_id": [(4, manager_group.id)]})
+        views = self.env["sale.order"].get_views([(False, "form")])
+        arch = views["views"]["form"]["arch"]
+        self.assertIn("l10n_py_maquila_cap_override_reason", arch)
+
     def test_guarantee_amount_used_converted(self):
         other = self.env.ref("base.EUR")
         other.active = True
@@ -450,6 +473,12 @@ class TestMaquilaOps(TransactionCase):
         chart's auto-detected "Ventas - Exportación" fiscal position (which
         maps VAT to exonerado) in favor of the maquila position, which has
         no tax mapping of its own."""
+        if not self.env["ir.module.module"].search_count(
+            [("name", "=", "l10n_py_account"), ("state", "=", "installed")]
+        ):
+            self.skipTest(
+                "needs l10n_py_account (auto-detected export fiscal position)"
+            )
         company = self._py_chart_company("PY Maquila Export Co")
         program = self.env["l10n_py.maquila.program"].create(
             {

@@ -104,10 +104,18 @@ class MaquilaGuarantee(models.Model):
             )
             rec.amount_available = rec.amount - rec.amount_used
 
+    def _scope_admissions(self):
+        """Admissions that still hold the guarantee: a closed or expired
+        admission releases a per-operation guarantee."""
+        self.ensure_one()
+        return self.admission_ids.filtered(
+            lambda a: a.state not in ("closed", "expired")
+        )
+
     @api.constrains("scope", "admission_ids")
     def _check_scope_admissions(self):
         for rec in self:
-            if rec.scope == "operation" and len(rec.admission_ids) > 1:
+            if rec.scope == "operation" and len(rec._scope_admissions()) > 1:
                 raise ValidationError(
                     _(
                         "A per-operation guarantee covers a single admission. "

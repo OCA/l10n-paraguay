@@ -120,7 +120,10 @@ class MaquilaAdmission(models.Model):
     def _check_guarantee_scope(self):
         for rec in self:
             guarantee = rec.guarantee_id
-            if guarantee.scope == "operation" and len(guarantee.admission_ids) > 1:
+            if (
+                guarantee.scope == "operation"
+                and len(guarantee._scope_admissions()) > 1
+            ):
                 raise ValidationError(
                     _(
                         "The guarantee %(guarantee)s is per operation and already "
@@ -162,7 +165,11 @@ class MaquilaAdmission(models.Model):
             if rec.guarantee_id:
                 guarantee = rec.guarantee_id
                 admission_date = rec.date_admission or fields.Date.context_today(rec)
-                if guarantee.state != "active" or guarantee.date_end < admission_date:
+                if (
+                    guarantee.state != "active"
+                    or guarantee.date_start > admission_date
+                    or guarantee.date_end < admission_date
+                ):
                     raise UserError(
                         _(
                             "The guarantee %(guarantee)s is not active on the "
