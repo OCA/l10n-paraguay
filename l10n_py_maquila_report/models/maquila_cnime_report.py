@@ -5,7 +5,7 @@ import json
 
 from dateutil.relativedelta import relativedelta
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -60,7 +60,7 @@ class MaquilaCnimeReport(models.Model):
     @api.depends("program_id.code", "period_start", "period_end")
     def _compute_name(self):
         for report in self:
-            report.name = _(
+            report.name = self.env._(
                 "CNIME %(program)s %(start)s - %(end)s",
                 program=report.program_id.code or "",
                 start=report.period_start or "",
@@ -72,7 +72,9 @@ class MaquilaCnimeReport(models.Model):
         never as a compute, so a submitted report is never silently rewritten."""
         for report in self:
             if not (report.program_id and report.period_start and report.period_end):
-                raise UserError(_("Set the program and the period before generating."))
+                raise UserError(
+                    self.env._("Set the program and the period before generating.")
+                )
             program = report.program_id
 
             # Import data - admissions in period
@@ -219,7 +221,7 @@ class MaquilaCnimeReport(models.Model):
         """Compile the snapshot and move to the generated state."""
         for report in self:
             if report.state == "submitted":
-                raise UserError(_("A submitted report cannot be regenerated."))
+                raise UserError(self.env._("A submitted report cannot be regenerated."))
         self._generate_report_data()
         self.write({"state": "generated"})
 
@@ -237,7 +239,9 @@ class MaquilaCnimeReport(models.Model):
     def action_draft(self):
         for report in self:
             if report.state == "submitted":
-                raise UserError(_("A submitted report cannot be reset to draft."))
+                raise UserError(
+                    self.env._("A submitted report cannot be reset to draft.")
+                )
         self.write({"state": "draft"})
 
     def action_generate_simex_payload(self):
@@ -260,18 +264,20 @@ class MaquilaCnimeReport(models.Model):
         }
         # Log payload for debugging
         self.message_post(
-            body=_(
+            body=self.env._(
                 "Draft SIMEX payload (internal layout, not validated against "
-                "the official SIMEX format):\n%s"
-            )
-            % json.dumps(payload, indent=2, default=str),
+                "the official SIMEX format):\n%s",
+                json.dumps(payload, indent=2, default=str),
+            ),
         )
         return {
             "type": "ir.actions.client",
             "tag": "display_notification",
             "params": {
-                "title": _("SIMEX Payload Generated"),
-                "message": _("SIMEX payload generated successfully (offline mode)."),
+                "title": self.env._("SIMEX Payload Generated"),
+                "message": self.env._(
+                    "SIMEX payload generated successfully (offline mode)."
+                ),
                 "sticky": False,
                 "type": "success",
             },
