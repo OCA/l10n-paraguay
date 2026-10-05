@@ -372,19 +372,34 @@ ul.auto-toc {
 <p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/OCA/l10n-paraguay/tree/18.0/l10n_py_maquila_ops"><img alt="OCA/l10n-paraguay" src="https://img.shields.io/badge/github-OCA%2Fl10n--paraguay-lightgray.png?logo=github" /></a> <a class="reference external image-reference" href="https://translation.odoo-community.org/projects/l10n-paraguay-18-0/l10n-paraguay-18-0-l10n_py_maquila_ops"><img alt="Translate me on Weblate" src="https://img.shields.io/badge/weblate-Translate%20me-F47D42.png" /></a> <a class="reference external image-reference" href="https://runboat.odoo-community.org/builds?repo=OCA/l10n-paraguay&amp;target_branch=18.0"><img alt="Try me on Runboat" src="https://img.shields.io/badge/runboat-Try%20me-875A7B.png" /></a></p>
 <p>Operations of Paraguay’s Maquila regime (Ley 7547/2025):</p>
 <ul class="simple">
-<li><strong>Temporary admission</strong> of goods (Art. 14: 12 + 12 months) with a
-customs guarantee, CIF control and per-line remaining balance.</li>
+<li><strong>Temporary admission</strong> of goods with a customs guarantee, CIF
+control and per-line remaining balance. The stay follows Ley
+7547/2025 Art. 14 by type of good: raw materials and inputs 12 months
+from the import date (extendable once, up to the same period);
+containers and trailer boxes 12 months from the arrival declaration
+(no extension); other goods while the program is in force.</li>
 <li><strong>Export dispatches</strong> with traceability to the source admissions.</li>
-<li><strong>Customs guarantees</strong> (bank, insurance, deposit, mortgage) with
-available balance control.</li>
+<li><strong>Customs guarantees</strong> (bank, insurance, deposit, mortgage), per
+operation or global (Decreto 5714/2026 Art. 28), with available
+balance control and automatic expiry. Form and validity of the
+guarantee follow art. 293 of the Customs Code and are not validated
+by the module.</li>
 <li><strong>Fiscal positions</strong> for temporary admission and exempt export.</li>
 <li>Wizards for the <strong>Tributo Único Maquilador (TUM, 1%)</strong>, the <strong>IVA
 credit</strong> (compensate/transfer) and the <strong>VAN</strong> period computation.</li>
-<li><strong>Domestic-market sales</strong> control (Art. 18): pure maquila may sell up
-to 10% of the prior-year exported value.</li>
+<li><strong>Domestic-market sales</strong> control (Ley 7547/2025 Art. 18): only pure
+maquila is capped, at 10% of what it exported in the last year. A
+pure maquila with no exports in that period has a zero cap and cannot
+sell domestically, unless a Maquila manager sets an explicit, logged
+override on the order.</li>
 </ul>
 <p>All monetary comparisons and accounting entries are converted to the
 company currency.</p>
+<p>Open legal questions (not decided by the module): the law caps sales at
+10% of the “volumen exportado en el ultimo ano”; the module measures the
+exported FOB value (quantities of different products and units cannot be
+added) and reads “ultimo ano” as the previous calendar year. Both
+readings must be confirmed with the Secretaria Ejecutiva / DNIT.</p>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
@@ -404,8 +419,10 @@ company currency.</p>
 <li>Register a <strong>customs guarantee</strong> for the program.</li>
 <li>Create a <strong>temporary admission</strong> with its CIF amount and lines;
 admitting it checks the CNIME certificate and that the guarantee
-covers the CIF (converted to the guarantee currency). Use <em>Extend 12
-Months</em> for the Art. 14 extension.</li>
+covers the CIF (converted to the guarantee currency). Pick the type
+of good (it defines the Art. 14 deadline); for containers and trailer
+boxes also fill in the arrival declaration date. <em>Extend 12 Months</em>
+is only available for raw materials and inputs.</li>
 <li>Create an <strong>export</strong> and link it to its source admissions before
 confirming.</li>
 <li>Use the <strong>TUM</strong>, <strong>IVA credit</strong> and <strong>VAN</strong> wizards to compute and
