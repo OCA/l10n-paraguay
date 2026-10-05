@@ -25,7 +25,7 @@
                         name="action_extend"
                         string="Extend 12 Months"
                         type="object"
-                        invisible="state not in ['admitted', 'in_production'] or date_extended"
+                        invisible="state not in ['admitted', 'in_production'] or date_extended or good_type != 'raw_material_input'"
                     />
                     <button
                         name="action_close"
@@ -58,9 +58,15 @@
                             <field name="cnime_certificate" />
                             <field name="guarantee_id" />
                             <field name="supplier_id" />
+                            <field name="good_type" />
                         </group>
                         <group>
                             <field name="date_admission" />
+                            <field
+                                name="date_arrival"
+                                invisible="good_type != 'container_box'"
+                                required="good_type == 'container_box'"
+                            />
                             <field name="date_deadline" />
                             <field name="date_extended" />
                             <field

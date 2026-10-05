@@ -29,16 +29,46 @@ class MaquilaAdmission(models.Model):
         string="CNIME Certificate",
         tracking=True,
     )
+    good_type = fields.Selection(
+        [
+            ("raw_material_input", "Raw Materials and Inputs"),
+            ("container_box", "Containers and Trailer Boxes"),
+            ("capital_good", "Machinery, Tools and Other Goods"),
+        ],
+        string="Good Type",
+        required=True,
+        default="raw_material_input",
+        tracking=True,
+        help="Ley 7547/2025 Art. 14 stay limits per type of good:\n"
+        "- Raw materials and inputs: 12 months from the import date, "
+        "extendable once for up to the same period (biministerial "
+        "resolution).\n"
+        "- Containers and trailer boxes: 12 months maximum from the "
+        "arrival declaration; no extension.\n"
+        "- Other goods (machinery, tools, equipment): while the Maquila "
+        "program remains in force.",
+    )
     date_admission = fields.Date(
+        string="Import Date",
         required=True,
         default=fields.Date.today,
         tracking=True,
+    )
+    date_arrival = fields.Date(
+        string="Arrival Declaration Date",
+        tracking=True,
+        help="Date of the arrival declaration (declaracion de llegada). "
+        "Starts the 12-month stay of containers and trailer boxes "
+        "(Ley 7547/2025 Art. 14).",
     )
     date_deadline = fields.Date(
         string="Deadline",
         compute="_compute_date_deadline",
         store=True,
-        help="12 months from admission date",
+        help="Ley 7547/2025 Art. 14: 12 months from the import date (raw "
+        "materials and inputs), 12 months from the arrival declaration "
+        "(containers and trailer boxes), or the program benefit expiry "
+        "(other goods).",
     )
     date_extended = fields.Date(
         string="Extended Deadline",
@@ -87,18 +117,35 @@ class MaquilaAdmission(models.Model):
         store=True,
     )
 
-    @api.depends("date_admission")
+    @api.depends(
+        "good_type",
+        "date_admission",
+        "date_arrival",
+        "program_id.benefit_expiry",
+    )
     def _compute_date_deadline(self):
         for rec in self:
-            if rec.date_admission:
-                rec.date_deadline = rec.date_admission + relativedelta(months=12)
-            else:
-                rec.date_deadline = False
+            deadline = False
+            if rec.good_type == "container_box":
+                if rec.date_arrival:
+                    deadline = rec.date_arrival + relativedelta(months=12)
+            elif rec.good_type == "capital_good":
+                deadline = rec.program_id.benefit_expiry
+            elif rec.date_admission:
+                deadline = rec.date_admission + relativedelta(months=12)
+            rec.date_deadline = deadline
 
     def action_admit(self):
         for rec in self:
             if not rec.cnime_certificate:
                 raise UserError(_("CNIME certificate is required for admission."))
+            if rec.good_type == "container_box" and not rec.date_arrival:
+                raise UserError(
+                    _(
+                        "The arrival declaration date is required to admit "
+                        "containers and trailer boxes (Ley 7547/2025 Art. 14)."
+                    )
+                )
             if rec.guarantee_id:
                 company = rec.company_id or self.env.company
                 cif_in_guarantee = rec.currency_id._convert(
@@ -119,9 +166,27 @@ class MaquilaAdmission(models.Model):
         self.write({"state": "admitted"})
 
     def action_extend(self):
-        """Ley 7547/2025 Art. 14: temporary admission may be extended once for
-        a further 12 months (24 months total)."""
+        """Ley 7547/2025 Art. 14: raw materials and inputs may have their stay
+        extended (biministerial resolution) for a period not exceeding the
+        original 12 months. Containers and trailer boxes (12 months maximum)
+        and the other goods (stay tied to the program) cannot be extended."""
         for rec in self:
+            if rec.good_type == "container_box":
+                raise UserError(
+                    _(
+                        "Containers and trailer boxes stay at most 12 months "
+                        "from the arrival declaration and cannot be extended "
+                        "(Ley 7547/2025 Art. 14)."
+                    )
+                )
+            if rec.good_type == "capital_good":
+                raise UserError(
+                    _(
+                        "These goods may stay while the Maquila program is in "
+                        "force; there is no admission deadline to extend "
+                        "(Ley 7547/2025 Art. 14)."
+                    )
+                )
             if rec.state not in ("admitted", "in_production"):
                 raise UserError(
                     _("Only admitted goods can have their deadline extended.")
