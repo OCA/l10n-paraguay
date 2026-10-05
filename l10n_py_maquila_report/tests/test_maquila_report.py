@@ -1,6 +1,8 @@
 # Copyright 2026 KMEE
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import json
+
 from odoo import fields
 from odoo.exceptions import UserError
 from odoo.tests import tagged
@@ -105,6 +107,46 @@ class TestMaquilaReport(TransactionCase):
         self.report.action_generate()
         result = self.report.action_generate_simex_payload()
         self.assertEqual(result["type"], "ir.actions.client")
+
+    def test_report_name_and_currency(self):
+        self.assertIn("RES-BIM-REP-001", self.report.name)
+        self.assertEqual(self.report.currency_id, self.company.currency_id)
+        self.assertNotIn("l10n_py.maquila.cnime.report", self.report.display_name)
+
+    def test_report_lines_carry_currency(self):
+        self.report.action_generate()
+        self.assertIn('"currency"', self.report.export_data)
+
+    def _receive_in_maquila(self, qty, date):
+        loc = self.env.ref("l10n_py_maquila_ops.stock_location_maquila_admission")
+        supplier = self.env.ref("stock.stock_location_suppliers")
+        move = self.env["stock.move"].create(
+            {
+                "name": "rep receipt",
+                "product_id": self.product.id,
+                "product_uom_qty": qty,
+                "product_uom": self.product.uom_id.id,
+                "location_id": supplier.id,
+                "location_dest_id": loc.id,
+                "company_id": self.company.id,
+            }
+        )
+        move._action_confirm()
+        move._action_assign()
+        move.quantity = qty
+        move.picked = True
+        move._action_done()
+        move.move_line_ids.write({"date": date})
+
+    def test_stock_balance_respects_period_end(self):
+        self._receive_in_maquila(10, "2026-06-01 10:00:00")
+        self._receive_in_maquila(7, "2027-03-01 10:00:00")  # after period_end
+        self.report.action_generate()
+        balance = {
+            line["product"]: line["quantity"]
+            for line in json.loads(self.report.stock_balance)
+        }
+        self.assertEqual(balance[self.product.name], 10)
 
     def test_account_move_legend(self):
         move = self.env["account.move"].create(
