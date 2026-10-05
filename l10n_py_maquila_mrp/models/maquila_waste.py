@@ -66,8 +66,10 @@ class MaquilaWaste(models.Model):
         string="MADES Dictamen",
         help="Environmental clearance (MADES, ex-SEAM per Ley 6123/2018)",
     )
-    scrap_id = fields.Many2one(
-        "stock.scrap",
+    scrap_move_id = fields.Many2one(
+        "stock.move",
+        readonly=True,
+        copy=False,
     )
     nationalization_move_id = fields.Many2one(
         "account.move",
@@ -92,17 +94,37 @@ class MaquilaWaste(models.Model):
         so the physical write-off is traceable; nationalization and re-export
         keep their own document references (entry / dispatch)."""
         for rec in self:
-            if rec.destination == "destruction" and rec.product_id and not rec.scrap_id:
-                rec.scrap_id = self.env["stock.scrap"].create(
-                    {
-                        "product_id": rec.product_id.id,
-                        "scrap_qty": rec.quantity,
-                        "product_uom_id": rec.product_id.uom_id.id,
-                        "company_id": rec.company_id.id,
-                        "origin": rec.name,
-                    }
-                )
+            if (
+                rec.destination == "destruction"
+                and rec.product_id
+                and not rec.scrap_move_id
+            ):
+                rec.scrap_move_id = rec._create_scrap_move()
         self.write({"state": "completed"})
+
+    def _create_scrap_move(self):
+        """Draft the scrap move (Odoo 20 has no stock.scrap model anymore).
+
+        The move goes from the stock location of the first warehouse of the
+        company to the company scrap location; it stays in draft until the
+        warehouse user validates it.
+        """
+        self.ensure_one()
+        warehouse = self.env["stock.warehouse"].search(
+            [("company_id", "=", self.company_id.id)], limit=1
+        )
+        return self.env["stock.move"].create(
+            {
+                "product_id": self.product_id.id,
+                "product_uom_qty": self.quantity,
+                "uom_id": self.product_id.uom_id.id,
+                "location_id": warehouse.lot_stock_id.id,
+                "location_dest_id": self.company_id.scrap_location_id.id,
+                "company_id": self.company_id.id,
+                "is_scrap": True,
+                "origin": self.name,
+            }
+        )
 
     def action_pending(self):
         self.write({"state": "pending"})

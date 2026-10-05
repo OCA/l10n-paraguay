@@ -144,8 +144,8 @@ class TestMaquilaMrp(TransactionCase):
         self.assertTrue(waste.name)  # _rec_name populated
         waste.action_complete()
         self.assertEqual(waste.state, "completed")
-        self.assertTrue(waste.scrap_id)
-        self.assertEqual(waste.scrap_id.product_id, self.raw_nat)
+        self.assertTrue(waste.scrap_move_id)
+        self.assertEqual(waste.scrap_move_id.product_id, self.raw_nat)
 
     def test_waste_state_transitions(self):
         waste = self.env["l10n_py.maquila.waste"].create(

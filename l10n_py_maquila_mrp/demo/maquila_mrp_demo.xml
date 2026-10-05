@@ -5,6 +5,7 @@
     <!-- ============================================================ -->
 
     <record id="bom_chicote" model="mrp.bom">
+        <field name="company_id" ref="l10n_py_maquila_base.demo_company_py_maquila" />
         <field name="code">BOM-CHE-001</field>
         <field
             name="product_tmpl_id"
@@ -88,6 +89,7 @@
     <!-- ============================================================ -->
 
     <record id="bom_panel" model="mrp.bom">
+        <field name="company_id" ref="l10n_py_maquila_base.demo_company_py_maquila" />
         <field name="code">BOM-PPI-001</field>
         <field
             name="product_tmpl_id"

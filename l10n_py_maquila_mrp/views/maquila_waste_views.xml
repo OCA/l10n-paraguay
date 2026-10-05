@@ -58,7 +58,7 @@
                             <field name="seam_approval" />
                         </group>
                         <group>
-                            <field name="scrap_id" />
+                            <field name="scrap_move_id" />
                             <field name="nationalization_move_id" />
                         </group>
                     </group>
