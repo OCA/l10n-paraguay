@@ -11,9 +11,11 @@
     "license": "AGPL-3",
     "depends": [
         "l10n_py_maquila_base",
+        "account",
         "mail",
         "mrp",
         "mrp_account",
+        "stock",
     ],
     "data": [
         "security/ir.model.access.csv",
