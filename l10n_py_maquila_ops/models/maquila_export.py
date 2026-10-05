@@ -1,7 +1,7 @@
 # Copyright 2026 KMEE
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, fields, models
+from odoo import fields, models
 from odoo.exceptions import UserError
 
 
@@ -66,7 +66,7 @@ class MaquilaExport(models.Model):
         for rec in self:
             if not rec.admission_ids:
                 raise UserError(
-                    _(
+                    self.env._(
                         "Export must be linked to at least one source"
                         " admission for traceability."
                     )

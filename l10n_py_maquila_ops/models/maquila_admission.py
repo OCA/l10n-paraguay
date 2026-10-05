@@ -3,7 +3,7 @@
 
 from dateutil.relativedelta import relativedelta
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 
@@ -122,7 +122,7 @@ class MaquilaAdmission(models.Model):
             guarantee = rec.guarantee_id
             if guarantee.scope == "operation" and len(guarantee.admission_ids) > 1:
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "The guarantee %(guarantee)s is per operation and already "
                         "covers another admission. Use a global guarantee for "
                         "several operations.",
@@ -151,10 +151,12 @@ class MaquilaAdmission(models.Model):
     def action_admit(self):
         for rec in self:
             if not rec.cnime_certificate:
-                raise UserError(_("CNIME certificate is required for admission."))
+                raise UserError(
+                    self.env._("CNIME certificate is required for admission.")
+                )
             if rec.good_type == "container_box" and not rec.date_arrival:
                 raise UserError(
-                    _(
+                    self.env._(
                         "The arrival declaration date is required to admit "
                         "containers and trailer boxes (Ley 7547/2025 Art. 14)."
                     )
@@ -164,7 +166,7 @@ class MaquilaAdmission(models.Model):
                 admission_date = rec.date_admission or fields.Date.context_today(rec)
                 if guarantee.state != "active" or guarantee.date_end < admission_date:
                     raise UserError(
-                        _(
+                        self.env._(
                             "The guarantee %(guarantee)s is not active on the "
                             "admission date (Decreto 5714/2026 Art. 28).",
                             guarantee=guarantee.display_name,
@@ -179,7 +181,7 @@ class MaquilaAdmission(models.Model):
                 )
                 if rec.guarantee_id.amount_available < cif_in_guarantee:
                     raise UserError(
-                        _(
+                        self.env._(
                             "Insufficient guarantee. Available: %(available)s,"
                             " Required: %(required)s",
                             available=rec.guarantee_id.amount_available,
@@ -196,7 +198,7 @@ class MaquilaAdmission(models.Model):
         for rec in self:
             if rec.good_type == "container_box":
                 raise UserError(
-                    _(
+                    self.env._(
                         "Containers and trailer boxes stay at most 12 months "
                         "from the arrival declaration and cannot be extended "
                         "(Ley 7547/2025 Art. 14)."
@@ -204,7 +206,7 @@ class MaquilaAdmission(models.Model):
                 )
             if rec.good_type == "capital_good":
                 raise UserError(
-                    _(
+                    self.env._(
                         "These goods may stay while the Maquila program is in "
                         "force; there is no admission deadline to extend "
                         "(Ley 7547/2025 Art. 14)."
@@ -212,12 +214,14 @@ class MaquilaAdmission(models.Model):
                 )
             if rec.state not in ("admitted", "in_production"):
                 raise UserError(
-                    _("Only admitted goods can have their deadline extended.")
+                    self.env._("Only admitted goods can have their deadline extended.")
                 )
             if rec.date_extended:
-                raise UserError(_("This admission has already been extended once."))
+                raise UserError(
+                    self.env._("This admission has already been extended once.")
+                )
             if not rec.date_deadline:
-                raise UserError(_("The admission has no deadline to extend."))
+                raise UserError(self.env._("The admission has no deadline to extend."))
             rec.date_extended = rec.date_deadline + relativedelta(months=12)
 
     def action_in_production(self):
