@@ -4,7 +4,7 @@
 from dateutil.relativedelta import relativedelta
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class MaquilaAdmission(models.Model):
@@ -35,7 +35,6 @@ class MaquilaAdmission(models.Model):
             ("container_box", "Containers and Trailer Boxes"),
             ("capital_good", "Machinery, Tools and Other Goods"),
         ],
-        string="Good Type",
         required=True,
         default="raw_material_input",
         tracking=True,
@@ -117,6 +116,20 @@ class MaquilaAdmission(models.Model):
         store=True,
     )
 
+    @api.constrains("guarantee_id")
+    def _check_guarantee_scope(self):
+        for rec in self:
+            guarantee = rec.guarantee_id
+            if guarantee.scope == "operation" and len(guarantee.admission_ids) > 1:
+                raise ValidationError(
+                    _(
+                        "The guarantee %(guarantee)s is per operation and already "
+                        "covers another admission. Use a global guarantee for "
+                        "several operations.",
+                        guarantee=guarantee.display_name,
+                    )
+                )
+
     @api.depends(
         "good_type",
         "date_admission",
@@ -147,6 +160,16 @@ class MaquilaAdmission(models.Model):
                     )
                 )
             if rec.guarantee_id:
+                guarantee = rec.guarantee_id
+                admission_date = rec.date_admission or fields.Date.context_today(rec)
+                if guarantee.state != "active" or guarantee.date_end < admission_date:
+                    raise UserError(
+                        _(
+                            "The guarantee %(guarantee)s is not active on the "
+                            "admission date (Decreto 5714/2026 Art. 28).",
+                            guarantee=guarantee.display_name,
+                        )
+                    )
                 company = rec.company_id or self.env.company
                 cif_in_guarantee = rec.currency_id._convert(
                     rec.amount_cif,
