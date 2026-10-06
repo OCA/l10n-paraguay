@@ -29,6 +29,12 @@ class LibroCommonCase(TransactionCase):
         cls.tax_group = cls.env["account.tax.group"].create(
             {"name": "IVA Libros Test", "country_id": cls.country_py.id}
         )
+        # Self-sufficient fixture: a clean DB (e.g. OCA CI) has the generic
+        # chart, which lacks the tax groups/accounts these tests rely on.
+        if cls.company.chart_template != "py":
+            cls.env["account.chart.template"].try_loading(
+                "py", cls.company, install_demo=False
+            )
 
         cls.doc_type_factura = cls.env.ref("l10n_py_account.dc_py_f")
         cls.doc_type_autofactura = cls.env.ref("l10n_py_account.dc_py_af")
