@@ -8,6 +8,8 @@ from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 from odoo.tools import mute_logger
 
+from odoo.addons.l10n_py_account.tests.common import create_py_company
+
 
 @tagged("post_install", "-at_install", "l10n_py")
 class TestAccountAuthorization(TransactionCase):
@@ -16,8 +18,8 @@ class TestAccountAuthorization(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.company = create_py_company(cls)
         cls.Authorization = cls.env["account.authorization"]
-        cls.company = cls.env.ref("base.main_company")
         cls.country_py = cls.env.ref("base.py")
 
         # Obtener tipo de documento factura

@@ -2,6 +2,8 @@ from odoo.exceptions import ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
+from odoo.addons.l10n_py_account.tests.common import create_py_company
+
 
 @tagged("post_install", "-at_install", "l10n_py")
 class TestAccountJournal(TransactionCase):
@@ -10,8 +12,8 @@ class TestAccountJournal(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.company = create_py_company(cls)
         cls.Journal = cls.env["account.journal"]
-        cls.company = cls.env.ref("base.main_company")
 
     def test_establishment_validation(self):
         """Validación formato 3 dígitos"""

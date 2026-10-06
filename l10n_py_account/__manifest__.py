@@ -1,12 +1,11 @@
 {
     "name": "Paraguay - Accounting Extensions",
-    "version": "20.0.1.0.0",
+    "version": "20.0.1.1.0",
     "category": "Accounting/Localizations",
     "summary": "Accounting extensions for Paraguay localization",
     "author": "KMEE, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/l10n-paraguay",
     "license": "LGPL-3",
-    "post_init_hook": "post_init_hook",
     "depends": [
         "account",
         "l10n_py",
@@ -23,14 +22,13 @@
         "views/account_journal_views.xml",
         "views/account_move_views.xml",
         "security/ir.access.csv",
+        "views/account_tax_views.xml",
     ],
+    # Order matters: the demo company (and its chart of accounts) first
     "demo": [
         "demo/res_company_demo.xml",
         "demo/res_partner_demo.xml",
         "demo/account_authorization_demo.xml",
-    ],
-    # Loaded by post_init_hook, after the chart template is installed
-    "oca_data_manual": [
         "demo/product_product_demo.xml",
         "demo/account_customer_invoice_demo.xml",
         "demo/account_supplier_invoice_demo.xml",
