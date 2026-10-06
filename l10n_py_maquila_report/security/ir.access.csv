@@ -1,0 +1,6 @@
+id,name,model_id,group_id/id,operation,domain
+access_maquila_cnime_report_user,l10n_py.maquila.cnime.report user,l10n_py.maquila.cnime.report,l10n_py_maquila_base.group_maquila_user,r,
+access_maquila_cnime_report_manager,l10n_py.maquila.cnime.report manager,l10n_py.maquila.cnime.report,l10n_py_maquila_base.group_maquila_manager,crud,
+ir_rule_maquila_cnime_report_company,Maquila CNIME Report: multi-company,l10n_py.maquila.cnime.report,,crud,"
+            ['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]
+        "

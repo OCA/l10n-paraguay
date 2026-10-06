@@ -1,0 +1,8 @@
+id,name,model_id,group_id/id,operation,domain
+access_maquila_waste_user,l10n_py.maquila.waste user,l10n_py.maquila.waste,l10n_py_maquila_base.group_maquila_user,r,
+access_maquila_waste_manager,l10n_py.maquila.waste manager,l10n_py.maquila.waste,l10n_py_maquila_base.group_maquila_manager,crud,
+ir_rule_maquila_waste_company,Maquila Waste: multi-company,l10n_py.maquila.waste,,crud,"
+            ['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]
+        "
+access_maquila_van_wizard_user,l10n_py.maquila.van.wizard user,l10n_py.maquila.van.wizard,l10n_py_maquila_base.group_maquila_user,cru,
+access_maquila_van_wizard_manager,l10n_py.maquila.van.wizard manager,l10n_py.maquila.van.wizard,l10n_py_maquila_base.group_maquila_manager,crud,
