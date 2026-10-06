@@ -1,19 +1,56 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo noupdate="1">
-    <!-- Configurar empresa principal como paraguaya.
-         No cambiamos currency_id porque el módulo account puede haber
-         creado journal items con la moneda por defecto, y Odoo bloquea
-         cambios de moneda cuando ya existen asientos. -->
-    <record id="base.main_company" model="res.company">
+    <!-- Dedicated Paraguayan demo company. The Odoo demo company
+         (base.main_company) is left untouched: every demo record of the
+         Paraguayan localization lives in this company. -->
+
+    <record id="base.PYG" model="res.currency">
+        <field name="active" eval="True" />
+    </record>
+
+    <record id="partner_demo_company_py" model="res.partner" forcecreate="1">
         <field name="name">Empresa Demo Paraguay SRL</field>
+        <field name="is_company" eval="True" />
         <field name="country_id" ref="base.py" />
-        <field name="account_fiscal_country_id" ref="base.py" />
+        <field name="state_id" ref="l10n_py_base.state_py_asuncion" />
         <field name="street">Avda. Mariscal López 3456</field>
         <field name="city">Asunción</field>
-        <field name="state_id" ref="l10n_py_base.state_py_asuncion" />
         <field name="zip">1209</field>
         <field name="phone">+595 21 555 0000</field>
         <field name="email">info@empresademo.com.py</field>
         <field name="website">https://www.empresademo.com.py</field>
+        <field name="vat">80009401-8</field>
+        <field name="l10n_py_taxpayer_type">1</field>
     </record>
+
+    <record id="demo_company_py" model="res.company" forcecreate="1">
+        <field name="name">Empresa Demo Paraguay SRL</field>
+        <field name="partner_id" ref="partner_demo_company_py" />
+        <field name="currency_id" ref="base.PYG" />
+        <field name="country_id" ref="base.py" />
+        <field name="account_fiscal_country_id" ref="base.py" />
+    </record>
+
+    <!-- Make the company reachable from the demo users (the user stays on
+         base.main_company by default) -->
+    <function model="res.users" name="write">
+        <value
+            eval="[ref('base.user_root'), ref('base.user_admin'), ref('base.user_demo')]"
+        />
+        <value eval="{'company_ids': [(4, ref('demo_company_py'))]}" />
+    </function>
+
+    <!-- Load the Paraguayan chart of accounts in the demo company only.
+         install_demo=True is what allows the call while the registry is still
+         loading (no try_loading warning), and also loads the Odoo core
+         accounting demo data on the chart. -->
+    <function model="account.chart.template" name="try_loading">
+        <value eval="[]" />
+        <value>py</value>
+        <value
+            model="res.company"
+            eval="obj().env.ref('l10n_py_account.demo_company_py')"
+        />
+        <value name="install_demo" eval="True" />
+    </function>
 </odoo>

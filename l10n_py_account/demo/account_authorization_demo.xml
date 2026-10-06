@@ -4,6 +4,7 @@
 
     <!-- Timbrado vigente para facturas -->
     <record id="demo_authorization_001" model="account.authorization">
+        <field name="company_id" ref="demo_company_py" />
         <field name="name">12345678</field>
         <field
             name="date_from"
@@ -23,6 +24,7 @@
 
     <!-- Timbrado vigente alternativo -->
     <record id="demo_authorization_002" model="account.authorization">
+        <field name="company_id" ref="demo_company_py" />
         <field name="name">87654321</field>
         <field
             name="date_from"
@@ -42,6 +44,7 @@
 
     <!-- Timbrado para notas de crédito -->
     <record id="demo_authorization_credit_note" model="account.authorization">
+        <field name="company_id" ref="demo_company_py" />
         <field name="name">11223344</field>
         <field
             name="date_from"
@@ -61,6 +64,7 @@
 
     <!-- Timbrado por vencer (menos de 30 días) -->
     <record id="demo_authorization_to_expire" model="account.authorization">
+        <field name="company_id" ref="demo_company_py" />
         <field name="name">99887766</field>
         <field
             name="date_from"
@@ -80,6 +84,7 @@
 
     <!-- Timbrado vencido (para demostración) -->
     <record id="demo_authorization_expired" model="account.authorization">
+        <field name="company_id" ref="demo_company_py" />
         <field name="name">55667788</field>
         <field
             name="date_from"
@@ -99,6 +104,7 @@
 
     <!-- Timbrado para notas de débito -->
     <record id="demo_authorization_debit_note" model="account.authorization">
+        <field name="company_id" ref="demo_company_py" />
         <field name="name">44556677</field>
         <field
             name="date_from"
