@@ -4,6 +4,7 @@
 
     <!-- Cliente contribuyente - IVA general -->
     <record id="partner_contribuyente_general" model="res.partner">
+        <field name="company_id" ref="demo_company_py" />
         <field name="name">Comercial Guaraní SA</field>
         <field name="is_company">1</field>
         <field name="country_id" ref="base.py" />
@@ -20,6 +21,7 @@
 
     <!-- Cliente contribuyente - Servicios -->
     <record id="partner_contribuyente_servicios" model="res.partner">
+        <field name="company_id" ref="demo_company_py" />
         <field name="name">Consultora Paraná SRL</field>
         <field name="is_company">1</field>
         <field name="country_id" ref="base.py" />
@@ -36,6 +38,7 @@
 
     <!-- Proveedor contribuyente -->
     <record id="partner_proveedor_py" model="res.partner">
+        <field name="company_id" ref="demo_company_py" />
         <field name="name">Distribuidora del Este SA</field>
         <field name="is_company">1</field>
         <field name="country_id" ref="base.py" />
@@ -54,6 +57,7 @@
 
     <!-- Cliente no contribuyente con CI -->
     <record id="partner_no_contribuyente_ci" model="res.partner">
+        <field name="company_id" ref="demo_company_py" />
         <field name="name">María González</field>
         <field name="is_company">0</field>
         <field name="country_id" ref="base.py" />
@@ -70,6 +74,7 @@
 
     <!-- Cliente no contribuyente con Pasaporte -->
     <record id="partner_no_contribuyente_pasaporte" model="res.partner">
+        <field name="company_id" ref="demo_company_py" />
         <field name="name">Carlos Rodríguez</field>
         <field name="is_company">0</field>
         <field name="country_id" ref="base.py" />
@@ -86,6 +91,7 @@
     <!-- ============== EXTRANJERO ============== -->
 
     <record id="partner_extranjero" model="res.partner">
+        <field name="company_id" ref="demo_company_py" />
         <field name="name">Global Trade Inc</field>
         <field name="is_company">1</field>
         <field name="country_id" ref="base.us" />
@@ -100,6 +106,7 @@
     <!-- ============== SUCURSAL (mesmo RUC - para NRE) ============== -->
 
     <record id="partner_sucursal_propia" model="res.partner">
+        <field name="company_id" ref="demo_company_py" />
         <field name="name">Empresa Demo PY - Sucursal Encarnación</field>
         <field name="is_company">1</field>
         <field name="country_id" ref="base.py" />
