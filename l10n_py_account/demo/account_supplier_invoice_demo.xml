@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo noupdate="1">
     <!-- ============================================================ -->
     <!-- Facturas de Compra (no requieren timbrado propio)             -->
@@ -7,8 +7,13 @@
 
     <!-- Compra con IVA 10% -->
     <record id="demo_bill_iva10" model="account.move">
+        <field name="company_id" ref="demo_company_py" />
         <field name="partner_id" ref="partner_proveedor_py" />
         <field name="move_type">in_invoice</field>
+        <field
+            name="journal_id"
+            search="[('company_id', '=', ref('demo_company_py')), ('type', '=', 'purchase')]"
+        />
         <field name="invoice_date" eval="time.strftime('%Y-%m') + '-02'" />
         <field name="ref">FE 001-001-0000123</field>
         <field
@@ -26,8 +31,13 @@
 
     <!-- Compra con IVA 5% -->
     <record id="demo_bill_iva5" model="account.move">
+        <field name="company_id" ref="demo_company_py" />
         <field name="partner_id" ref="partner_proveedor_py" />
         <field name="move_type">in_invoice</field>
+        <field
+            name="journal_id"
+            search="[('company_id', '=', ref('demo_company_py')), ('type', '=', 'purchase')]"
+        />
         <field name="invoice_date" eval="time.strftime('%Y-%m') + '-04'" />
         <field name="ref">FE 001-001-0000456</field>
         <field
@@ -45,8 +55,13 @@
 
     <!-- Compra mixta -->
     <record id="demo_bill_mixta" model="account.move">
+        <field name="company_id" ref="demo_company_py" />
         <field name="partner_id" ref="partner_proveedor_py" />
         <field name="move_type">in_invoice</field>
+        <field
+            name="journal_id"
+            search="[('company_id', '=', ref('demo_company_py')), ('type', '=', 'purchase')]"
+        />
         <field name="invoice_date" eval="time.strftime('%Y-%m') + '-06'" />
         <field name="ref">FE 001-001-0000789</field>
         <field

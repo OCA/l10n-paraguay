@@ -15,6 +15,48 @@ def _ref_or_skip(test_case, xml_id):
 class TestDemoData(TransactionCase):
     """Valida que os dados demo do l10n_py_account foram carregados corretamente."""
 
+    def test_demo_company(self):
+        """The Paraguayan demo data lives in its own company"""
+        company = _ref_or_skip(self, "l10n_py_account.demo_company_py")
+        self.assertEqual(company.country_id, self.env.ref("base.py"))
+        self.assertEqual(company.currency_id, self.env.ref("base.PYG"))
+        self.assertEqual(company.city, "Asunción")
+        self.assertEqual(company.chart_template, "py")
+        self.assertEqual(company.partner_id.vat, "80009401-8")
+        self.assertTrue(
+            self.env["account.journal"].search_count(
+                [("company_id", "=", company.id), ("type", "=", "sale")]
+            )
+        )
+
+    def test_demo_records_belong_to_demo_company(self):
+        """Partners, products, timbrados and invoices are tied to the PY company"""
+        company = _ref_or_skip(self, "l10n_py_account.demo_company_py")
+        for xml_id in (
+            "l10n_py_account.partner_contribuyente_general",
+            "l10n_py_account.product_iva_10_electronica",
+            "l10n_py_account.demo_authorization_001",
+            "l10n_py_account.demo_invoice_fe_iva10",
+            "l10n_py_account.demo_bill_iva10",
+        ):
+            self.assertEqual(self.env.ref(xml_id).company_id, company, xml_id)
+
+    def test_main_company_untouched(self):
+        """base.main_company keeps the Odoo demo setup: no PY chart nor PY data"""
+        main = self.env.ref("base.main_company")
+        company = _ref_or_skip(self, "l10n_py_account.demo_company_py")
+        self.assertNotEqual(main, company)
+        self.assertNotEqual(main.chart_template, "py")
+        self.assertNotEqual(main.country_id, self.env.ref("base.py"))
+        self.assertFalse(
+            self.env["account.move"].search_count(
+                [
+                    ("company_id", "=", main.id),
+                    ("l10n_py_authorization_id", "!=", False),
+                ]
+            )
+        )
+
     def test_demo_partners_exist(self):
         """Partners demo foram criados com dados corretos"""
         partner = _ref_or_skip(self, "l10n_py_account.partner_contribuyente_general")
