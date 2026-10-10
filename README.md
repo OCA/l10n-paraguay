@@ -23,7 +23,7 @@ Available addons
 addon | version | maintainers | summary
 --- | --- | --- | ---
 [l10n_py](l10n_py/) | 18.0.2.0.0 |  | Localización contable para Paraguay
-[l10n_py_account](l10n_py_account/) | 18.0.1.0.0 |  | Accounting extensions for Paraguay localization
+[l10n_py_account](l10n_py_account/) | 18.0.1.1.0 |  | Accounting extensions for Paraguay localization
 [l10n_py_base](l10n_py_base/) | 18.0.1.0.0 |  | Base localization data for Paraguay
 [l10n_py_edi_base](l10n_py_edi_base/) | 18.0.1.0.0 |  | Base module for Electronic Invoicing in Paraguay
 [l10n_py_edi_sifen](l10n_py_edi_sifen/) | 18.0.1.0.0 |  | Direct SIFEN transmission via pysifen library
