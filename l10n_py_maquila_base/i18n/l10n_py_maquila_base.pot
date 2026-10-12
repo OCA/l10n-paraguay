@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -52,11 +52,6 @@ msgstr ""
 #. module: l10n_py_maquila_base
 #: model:ir.model.fields,field_description:l10n_py_maquila_base.field_l10n_py_maquila_program__activity_type_icon
 msgid "Activity Type Icon"
-msgstr ""
-
-#. module: l10n_py_maquila_base
-#: model:product.template,name:l10n_py_maquila_base.product_aditivo_uv_product_template
-msgid "Aditivo UV"
 msgstr ""
 
 #. module: l10n_py_maquila_base
@@ -115,11 +110,6 @@ msgid "CNIME Resolution Expiry"
 msgstr ""
 
 #. module: l10n_py_maquila_base
-#: model:product.template,name:l10n_py_maquila_base.product_cable_cobre_product_template
-msgid "Cable de Cobre 1.5mm²"
-msgstr ""
-
-#. module: l10n_py_maquila_base
 #: model:ir.model.fields.selection,name:l10n_py_maquila_base.selection__l10n_py_maquila_program__maquila_type__ociosidad
 msgid "Capacidad Ociosa"
 msgstr ""
@@ -127,16 +117,6 @@ msgstr ""
 #. module: l10n_py_maquila_base
 #: model:ir.model.fields,help:l10n_py_maquila_base.field_res_company__l10n_py_is_maquiladora
 msgid "Check if this company operates under Maquila regime (Ley 7547/2025)"
-msgstr ""
-
-#. module: l10n_py_maquila_base
-#: model:product.template,name:l10n_py_maquila_base.product_chicote_eletrico_product_template
-msgid "Chicote Eléctrico Automotriz"
-msgstr ""
-
-#. module: l10n_py_maquila_base
-#: model:product.template,name:l10n_py_maquila_base.product_cinta_aislante_product_template
-msgid "Cinta Aislante PVC"
 msgstr ""
 
 #. module: l10n_py_maquila_base
@@ -163,11 +143,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:l10n_py_maquila_base.view_maquila_program_form
 #: model_terms:ir.ui.view,arch_db:l10n_py_maquila_base.view_maquila_program_search
 msgid "Company"
-msgstr ""
-
-#. module: l10n_py_maquila_base
-#: model:product.template,name:l10n_py_maquila_base.product_conector_12pin_product_template
-msgid "Conector 12-pin"
 msgstr ""
 
 #. module: l10n_py_maquila_base
@@ -206,6 +181,7 @@ msgstr ""
 #. module: l10n_py_maquila_base
 #: model:ir.model.fields,field_description:l10n_py_maquila_base.field_l10n_py_maquila_program__display_name
 #: model:ir.model.fields,field_description:l10n_py_maquila_base.field_l10n_py_maquila_program_product__display_name
+#: model:ir.model.fields,field_description:l10n_py_maquila_base.field_res_company__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -251,11 +227,6 @@ msgid "Foreign parent company (owner of temporary goods)"
 msgstr ""
 
 #. module: l10n_py_maquila_base
-#: model_terms:ir.ui.view,arch_db:l10n_py_maquila_base.view_maquila_program_search
-msgid "Group By"
-msgstr ""
-
-#. module: l10n_py_maquila_base
 #: model:ir.model.fields,field_description:l10n_py_maquila_base.field_l10n_py_maquila_program__has_message
 msgid "Has Message"
 msgstr ""
@@ -263,6 +234,7 @@ msgstr ""
 #. module: l10n_py_maquila_base
 #: model:ir.model.fields,field_description:l10n_py_maquila_base.field_l10n_py_maquila_program__id
 #: model:ir.model.fields,field_description:l10n_py_maquila_base.field_l10n_py_maquila_program_product__id
+#: model:ir.model.fields,field_description:l10n_py_maquila_base.field_res_company__id
 msgid "ID"
 msgstr ""
 
@@ -375,19 +347,9 @@ msgid "Ley 7547/2025"
 msgstr ""
 
 #. module: l10n_py_maquila_base
-#: model:account.analytic.plan,name:l10n_py_maquila_base.analytic_plan_maquila
 #: model:ir.ui.menu,name:l10n_py_maquila_base.menu_maquila_root
+#: model:res.groups.privilege,name:l10n_py_maquila_base.res_groups_privilege_maquila
 msgid "Maquila"
-msgstr ""
-
-#. module: l10n_py_maquila_base
-#: model:account.analytic.account,name:l10n_py_maquila_base.analytic_account_program_pura
-msgid "Maquila - Chicotes Eléctricos (Pura)"
-msgstr ""
-
-#. module: l10n_py_maquila_base
-#: model:account.analytic.account,name:l10n_py_maquila_base.analytic_account_program_ociosidad
-msgid "Maquila - Plásticos Inyectados (Ociosidad)"
 msgstr ""
 
 #. module: l10n_py_maquila_base
@@ -509,18 +471,8 @@ msgid "OCA Agreement linked to CNIME contract"
 msgstr ""
 
 #. module: l10n_py_maquila_base
-#: model:product.template,name:l10n_py_maquila_base.product_panel_plastico_product_template
-msgid "Panel Plástico Interior"
-msgstr ""
-
-#. module: l10n_py_maquila_base
 #: model:ir.model.fields,help:l10n_py_maquila_base.field_l10n_py_maquila_program__internal_sale_pct
 msgid "Percentage allowed for domestic sale (capacidad ociosa type)"
-msgstr ""
-
-#. module: l10n_py_maquila_base
-#: model:product.template,name:l10n_py_maquila_base.product_polimero_abs_product_template
-msgid "Polímero ABS"
 msgstr ""
 
 #. module: l10n_py_maquila_base
@@ -630,11 +582,6 @@ msgstr ""
 #. module: l10n_py_maquila_base
 #: model:ir.model.constraint,message:l10n_py_maquila_base.constraint_l10n_py_maquila_program_code_company_uniq
 msgid "The resolution code must be unique per company."
-msgstr ""
-
-#. module: l10n_py_maquila_base
-#: model:product.template,name:l10n_py_maquila_base.product_parafusos_m4_product_template
-msgid "Tornillos M4"
 msgstr ""
 
 #. module: l10n_py_maquila_base
