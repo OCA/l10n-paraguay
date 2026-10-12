@@ -29,6 +29,8 @@ addon | version | maintainers | summary
 [l10n_py_edi_sifen](l10n_py_edi_sifen/) | 18.0.1.0.0 |  | Direct SIFEN transmission via pysifen library
 [l10n_py_libros](l10n_py_libros/) | 18.0.1.0.0 |  | Registro de comprobantes Ventas/Compras/Ingresos/Egresos (DNIT)
 [l10n_py_maquila_base](l10n_py_maquila_base/) | 18.0.1.0.0 |  | Base module for Paraguay Maquila regime (Ley 7547/2025)
+[l10n_py_maquila_mrp](l10n_py_maquila_mrp/) | 18.0.1.0.0 |  | BOM coefficients, VAN calculation, and waste management for Maquila
+[l10n_py_maquila_ops](l10n_py_maquila_ops/) | 18.0.1.0.0 |  | Temporary admission, export, guarantees and fiscal ops for Maquila
 
 [//]: # (end addons)
 
