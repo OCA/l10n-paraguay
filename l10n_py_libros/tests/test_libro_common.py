@@ -156,6 +156,15 @@ class LibroCommonCase(TransactionCase):
                 "type_tax_use": "sale",
             }
         )
+        cls.tax_exonerado = cls.env["account.tax"].create(
+            {
+                "name": "Exonerado Libros Test",
+                "amount": 0.0,
+                "amount_type": "percent",
+                "type_tax_use": "sale",
+                "l10n_py_iva_affectation": "2",
+            }
+        )
         cls.tax_10_purchase = cls.env["account.tax"].create(
             {
                 "name": "IVA 10% Compras Libros Test",
