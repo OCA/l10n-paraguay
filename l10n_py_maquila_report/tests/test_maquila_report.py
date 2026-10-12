@@ -66,11 +66,14 @@ class TestMaquilaReport(TransactionCase):
                 ],
             }
         )
+        # Admission and export are created "now": the period follows the
+        # current year instead of a fixed one.
+        cls.year = fields.Date.today().year
         cls.report = cls.env["l10n_py.maquila.cnime.report"].create(
             {
                 "program_id": cls.program.id,
-                "period_start": fields.Date.to_date("2026-01-01"),
-                "period_end": fields.Date.to_date("2026-12-31"),
+                "period_start": fields.Date.to_date(f"{cls.year}-01-01"),
+                "period_end": fields.Date.to_date(f"{cls.year}-12-31"),
                 "employment_count": 25,
             }
         )
@@ -139,8 +142,10 @@ class TestMaquilaReport(TransactionCase):
         move.move_line_ids.write({"date": date})
 
     def test_stock_balance_respects_period_end(self):
-        self._receive_in_maquila(10, "2026-06-01 10:00:00")
-        self._receive_in_maquila(7, "2027-03-01 10:00:00")  # after period_end
+        self._receive_in_maquila(10, f"{self.year}-06-01 10:00:00")
+        self._receive_in_maquila(
+            7, f"{self.year + 1}-03-01 10:00:00"
+        )  # after period_end
         self.report.action_generate()
         balance = {
             line["product"]: line["quantity"]
