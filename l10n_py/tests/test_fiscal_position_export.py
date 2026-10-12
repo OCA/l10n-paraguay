@@ -121,3 +121,18 @@ class TestFiscalPositionExport(TransactionCase):
             "Con socio del exterior la export (prioridad 2) debe ganarle a "
             "cualquier otra auto_apply",
         )
+
+    def test_tax_loaded_with_iva_affectation_without_l10n_py_account(self):
+        # The chart CSV carries l10n_py_iva_affectation, so the field must be
+        # owned by l10n_py: the chart loader drops columns that are not fields.
+        company = self.env["res.company"].create({"name": "PY Co Aff"})
+        self.env["account.chart.template"].try_loading(
+            "py", company=company, install_demo=False
+        )
+        taxes = self.env["account.tax"].search(
+            [("company_id", "=", company.id), ("type_tax_use", "=", "sale")]
+        )
+        self.assertTrue(taxes)
+        self.assertEqual(
+            set(taxes.mapped("l10n_py_iva_affectation")) - {False}, {"1", "2", "3"}
+        )
