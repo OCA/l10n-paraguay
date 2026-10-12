@@ -30,6 +30,8 @@ NC_ND_TABLE = {
 }
 
 LOTE_LETRA_MAP = {"ventas": "V", "compras": "C", "ingresos": "I", "egresos": "E"}
+# Guaranies: three buckets rounded on their own can differ by up to 1.5
+LIBRO_ROUNDING_TOLERANCE = 3
 
 
 class L10nPyLibro(models.Model):
@@ -94,6 +96,15 @@ class L10nPyLibro(models.Model):
         "unique(company_id, tipo_registro, obligacion, year, month)",
         "Ya existe un libro para esta empresa/tipo de registro/obligación/período.",
     )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get("lote_letra"):
+                vals["lote_letra"] = LOTE_LETRA_MAP.get(
+                    vals.get("tipo_registro"), False
+                )
+        return super().create(vals_list)
 
     def _default_lote_letra(self):
         tipo = self.env.context.get("default_tipo_registro")
@@ -215,17 +226,21 @@ class L10nPyLibro(models.Model):
         b5 = round(
             self._convert_amount_to_pyg(move, move.l10n_py_amount_subtotal_5 or 0)
         )
+        # Field 11 of the DNIT spec is "no gravado o exento": the exonerated
+        # amount (l10n_py_account) belongs there together with the exempt one.
         exento = round(
-            self._convert_amount_to_pyg(move, move.l10n_py_amount_exempt or 0)
+            self._convert_amount_to_pyg(
+                move,
+                (move.l10n_py_amount_exempt or 0)
+                + (move.l10n_py_amount_exonerado or 0),
+            )
         )
-        # D1 item 3 - cada balde é convertido/arredondado independentemente,
-        # o que pode deixar um resíduo de arredondamento (moeda estrangeira,
-        # múltiplos baldes). O resíduo é absorvido pelo maior balde não-zero
-        # para garantir o invariante 9+10+11 == 12 exatamente, em vez de só
-        # "por construção" (correção O1).
+        # Each bucket is converted and rounded on its own. Only a rounding
+        # residue is absorbed by the largest bucket; a bigger gap is left in
+        # place so the line check against the invoice total reports it.
         target_total = self._get_total_in_pyg(move)
         residue = target_total - (b10 + b5 + exento)
-        if residue:
+        if residue and abs(residue) <= LIBRO_ROUNDING_TOLERANCE:
             buckets = {"b10": b10, "b5": b5, "exento": exento}
             nonzero = {key: value for key, value in buckets.items() if value}
             if nonzero:
@@ -287,7 +302,7 @@ class L10nPyLibro(models.Model):
                     "f_monto_gravado_10": b10,
                     "f_monto_gravado_5": b5,
                     "f_monto_exento": exento,
-                    "f_monto_total": b10 + b5 + exento,
+                    "f_monto_total": self._get_total_in_pyg(move),
                 }
             )
 
