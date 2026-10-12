@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
 
@@ -340,3 +342,64 @@ class TestLibroVentasCompras(LibroCommonCase):
         self.assertEqual(line.state, "ok", line.error_message)
         invoice.l10n_py_libro_supplier_timbrado = False
         self.assertEqual(line.state, "erro")
+
+    def test_ventas_solo_exonerado_va_al_campo_no_gravado(self):
+        invoice = self._create_invoice(
+            "out_invoice", [(self.product, self.tax_exonerado, 5000.0)]
+        )
+        invoice.action_post()
+        libro = self._create_libro("ventas")
+        libro.action_generate_lines()
+        line = libro.line_ids
+        self.assertEqual(line.state, "ok", line.error_message)
+        self.assertEqual(line.f_monto_gravado_10, 0)
+        self.assertEqual(line.f_monto_gravado_5, 0)
+        self.assertEqual(line.f_monto_exento, 5000)
+        self.assertEqual(line.f_monto_total, 5000)
+
+    def test_ventas_mixta_exonerado_no_se_suma_al_gravado_10(self):
+        invoice = self._create_invoice(
+            "out_invoice",
+            [
+                (self.product, self.tax_10, 1100.0),
+                (self.product, self.tax_exonerado, 900.0),
+            ],
+        )
+        invoice.action_post()
+        libro = self._create_libro("ventas")
+        libro.action_generate_lines()
+        line = libro.line_ids
+        self.assertEqual(line.state, "ok", line.error_message)
+        self.assertEqual(line.f_monto_gravado_10, 1100)
+        self.assertEqual(line.f_monto_exento, 900)
+        self.assertEqual(line.f_monto_total, 2000)
+
+    def test_residuo_mayor_que_redondeo_no_se_redistribuye(self):
+        invoice = self._create_invoice(
+            "out_invoice", [(self.product, self.tax_10, 1100.0)]
+        )
+        invoice.action_post()
+        libro = self._create_libro("ventas")
+        with patch.object(type(libro), "_get_total_in_pyg", return_value=1100 + 500):
+            libro.action_generate_lines()
+        line = libro.line_ids
+        self.assertEqual(line.f_monto_gravado_10, 1100)
+        self.assertEqual(line.state, "erro")
+
+    def test_wizard_asigna_letra_de_lote_por_tipo(self):
+        wizard = self.env["l10n_py.libro.generate.wizard"].create(
+            {
+                "company_id": self.company.id,
+                "year": self.TEST_YEAR,
+                "month": self.TEST_MONTH,
+                "incluir_ventas": True,
+                "incluir_compras": True,
+            }
+        )
+        wizard.action_generate()
+        libros = self.env["l10n_py.libro"].search(
+            [("company_id", "=", self.company.id), ("year", "=", self.TEST_YEAR)]
+        )
+        letras = {libro.tipo_registro: libro.lote_letra for libro in libros}
+        self.assertEqual(letras.get("ventas"), "V")
+        self.assertEqual(letras.get("compras"), "C")
