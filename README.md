@@ -31,6 +31,7 @@ addon | version | maintainers | summary
 [l10n_py_maquila_base](l10n_py_maquila_base/) | 18.0.1.0.0 |  | Base module for Paraguay Maquila regime (Ley 7547/2025)
 [l10n_py_maquila_mrp](l10n_py_maquila_mrp/) | 18.0.1.0.0 |  | BOM coefficients, VAN calculation, and waste management for Maquila
 [l10n_py_maquila_ops](l10n_py_maquila_ops/) | 18.0.1.0.0 |  | Temporary admission, export, guarantees and fiscal ops for Maquila
+[l10n_py_maquila_report](l10n_py_maquila_report/) | 18.0.1.0.0 |  | CNIME reports, dashboard, SIFEN extension, and SIMEX for Maquila
 
 [//]: # (end addons)
 
