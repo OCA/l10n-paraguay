@@ -1,10 +1,11 @@
 [project]
 name = "odoo-addons-oca-l10n-paraguay"
-version = "20.0.20261005.2"
+version = "20.0.20261012.0"
 dependencies = [
     "odoo-addon-l10n_py==20.0.*",
     "odoo-addon-l10n_py_account==20.0.*",
     "odoo-addon-l10n_py_base==20.0.*",
+    "odoo-addon-l10n_py_edi_base==20.0.*",
 ]
 classifiers=[
     "Programming Language :: Python",
