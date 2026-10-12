@@ -412,13 +412,46 @@ class TestMaquilaOps(TransactionCase):
                         [
                             self.env.ref("base.group_user").id,
                             self.env.ref("sales_team.group_sale_manager").id,
+                            self.env.ref("stock.group_stock_user").id,
+                            self.env.ref("l10n_py_maquila_base.group_maquila_user").id,
                         ],
                     )
                 ],
             }
         )
-        with self.assertRaises(UserError):
+        with self.assertRaisesRegex(UserError, "Only Maquila managers"):
             order.with_user(user).action_confirm()
+
+    def _plain_salesman(self):
+        return self.env["res.users"].create(
+            {
+                "name": "Plain Salesman",
+                "login": "maquila_plain_sales",
+                "groups_id": [
+                    (
+                        6,
+                        0,
+                        [
+                            self.env.ref("base.group_user").id,
+                            self.env.ref("sales_team.group_sale_manager").id,
+                            self.env.ref("stock.group_stock_user").id,
+                        ],
+                    )
+                ],
+            }
+        )
+
+    def test_domestic_sale_within_cap_without_maquila_group(self):
+        self._prior_year_export(100000)  # cap = 10000
+        order = self._domestic_sale(50)  # 5000
+        order.with_user(self._plain_salesman()).action_confirm()
+        self.assertEqual(order.state, "sale")
+
+    def test_domestic_sale_exceeds_cap_without_maquila_group(self):
+        self._prior_year_export(100000)  # cap = 10000
+        order = self._domestic_sale(200)  # 20000
+        with self.assertRaisesRegex(UserError, "would exceed"):
+            order.with_user(self._plain_salesman()).action_confirm()
 
     def test_domestic_cap_skipped_for_non_pura(self):
         # A separate program so it does not affect the shared "pura" one.

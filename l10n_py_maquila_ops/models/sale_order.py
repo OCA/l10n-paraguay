@@ -71,7 +71,10 @@ class SaleOrder(models.Model):
     def action_confirm(self):
         py_country = self.env.ref("base.py", raise_if_not_found=False)
         for order in self:
-            program = order.l10n_py_maquila_program_id
+            # A salesperson without a maquila group must still be able to
+            # confirm: the cap is a company rule, not a permission, so the
+            # program and the exports are read with sudo.
+            program = order.sudo().l10n_py_maquila_program_id
             # Art. 18 caps domestic sales only for the "pura" modality.
             if not (program and py_country and program.maquila_type == "pura"):
                 continue
@@ -127,12 +130,16 @@ class SaleOrder(models.Model):
         today = fields.Date.context_today(self)
         pct = program.internal_sale_pct or 10.0
         year = today.year
-        prior_exports = self.env["l10n_py.maquila.export.line"].search(
-            [
-                ("export_id.program_id", "=", program.id),
-                ("export_id.date_export", ">=", f"{year - 1}-01-01"),
-                ("export_id.date_export", "<=", f"{year - 1}-12-31"),
-            ]
+        prior_exports = (
+            self.env["l10n_py.maquila.export.line"]
+            .sudo()
+            .search(
+                [
+                    ("export_id.program_id", "=", program.id),
+                    ("export_id.date_export", ">=", f"{year - 1}-01-01"),
+                    ("export_id.date_export", "<=", f"{year - 1}-12-31"),
+                ]
+            )
         )
         export_base = sum(
             line.currency_id._convert(
@@ -145,13 +152,17 @@ class SaleOrder(models.Model):
         )
         cap = export_base * pct / 100.0
         py_country = self.env.ref("base.py")
-        other_domestic = self.search(
-            [
-                ("l10n_py_maquila_program_id", "=", program.id),
-                ("state", "=", "sale"),
-                ("id", "!=", self.id),
-            ]
-        ).filtered(lambda o: o.partner_id.country_id == py_country)
+        other_domestic = (
+            self.sudo()
+            .search(
+                [
+                    ("l10n_py_maquila_program_id", "=", program.id),
+                    ("state", "=", "sale"),
+                    ("id", "!=", self.id),
+                ]
+            )
+            .filtered(lambda o: o.partner_id.country_id == py_country)
+        )
         already = sum(
             o.currency_id._convert(o.amount_untaxed, company_currency, company, today)
             for o in other_domestic
