@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -68,6 +68,12 @@ msgid ""
 msgstr ""
 
 #. module: l10n_py_edi_sifen
+#: model:ir.model.fields,field_description:l10n_py_edi_sifen.field_l10n_py_edi_connector__display_name
+#: model:ir.model.fields,field_description:l10n_py_edi_sifen.field_res_company__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: l10n_py_edi_sifen
 #: model_terms:ir.ui.view,arch_db:l10n_py_edi_sifen.view_edi_connector_form_sifen
 msgid ""
 "El certificado digital PKCS12 se configura en la ficha de la empresa.\n"
@@ -84,6 +90,12 @@ msgstr ""
 #. module: l10n_py_edi_sifen
 #: model:ir.model.fields,field_description:l10n_py_edi_sifen.field_res_company__l10n_py_certificate_expiry
 msgid "Expiración"
+msgstr ""
+
+#. module: l10n_py_edi_sifen
+#: model:ir.model.fields,field_description:l10n_py_edi_sifen.field_l10n_py_edi_connector__id
+#: model:ir.model.fields,field_description:l10n_py_edi_sifen.field_res_company__id
+msgid "ID"
 msgstr ""
 
 #. module: l10n_py_edi_sifen
