@@ -1,6 +1,7 @@
 # Copyright 2026 KMEE
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from odoo import fields
 from odoo.exceptions import UserError
 from odoo.tests import Form, tagged
 from odoo.tests.common import TransactionCase
@@ -12,6 +13,12 @@ class TestMaquilaMrp(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.company = cls.env.company
+        # Productions are created "now", so the VAN period follows the
+        # current year instead of a fixed one.
+        year = fields.Date.today().year
+        cls.period_start = f"{year}-01-01"
+        cls.period_end = f"{year}-12-31"
+        cls.period_mid = f"{year}-06-01"
         cls.matriz = cls.env["res.partner"].create({"name": "MRP Matriz"})
         cls.program = cls.env["l10n_py.maquila.program"].create(
             {
@@ -169,8 +176,8 @@ class TestMaquilaMrp(TransactionCase):
         wiz = self.env["l10n_py.maquila.van.wizard"].create(
             {
                 "program_id": self.program.id,
-                "period_start": "2026-01-01",
-                "period_end": "2026-12-31",
+                "period_start": self.period_start,
+                "period_end": self.period_end,
                 "total_cost": 8000,
                 "imported_cost": 3000,
             }
@@ -182,8 +189,8 @@ class TestMaquilaMrp(TransactionCase):
         wiz = self.env["l10n_py.maquila.van.wizard"].create(
             {
                 "program_id": self.program.id,
-                "period_start": "2026-01-01",
-                "period_end": "2026-12-31",
+                "period_start": self.period_start,
+                "period_end": self.period_end,
             }
         )
         self.assertEqual(wiz.van_amount, 0)
@@ -194,8 +201,8 @@ class TestMaquilaMrp(TransactionCase):
         wiz = self.env["l10n_py.maquila.van.wizard"].create(
             {
                 "program_id": self.program.id,
-                "period_start": "2026-01-01",
-                "period_end": "2026-12-31",
+                "period_start": self.period_start,
+                "period_end": self.period_end,
             }
         )
         with self.assertRaises(UserError):
@@ -210,14 +217,14 @@ class TestMaquilaMrp(TransactionCase):
                 "name": "labor",
                 "account_id": self.analytic.id,
                 "amount": -8000,
-                "date": "2026-06-01",
+                "date": self.period_mid,
             }
         )
         wiz = self.env["l10n_py.maquila.van.wizard"].create(
             {
                 "program_id": self.program.id,
-                "period_start": "2026-01-01",
-                "period_end": "2026-12-31",
+                "period_start": self.period_start,
+                "period_end": self.period_end,
             }
         )
         with self.assertRaises(UserError):
@@ -231,7 +238,7 @@ class TestMaquilaMrp(TransactionCase):
                 "name": "total cost",
                 "account_id": self.analytic.id,
                 "amount": -8000,
-                "date": "2026-06-01",
+                "date": self.period_mid,
             }
         )
         mo = self._make_done_production()
@@ -239,8 +246,8 @@ class TestMaquilaMrp(TransactionCase):
         wiz = self.env["l10n_py.maquila.van.wizard"].create(
             {
                 "program_id": self.program.id,
-                "period_start": "2026-01-01",
-                "period_end": "2026-12-31",
+                "period_start": self.period_start,
+                "period_end": self.period_end,
             }
         )
         wiz.action_compute()
@@ -288,11 +295,11 @@ class TestMaquilaMrp(TransactionCase):
                 "name": "total cost",
                 "account_id": self.analytic.id,
                 "amount": -1000,
-                "date": "2026-06-01",
+                "date": self.period_mid,
             }
         )
         self._make_done_production(bom)
-        vals = self.program._maquila_van_for_period("2026-01-01", "2026-12-31")
+        vals = self.program._maquila_van_for_period(self.period_start, self.period_end)
         # 4 units @ 5 of Mercosul origin are foreign for the VAN.
         self.assertEqual(vals["mercosul_cost"], 20)
         self.assertEqual(vals["van_amount"], 980)
