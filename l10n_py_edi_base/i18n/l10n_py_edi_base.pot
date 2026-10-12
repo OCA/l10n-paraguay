@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -758,16 +758,20 @@ msgid "Dirección de Salida (E920)"
 msgstr ""
 
 #. module: l10n_py_edi_base
+#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__display_name
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move_send_edi_wizard__display_name
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_associated_document__display_name
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_edi_cancel_wizard__display_name
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_edi_connector__display_name
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_edi_document_type__display_name
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_edi_log__display_name
+#: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_edi_logging_mixin__display_name
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_number_inutilization__display_name
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_transport__display_name
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_transport_delivery__display_name
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_transport_vehicle__display_name
+#: model:ir.model.fields,field_description:l10n_py_edi_base.field_product_template__display_name
+#: model:ir.model.fields,field_description:l10n_py_edi_base.field_res_company__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -1321,16 +1325,20 @@ msgid "Headers da Resposta"
 msgstr ""
 
 #. module: l10n_py_edi_base
+#: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move__id
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_account_move_send_edi_wizard__id
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_associated_document__id
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_edi_cancel_wizard__id
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_edi_connector__id
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_edi_document_type__id
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_edi_log__id
+#: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_edi_logging_mixin__id
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_number_inutilization__id
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_transport__id
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_transport_delivery__id
 #: model:ir.model.fields,field_description:l10n_py_edi_base.field_l10n_py_transport_vehicle__id
+#: model:ir.model.fields,field_description:l10n_py_edi_base.field_product_template__id
+#: model:ir.model.fields,field_description:l10n_py_edi_base.field_res_company__id
 msgid "ID"
 msgstr ""
 
