@@ -4,6 +4,7 @@ import logging
 import re
 import secrets
 import string
+from typing import ClassVar
 
 from dateutil.relativedelta import relativedelta
 
@@ -331,7 +332,7 @@ class AccountMove(models.Model):
     # ISO 3166-1 alpha-2 -> alpha-3, tabela completa (todos os países/territórios
     # publicados pela ISO 3166-1). Usada por _get_country_alpha3 para o
     # cPaisRec/dDesPaisRe do SIFEN; qualquer country.code ISO válido resolve aqui.
-    _ALPHA2_TO_3 = {
+    _ALPHA2_TO_3: ClassVar[dict[str, str]] = {
         "AD": "AND",
         "AE": "ARE",
         "AF": "AFG",
@@ -1164,15 +1165,18 @@ class AccountMove(models.Model):
         if not self.l10n_py_nre_motive:
             errors.append(self.env._("Nota de Remisión: el motivo es obligatorio."))
         # Motivo "1" (traslado por venta) sin doc asociado → requer data estimada
-        if self.l10n_py_nre_motive == "1" and not docs:
-            if not self.l10n_py_nre_estimated_invoice_date:
-                errors.append(
-                    self.env._(
-                        "NRE traslado por venta sin documento "
-                        "asociado: debe indicar fecha estimada "
-                        "de facturación."
-                    )
+        if (
+            self.l10n_py_nre_motive == "1"
+            and not docs
+            and not self.l10n_py_nre_estimated_invoice_date
+        ):
+            errors.append(
+                self.env._(
+                    "NRE traslado por venta sin documento "
+                    "asociado: debe indicar fecha estimada "
+                    "de facturación."
                 )
+            )
         # Data estimada no puede exceder el mes de emisión
         if self.l10n_py_nre_estimated_invoice_date and self.invoice_date:
             est_date = self.l10n_py_nre_estimated_invoice_date
