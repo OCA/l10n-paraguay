@@ -27,6 +27,7 @@ addon | version | maintainers | summary
 [l10n_py_base](l10n_py_base/) | 20.0.1.0.0 |  | Base localization data for Paraguay
 [l10n_py_edi_base](l10n_py_edi_base/) | 20.0.1.0.0 |  | Base module for Electronic Invoicing in Paraguay
 [l10n_py_edi_sifen](l10n_py_edi_sifen/) | 20.0.1.0.0 |  | Direct SIFEN transmission via pysifen library
+[l10n_py_libros](l10n_py_libros/) | 20.0.1.0.0 |  | Registro de comprobantes Ventas/Compras/Ingresos/Egresos (DNIT)
 
 [//]: # (end addons)
 
