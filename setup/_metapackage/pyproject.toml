@@ -1,6 +1,6 @@
 [project]
 name = "odoo-addons-oca-l10n-paraguay"
-version = "19.0.20261012.4"
+version = "19.0.20261012.5"
 dependencies = [
     "odoo-addon-l10n_py==19.0.*",
     "odoo-addon-l10n_py_account==19.0.*",
@@ -10,6 +10,7 @@ dependencies = [
     "odoo-addon-l10n_py_maquila_base==19.0.*",
     "odoo-addon-l10n_py_maquila_mrp==19.0.*",
     "odoo-addon-l10n_py_maquila_ops==19.0.*",
+    "odoo-addon-l10n_py_maquila_report==19.0.*",
 ]
 classifiers=[
     "Programming Language :: Python",
