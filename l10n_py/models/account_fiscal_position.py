@@ -20,13 +20,14 @@ class AccountFiscalPosition(models.Model):
         # Contrato del core (account/models/partner.py): un valor falsy FILTRA
         # la posición, no baja su ranking — por eso el patrón neutro: una
         # posición no-export queda neutra (True), la de exportación puntúa 2
-        # con socio del exterior y se filtra con socio paraguayo.
+        # con socio del exterior y se filtra con socio paraguayo o sin país
+        # (la dirección de entrega puede no tenerlo).
         return [
             (
                 "l10n_py_export",
                 lambda fpos: (
                     not fpos.l10n_py_is_export
-                    or (partner.country_id.code != "PY" and 2)
+                    or (partner.country_id and partner.country_id.code != "PY" and 2)
                 ),
             ),
         ] + super()._get_fpos_ranking_functions(partner)
