@@ -70,6 +70,31 @@ class TestFiscalPositionExport(TransactionCase):
             "(IVA exonerado indevido)",
         )
 
+    def test_partner_without_country_does_not_get_export_fp(self):
+        # The ranking receives the delivery address, which may have no country
+        # even when the invoiced customer is Paraguayan.
+        company = self.env["res.company"].create({"name": "PY Co NoCountry"})
+        self.env["account.chart.template"].try_loading(
+            "py", company=company, install_demo=False
+        )
+        customer = self.env["res.partner"].create(
+            {"name": "Cliente PY Entrega", "country_id": self.env.ref("base.py").id}
+        )
+        delivery = self.env["res.partner"].create(
+            {"name": "Entrega sin país", "parent_id": customer.id, "type": "delivery"}
+        )
+        delivery.country_id = False
+        fp = (
+            self.env["account.fiscal.position"]
+            .with_company(company)
+            ._get_fiscal_position(customer, delivery=delivery)
+        )
+        self.assertNotEqual(
+            fp.name,
+            "Ventas - Exportación",
+            "Un socio sin país no puede resolver la FP de exportación",
+        )
+
     def test_ranking_does_not_filter_other_auto_apply_fpos(self):
         """Contrato del core: falsy FILTRA la posición. La función de ranking
         debe ser neutra para posiciones no-export — de lo contrario, con socio
@@ -120,4 +145,19 @@ class TestFiscalPositionExport(TransactionCase):
             "Ventas - Exportación",
             "Con socio del exterior la export (prioridad 2) debe ganarle a "
             "cualquier otra auto_apply",
+        )
+
+    def test_tax_loaded_with_iva_affectation_without_l10n_py_account(self):
+        # The chart CSV carries l10n_py_iva_affectation, so the field must be
+        # owned by l10n_py: the chart loader drops columns that are not fields.
+        company = self.env["res.company"].create({"name": "PY Co Aff"})
+        self.env["account.chart.template"].try_loading(
+            "py", company=company, install_demo=False
+        )
+        taxes = self.env["account.tax"].search(
+            [("company_id", "=", company.id), ("type_tax_use", "=", "sale")]
+        )
+        self.assertTrue(taxes)
+        self.assertEqual(
+            set(taxes.mapped("l10n_py_iva_affectation")) - {False}, {"1", "2", "3"}
         )
