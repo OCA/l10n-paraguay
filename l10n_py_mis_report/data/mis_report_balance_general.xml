@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 KMEE
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+     Balance General - Paraguay (Resolución General N° 49/14)
+     Usa saldos finales del período (bale[]) sobre los prefijos del Plan de Cuentas.
+     Convención de signos:
+       Activos  -> saldo deudor -> bale[1.%] positivo
+       Pasivos  -> saldo acreedor -> -bale[2.%] positivo
+       Patrim.  -> saldo acreedor -> -bale[3.%] positivo
+-->
+<odoo noupdate="1">
+    <record id="mis_report_balance_general_py" model="mis.report">
+        <field name="name">Balance General (Paraguay)</field>
+        <field name="description">Balance General - RG 49/14</field>
+        <field name="move_lines_source" ref="account.model_account_move_line" />
+    </record>
+
+    <!-- ============== ACTIVO ============== -->
+
+    <record id="bg_py_h_activo" model="mis.report.kpi">
+        <field name="sequence">1000</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">ACTIVO</field>
+        <field name="name">h_activo</field>
+        <field name="expression">""</field>
+        <field name="type">str</field>
+        <field name="compare_method">none</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_header" />
+    </record>
+
+    <!-- Activo Corriente -->
+
+    <record id="bg_py_activo_corriente" model="mis.report.kpi">
+        <field name="sequence">1100</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">ACTIVO CORRIENTE</field>
+        <field name="name">activo_corriente</field>
+        <field
+            name="expression"
+        >disponibilidades + inversiones_ct + creditos_ct + inventarios + gastos_pagados_anticipado</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_subtotal" />
+    </record>
+
+    <record id="bg_py_disponibilidades" model="mis.report.kpi">
+        <field name="sequence">1110</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Disponibilidades</field>
+        <field name="name">disponibilidades</field>
+        <field name="expression">bale[1.01.01%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="bg_py_inversiones_ct" model="mis.report.kpi">
+        <field name="sequence">1120</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Inversiones Temporales</field>
+        <field name="name">inversiones_ct</field>
+        <field name="expression">bale[1.01.02%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="bg_py_creditos_ct" model="mis.report.kpi">
+        <field name="sequence">1130</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Créditos</field>
+        <field name="name">creditos_ct</field>
+        <field name="expression">bale[1.01.03%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="bg_py_inventarios" model="mis.report.kpi">
+        <field name="sequence">1140</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Inventarios (Bienes de Cambio)</field>
+        <field name="name">inventarios</field>
+        <field name="expression">bale[1.01.04%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="bg_py_gastos_pagados_anticipado" model="mis.report.kpi">
+        <field name="sequence">1150</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Gastos Pagados por Adelantado</field>
+        <field name="name">gastos_pagados_anticipado</field>
+        <field name="expression">bale[1.01.05%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <!-- Activo No Corriente -->
+
+    <record id="bg_py_activo_no_corriente" model="mis.report.kpi">
+        <field name="sequence">1200</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">ACTIVO NO CORRIENTE</field>
+        <field name="name">activo_no_corriente</field>
+        <field
+            name="expression"
+        >creditos_lp + activos_biologicos_lp + inversiones_lp + bienes_uso + derechos_fiduciarios + cargos_diferidos + intangibles</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_subtotal" />
+    </record>
+
+    <record id="bg_py_creditos_lp" model="mis.report.kpi">
+        <field name="sequence">1210</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Créditos a Largo Plazo</field>
+        <field name="name">creditos_lp</field>
+        <field name="expression">bale[1.02.01%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="bg_py_activos_biologicos_lp" model="mis.report.kpi">
+        <field name="sequence">1220</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Activos Biológicos LP</field>
+        <field name="name">activos_biologicos_lp</field>
+        <field name="expression">bale[1.02.02%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="bg_py_inversiones_lp" model="mis.report.kpi">
+        <field name="sequence">1230</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Inversiones a Largo Plazo</field>
+        <field name="name">inversiones_lp</field>
+        <field name="expression">bale[1.02.03%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="bg_py_bienes_uso" model="mis.report.kpi">
+        <field name="sequence">1240</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Bienes de Uso (neto de depreciaciones)</field>
+        <field name="name">bienes_uso</field>
+        <field name="expression">bale[1.02.04%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="bg_py_derechos_fiduciarios" model="mis.report.kpi">
+        <field name="sequence">1250</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Derechos Fiduciarios</field>
+        <field name="name">derechos_fiduciarios</field>
+        <field name="expression">bale[1.02.05%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="bg_py_cargos_diferidos" model="mis.report.kpi">
+        <field name="sequence">1260</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Cargos Diferidos</field>
+        <field name="name">cargos_diferidos</field>
+        <field name="expression">bale[1.02.06%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="bg_py_intangibles" model="mis.report.kpi">
+        <field name="sequence">1270</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Activos Intangibles</field>
+        <field name="name">intangibles</field>
+        <field name="expression">bale[1.02.07%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <!-- Total Activo -->
+
+    <record id="bg_py_total_activo" model="mis.report.kpi">
+        <field name="sequence">1999</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">TOTAL ACTIVO</field>
+        <field name="name">total_activo</field>
+        <field name="expression">activo_corriente + activo_no_corriente</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_total" />
+    </record>
+
+    <!-- ============== PASIVO ============== -->
+
+    <record id="bg_py_h_pasivo" model="mis.report.kpi">
+        <field name="sequence">2000</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">PASIVO Y PATRIMONIO NETO</field>
+        <field name="name">h_pasivo</field>
+        <field name="expression">""</field>
+        <field name="type">str</field>
+        <field name="compare_method">none</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_header" />
+    </record>
+
+    <!-- Pasivo Corriente -->
+
+    <record id="bg_py_pasivo_corriente" model="mis.report.kpi">
+        <field name="sequence">2100</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">PASIVO CORRIENTE</field>
+        <field name="name">pasivo_corriente</field>
+        <field name="expression">-bale[2.01%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_subtotal" />
+    </record>
+
+    <record id="bg_py_proveedores_ct" model="mis.report.kpi">
+        <field name="sequence">2110</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Proveedores Comerciales</field>
+        <field name="name">proveedores_ct</field>
+        <field name="expression">-bale[2.01.01%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="bg_py_prestamos_ct" model="mis.report.kpi">
+        <field name="sequence">2120</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Préstamos Financieros CP</field>
+        <field name="name">prestamos_ct</field>
+        <field name="expression">-bale[2.01.02%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="bg_py_remuneraciones_cargas_sociales" model="mis.report.kpi">
+        <field name="sequence">2130</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Remuneraciones y Cargas Sociales</field>
+        <field name="name">remuneraciones_cargas_sociales</field>
+        <field name="expression">-bale[2.01.03.02%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="bg_py_obligaciones_fiscales" model="mis.report.kpi">
+        <field name="sequence">2140</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field
+            name="description"
+        >Obligaciones Fiscales (IVA, Renta, Retenciones)</field>
+        <field name="name">obligaciones_fiscales</field>
+        <field name="expression">-bale[2.01.03.01%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="bg_py_provisiones_ct" model="mis.report.kpi">
+        <field name="sequence">2145</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Provisiones</field>
+        <field name="name">provisiones_ct</field>
+        <field name="expression">-bale[2.01.04%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_subtotal" />
+    </record>
+
+    <record id="bg_py_otros_pasivos_ct" model="mis.report.kpi">
+        <field name="sequence">2150</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Otros Pasivos Corrientes</field>
+        <field name="name">otros_pasivos_ct</field>
+        <field
+            name="expression"
+        >pasivo_corriente - proveedores_ct - prestamos_ct - remuneraciones_cargas_sociales - obligaciones_fiscales - provisiones_ct</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <!-- Pasivo No Corriente -->
+
+    <record id="bg_py_pasivo_no_corriente" model="mis.report.kpi">
+        <field name="sequence">2200</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">PASIVO NO CORRIENTE</field>
+        <field name="name">pasivo_no_corriente</field>
+        <field name="expression">-bale[2.02%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_subtotal" />
+    </record>
+
+    <!-- Patrimonio Neto -->
+
+    <record id="bg_py_patrimonio_neto" model="mis.report.kpi">
+        <field name="sequence">2300</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">PATRIMONIO NETO</field>
+        <field name="name">patrimonio_neto</field>
+        <field
+            name="expression"
+        >capital + reservas + resultados_acumulados + resultado_no_asignado</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_subtotal" />
+    </record>
+
+    <record id="bg_py_capital" model="mis.report.kpi">
+        <field name="sequence">2310</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Capital</field>
+        <field name="name">capital</field>
+        <field name="expression">-bale[3.01%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="bg_py_reservas" model="mis.report.kpi">
+        <field name="sequence">2320</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Reservas</field>
+        <field name="name">reservas</field>
+        <field name="expression">-bale[3.02%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <record id="bg_py_resultados_acumulados" model="mis.report.kpi">
+        <field name="sequence">2330</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Resultados Acumulados</field>
+        <field name="name">resultados_acumulados</field>
+        <field name="expression">-bale[3.03%]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+    </record>
+
+    <!-- Total Pasivo + PN -->
+
+    <record id="bg_py_resultado_no_asignado" model="mis.report.kpi">
+        <field name="sequence">2994</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Resultado del Ejercicio (no asignado)</field>
+        <field name="name">resultado_no_asignado</field>
+        <field
+            name="expression"
+        >-bale[('account_type', 'in', ('income', 'income_other', 'expense', 'expense_direct_cost', 'expense_depreciation'))]</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_total" />
+    </record>
+
+    <record id="bg_py_total_pasivo_pn" model="mis.report.kpi">
+        <field name="sequence">2999</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">TOTAL PASIVO Y PATRIMONIO NETO</field>
+        <field name="name">total_pasivo_pn</field>
+        <field
+            name="expression"
+        >pasivo_corriente + pasivo_no_corriente + patrimonio_neto</field>
+        <field name="type">num</field>
+        <field name="compare_method">pct</field>
+        <field name="style_id" ref="mis_report_style_l10n_py_total" />
+    </record>
+
+    <!-- Diferencia / Check -->
+
+    <record id="bg_py_diferencia" model="mis.report.kpi">
+        <field name="sequence">3000</field>
+        <field name="report_id" ref="mis_report_balance_general_py" />
+        <field name="description">Diferencia (A - P - PN)</field>
+        <field name="name">diferencia</field>
+        <field name="expression">total_activo - total_pasivo_pn</field>
+        <field name="type">num</field>
+        <field name="compare_method">none</field>
+    </record>
+</odoo>
