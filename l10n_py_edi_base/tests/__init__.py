@@ -10,3 +10,5 @@ from . import test_kude_generation
 from . import test_export_invoice_lines
 from . import test_export_validation
 from . import test_gravado_parcial_guard
+from . import test_edi_check_status_wizard
+from . import test_number_inutilization_wizard
