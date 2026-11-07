@@ -175,11 +175,24 @@ class ResPartner(models.Model):
     def write(self, values):
         if "vat" in values or "country_id" in values:
             country_py = self.env.ref("base.py")
-            for record in self:
-                vat = values.get("vat", record.vat)
-                country_id = values.get("country_id", record.country_id.id)
-                if vat and country_id == country_py.id:
-                    values["vat"] = self._format_ruc(vat)
+            if "vat" in values:
+                if "country_id" in values:
+                    country_id = values["country_id"]
+                else:
+                    # Only format the shared vat against the records' country when
+                    # they all share one; otherwise the target country is unknown.
+                    countries = self.mapped("country_id")
+                    country_id = countries.id if len(countries) == 1 else False
+                if values["vat"] and country_id == country_py.id:
+                    values["vat"] = self._format_ruc(values["vat"])
+            elif values.get("country_id") == country_py.id:
+                # Only the country changes: format each record's own vat
+                # individually, since those values differ per record.
+                for record in self:
+                    if record.vat:
+                        formatted = self._format_ruc(record.vat)
+                        if formatted != record.vat:
+                            record.vat = formatted
         return super().write(values)
 
     @api.model
