@@ -157,13 +157,18 @@ class NumberInutilization(models.Model):
             )
 
         auth = self.authorization_id
+        doc_type_code = auth.l10n_latam_document_type_id.code
         data = {
             "timbrado": auth.name or "",
-            "establecimiento": auth.l10n_py_establishment or "001",
-            "punto": auth.l10n_py_point or "001",
+            "establecimiento": auth.establishment or "001",
+            "punto": auth.expedition_point or "001",
             "numeroDesde": str(self.number_from).zfill(7),
             "numeroHasta": str(self.number_to).zfill(7),
-            "tipoDocumento": 1,  # FE por defecto
+            "tipoDocumento": (
+                int(doc_type_code)
+                if doc_type_code and doc_type_code.isdigit()
+                else 1
+            ),
             "motivo": self.motive or "",
         }
 
