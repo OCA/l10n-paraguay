@@ -898,6 +898,25 @@ class AccountMove(models.Model):
                 base_gravada = line.price_total / (1 + iva_rate / 100)
                 liquidacion_iva = line.price_total - base_gravada
 
+            # SIFEN `dPUniProSer` is the unit price with taxes included and
+            # before the line discount. Odoo stores the price tax-excluded, so
+            # gross it up with the taxes actually applied to the line.
+            unit_taxes = line.tax_ids.compute_all(
+                line.price_unit,
+                self.currency_id,
+                1.0,
+                line.product_id,
+                self.partner_id,
+            )
+            precio_unitario = unit_taxes["total_included"]
+            # Discount per unit, derived from the line total rather than from
+            # `line.discount`: Odoo applies the percentage to the tax-excluded
+            # base, so a fixed-amount tax would make a percentage-based
+            # discount overstate the amount. Deriving it from `price_total`
+            # also absorbs the rounding of `total_included`.
+            cantidad = line.quantity or 1.0
+            descuento = round(precio_unitario - line.price_total / cantidad, 8)
+
             item = {
                 "codigo": (
                     line.product_id.default_code or f"PROD-{line.product_id.id}"
@@ -921,9 +940,10 @@ class AccountMove(models.Model):
                     else ""
                 )
                 or "",
-                "unidadMedida": 77,  # UNI - Unidad
+                "unidadMedida": line.product_id.l10n_py_unit_code or 77,
                 "cantidad": line.quantity,
-                "precioUnitario": line.price_unit,
+                "precioUnitario": precio_unitario,
+                "descuento": descuento,
                 "cambio": 0,
                 "ivaTipo": iva_type,
                 "ivaBase": prop_iva,

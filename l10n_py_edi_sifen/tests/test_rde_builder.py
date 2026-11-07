@@ -211,6 +211,37 @@ class TestRDeBuilder(TransactionCase):
             (Decimal("550000000") / Decimal("10500")).quantize(Decimal("0.01")),
         )
 
+    def test_build_item_discount(self):
+        """dDescItem lleva el descuento y Σ dTotOpeItem cuadra con dTotOpe."""
+        data = self._get_sample_invoice_data()
+        data["items"][0].update(
+            {"precioUnitario": 110000, "descuento": 11000, "cantidad": 2}
+        )
+        data["totales"]["totalOperacion"] = 198000
+        rde = self._build(invoice=data)
+        item = rde.DE.gDtipDE.gCamItem[0]
+        self.assertEqual(item.gValorItem.dPUniProSer, Decimal("110000"))
+        self.assertEqual(item.gValorItem.dTotBruOpeItem, Decimal("220000"))
+        self.assertEqual(item.gValorItem.gValorRestaItem.dDescItem, Decimal("11000"))
+        self.assertEqual(item.gValorItem.gValorRestaItem.dTotOpeItem, Decimal("198000"))
+        self.assertEqual(rde.DE.gTotSub.dTotDesc, Decimal("22000"))
+
+    def test_build_item_unit_code(self):
+        """cUniMed y dDesUniMed viajan juntos, sin 'UNI' fijo."""
+        data = self._get_sample_invoice_data()
+        data["items"][0]["unidadMedida"] = 83
+        item = self._build(invoice=data).DE.gDtipDE.gCamItem[0]
+        self.assertEqual(item.cUniMed, 83)
+        self.assertEqual(item.dDesUniMed, "kg")
+
+    def test_build_item_unknown_unit_falls_back(self):
+        """Un código fuera del mapa vuelve a unidad/UNI como par válido."""
+        data = self._get_sample_invoice_data()
+        data["items"][0]["unidadMedida"] = 4242
+        item = self._build(invoice=data).DE.gDtipDE.gCamItem[0]
+        self.assertEqual(item.cUniMed, 77)
+        self.assertEqual(item.dDesUniMed, "UNI")
+
     def test_build_serializes_to_xml(self):
         """El rDE serializa a XML bien formado con los datos esperados."""
         from lxml import etree
