@@ -114,6 +114,23 @@ _AFEC_IVA_DESC = {
     4: TdDesAfecIva.GRAVADO_PARCIAL_GRAV_EXENTO,
 }
 
+# SET validates that `dDesUniMed` matches `cUniMed` (TcUniMed), so the pair has
+# to travel together. Codes outside the map fall back to unit/UNI as a pair.
+_UNIDAD_DESC = {
+    77: "UNI",
+    83: "kg",
+    86: "g",
+    87: "m",
+    88: "ML",
+    89: "LT",
+    99: "TN",
+    100: "Hs",
+    109: "M2",
+    110: "M3",
+    113: "DOC",
+    117: "KT",
+}
+
 _TIP_DOC_ASO_DESC = {
     1: TdDesTipDocAso.ELECTR_NICO,
     2: TdDesTipDocAso.IMPRESO,
@@ -474,7 +491,14 @@ class RDeBuilder:
             liquidacion_iva = Decimal(str(item_data.get("liquidacionIva", 0)))
             precio = Decimal(str(item_data.get("precioUnitario", 0)))
             cantidad = Decimal(str(item_data.get("cantidad", 1)))
-            total_item = precio * cantidad
+            descuento = Decimal(str(item_data.get("descuento", 0)))
+            total_bruto = precio * cantidad
+            # dTotOpeItem is the item total after the discount, so that
+            # Σ dTotOpeItem matches gTotSub.dTotOpe.
+            total_item = (precio - descuento) * cantidad
+            unidad_code = int(item_data.get("unidadMedida", 77) or 77)
+            if unidad_code not in _UNIDAD_DESC:
+                unidad_code = 77
             # NT N° 13 al MT v150 (E737, validación 283 / código 1921):
             # dBasExe = 0 si E731 = 1, 2 o 3; solo el Gravado Parcial (4)
             # lleva base exenta, por la fórmula oficial. Exento/exonerado
@@ -490,14 +514,14 @@ class RDeBuilder:
             item = TgCamItem(
                 dCodInt=item_data.get("codigo", ""),
                 dDesProSer=item_data.get("descripcion", ""),
-                cUniMed=item_data.get("unidadMedida", 77),
-                dDesUniMed="UNI",
+                cUniMed=unidad_code,
+                dDesUniMed=_UNIDAD_DESC[unidad_code],
                 dCantProSer=cantidad,
                 gValorItem=TgValorItem(
                     dPUniProSer=precio,
-                    dTotBruOpeItem=total_item,
+                    dTotBruOpeItem=total_bruto,
                     gValorRestaItem=TgValorRestaItem(
-                        dDescItem=Decimal("0"),
+                        dDescItem=descuento,
                         dTotOpeItem=total_item,
                     ),
                 ),
@@ -518,13 +542,20 @@ class RDeBuilder:
 
     def _build_gTotSub(self):
         totales = self.data.get("totales", {})
+        total_desc = sum(
+            (
+                Decimal(str(item.get("descuento", 0)))
+                * Decimal(str(item.get("cantidad", 1)))
+            )
+            for item in self.data.get("items", [])
+        )
         return TgTotSub(
             dSubExe=Decimal(str(totales.get("totalExento", 0))),
             dSubExo=Decimal(str(totales.get("totalExonerado", 0))),
             dSub5=Decimal(str(totales.get("totalGravado5", 0))),
             dSub10=Decimal(str(totales.get("totalGravado10", 0))),
             dTotOpe=Decimal(str(totales.get("totalOperacion", 0))),
-            dTotDesc=Decimal("0"),
+            dTotDesc=total_desc,
             dTotDescGlotem=Decimal("0"),
             dTotAntItem=Decimal("0"),
             dTotAnt=Decimal("0"),
