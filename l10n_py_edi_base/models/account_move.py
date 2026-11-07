@@ -898,10 +898,15 @@ class AccountMove(models.Model):
                 base_gravada = line.price_total / (1 + iva_rate / 100)
                 liquidacion_iva = line.price_total - base_gravada
 
+            if line.product_id:
+                codigo = line.product_id.default_code or f"PROD-{line.product_id.id}"
+            else:
+                # Línea libre sin producto: código interno estable por línea,
+                # en vez del "PROD-False" que salía de un recordset vacío.
+                codigo = f"SERV-{line.id}"
+
             item = {
-                "codigo": (
-                    line.product_id.default_code or f"PROD-{line.product_id.id}"
-                ),
+                "codigo": codigo,
                 # Odoo antepone "[CÓDIGO] " al nombre de línea y permite saltos
                 # de línea; el SET valida un patrón en dDesProSer, así que se
                 # quita el prefijo y se colapsan los espacios/saltos.
@@ -1263,13 +1268,11 @@ class AccountMove(models.Model):
         for line in self.invoice_line_ids.filtered(
             lambda line: line.display_type not in ("line_section", "line_note")
         ):
-            if hasattr(line.product_id, "l10n_py_ncm_code"):
-                if not line.product_id.l10n_py_ncm_code:
-                    errors.append(
-                        self.env._(
-                            "El producto %s no tiene código NCM", line.product_id.name
-                        )
-                    )
+            label = line.name or line.product_id.display_name
+            # `l10n_py_ncm_code` lives on `product.template`, so `hasattr` is
+            # true even on an empty recordset; check the product itself.
+            if line.product_id and not line.product_id.l10n_py_ncm_code:
+                errors.append(self.env._("El producto %s no tiene código NCM", label))
             # "Gravado parcial" (iAfecIVA=4) no tiene, hoy, ningún cálculo
             # real de la proporción gravada/exenta (dPropIVA) -- generar
             # el DE con este tipo emitiría un dPropIVA incorrecto de forma
@@ -1286,7 +1289,7 @@ class AccountMove(models.Model):
                             "proporción gravada/exenta). Use otro tipo de "
                             "afectación o configure el cálculo antes de "
                             "generar el documento electrónico.",
-                            product=line.product_id.name,
+                            product=label,
                             tax=tax.name,
                         )
                     )
