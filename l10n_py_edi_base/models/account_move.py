@@ -12,6 +12,11 @@ from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
+# `res.partner.l10n_py_doc_type` keys are internal to the module. SIFEN
+# `iTipIDRec` uses its own codes: 3 is Cédula extranjera and 4 is Carnet de
+# residencia, so the carnet cannot be sent as 3 and the innominado as 4.
+_SIFEN_DOC_TYPE = {"1": 1, "2": 2, "3": 4, "4": 5}
+
 
 class AccountMove(models.Model):
     _inherit = "account.move"
@@ -797,7 +802,9 @@ class AccountMove(models.Model):
         # No-contribuyente: incluir documento de identidad (D024/D025)
         if nat_rec == "2":
             if partner.l10n_py_doc_type:
-                customer_data["documentoTipo"] = int(partner.l10n_py_doc_type)
+                customer_data["documentoTipo"] = _SIFEN_DOC_TYPE.get(
+                    partner.l10n_py_doc_type, 9
+                )
             if partner.l10n_py_doc_number:
                 customer_data["documentoNumero"] = partner.l10n_py_doc_number
 
