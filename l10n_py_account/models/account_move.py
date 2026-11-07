@@ -214,6 +214,15 @@ class AccountMove(models.Model):
                 if not move.l10n_py_invoice_number:
                     auth = move.l10n_py_authorization_id
                     auth.check_validity()
+                    # Lock the timbrado row before reading MAX. A concurrent
+                    # post on the same authorisation then gets a serialization
+                    # failure, which Odoo retries, instead of an IntegrityError
+                    # on unique(authorization, number), which it does not.
+                    self.env.cr.execute(
+                        "SELECT id FROM account_authorization "
+                        "WHERE id = %s FOR NO KEY UPDATE",
+                        (auth.id,),
+                    )
                     # Flush pending writes so the SQL query sees all data
                     self.env["account.move"].flush_model(["l10n_py_invoice_number"])
                     # Query next number directly to avoid ORM cache issues
