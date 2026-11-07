@@ -804,42 +804,42 @@ class AccountMove(models.Model):
         return customer_data
 
     def _prepare_payment_condition(self):
-        """Preparar condición de pago"""
-        payment_condition = {
-            "tipo": (
-                2 if self.invoice_payment_term_id else 1
-            ),  # 1: Contado, 2: Crédito
+        """Preparar condición de pago."""
+        payment_condition: dict = {
+            # 1: Contado, 2: Crédito
+            "tipo": 2 if self.invoice_payment_term_id else 1,
         }
 
         if self.invoice_payment_term_id:
-            # Es crédito
+            # `account.payment.term.line.days` was removed in 17.0. Odoo already
+            # computes the due dates on the move's payment-term lines, so read
+            # them from there instead of re-deriving the term arithmetic.
+            term_lines = (
+                self.line_ids.filtered(lambda line: line.display_type == "payment_term")
+                .filtered("date_maturity")
+                .sorted("date_maturity")
+            )
+
+            invoice_date = self.invoice_date or self.date or fields.Date.today()
+            first_due = term_lines[0].date_maturity if term_lines else invoice_date
+            plazo_days = max((first_due - invoice_date).days, 0)
+
             payment_condition["credito"] = {
-                "tipo": 1,  # 1: Plazo, 2: Cuotas
-                "plazo": (
-                    f"{self.invoice_payment_term_id.line_ids[0].days} días"
-                    if self.invoice_payment_term_id.line_ids
-                    else "0 días"
-                ),
-                "cuotas": len(self.invoice_payment_term_id.line_ids),
+                # 1: Plazo (one instalment), 2: Cuotas (several)
+                "tipo": 2 if len(term_lines) > 1 else 1,
+                "plazo": f"{plazo_days} días",
+                "cuotas": len(term_lines),
+                "infoCuotas": [
+                    {
+                        "moneda": self.currency_id.name,
+                        # `amount_currency` is the amount in the invoice
+                        # currency, which is what `moneda` declares.
+                        "monto": abs(line.amount_currency),
+                        "vencimiento": line.date_maturity.strftime("%Y-%m-%d"),
+                    }
+                    for line in term_lines
+                ],
             }
-
-            # Preparar información de cuotas
-            cuotas = []
-            if self.invoice_date and self.invoice_payment_term_id.line_ids:
-                for line in self.invoice_payment_term_id.line_ids:
-                    due_date = self.invoice_date + relativedelta(days=line.days)
-                    cuotas.append(
-                        {
-                            "moneda": self.currency_id.name,
-                            "monto": (
-                                self.amount_total
-                                / len(self.invoice_payment_term_id.line_ids)
-                            ),
-                            "vencimiento": due_date.strftime("%Y-%m-%d"),
-                        }
-                    )
-
-            payment_condition["credito"]["infoCuotas"] = cuotas
         else:
             # Es contado
             payment_condition["entregas"] = [
