@@ -263,6 +263,28 @@ class TestAccountMove(TransactionCase):
         self.assertEqual(invoices[1].l10n_py_invoice_number, 2)
         self.assertEqual(invoices[2].l10n_py_invoice_number, 3)
 
+    def test_post_locks_timbrado(self):
+        """El número se asigna con el timbrado bloqueado, no en carrera.
+
+        `FOR NO KEY UPDATE` deja un RowShareLock sobre la tabla hasta el final
+        de la transacción: dos posts simultáneos se serializan en vez de leer
+        el mismo MAX y chocar con el unique.
+        """
+        invoice = self._create_invoice(l10n_py_authorization_id=self.authorization.id)
+        invoice.action_post()
+        self.env.cr.execute(
+            """
+            SELECT count(*) FROM pg_locks
+            WHERE relation = 'account_authorization'::regclass
+              AND mode = 'RowShareLock'
+            """
+        )
+        self.assertGreater(
+            self.env.cr.fetchone()[0],
+            0,
+            "El timbrado debe quedar bloqueado al asignar el número",
+        )
+
     def test_action_post_exhausted_range(self):
         """F02: Faja agotada → UserError"""
         # Crear timbrado con rango mínimo
