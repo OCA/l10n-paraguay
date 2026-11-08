@@ -169,23 +169,27 @@ class ResPartner(models.Model):
         return super().create(vals_list)
 
     def write(self, values):
-        if any(
+        if not any(
             f in values
             for f in ["vat", "l10n_latam_identification_type_id", "country_id"]
         ):
-            for record in self:
-                vat_values = {
-                    "vat": values.get("vat", record.vat),
-                    "l10n_latam_identification_type_id": values.get(
-                        "l10n_latam_identification_type_id",
-                        record.l10n_latam_identification_type_id.id,
-                    ),
-                    "country_id": values.get("country_id", record.country_id.id),
-                }
-                formatted = self._format_vat_py(vat_values)
-                if formatted:
-                    values["vat"] = formatted
-        return super().write(values)
+            return super().write(values)
+        # The formatted vat depends on each record's own vat, identification
+        # type and country: write record by record instead of putting the
+        # vat of one record in the values shared by all of them.
+        for record in self:
+            vat_values = {
+                "vat": values.get("vat", record.vat),
+                "l10n_latam_identification_type_id": values.get(
+                    "l10n_latam_identification_type_id",
+                    record.l10n_latam_identification_type_id.id,
+                ),
+                "country_id": values.get("country_id", record.country_id.id),
+            }
+            formatted = self._format_vat_py(vat_values)
+            record_values = dict(values, vat=formatted) if formatted else values
+            super(ResPartner, record).write(record_values)
+        return True
 
     def _format_vat_py(self, vals):
         """Format vat for RUC type: append DV if missing or incorrect.
