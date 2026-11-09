@@ -1,3 +1,5 @@
+# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+
 import uuid
 
 from odoo import SUPERUSER_ID, api

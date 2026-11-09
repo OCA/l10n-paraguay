@@ -1,3 +1,5 @@
+# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+
 from unittest.mock import patch
 
 from odoo.exceptions import UserError

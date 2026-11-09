@@ -1,3 +1,5 @@
+# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+
 from . import edi_connector
 from . import edi_connector_webhook
 from . import l10n_py_edi_log

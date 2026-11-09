@@ -1,3 +1,5 @@
+# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+
 from lxml import etree
 
 from odoo.exceptions import UserError, ValidationError

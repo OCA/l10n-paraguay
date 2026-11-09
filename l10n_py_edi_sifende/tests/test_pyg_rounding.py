@@ -1,3 +1,5 @@
+# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+
 from odoo.tests import tagged
 
 from ..services.request_builder import SifendeRequestBuilder

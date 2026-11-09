@@ -1,3 +1,5 @@
+# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+
 import re
 from decimal import ROUND_HALF_UP, Decimal
 

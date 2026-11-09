@@ -1,3 +1,5 @@
+# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+
 from . import test_request_mapping
 from . import test_edi_flow
 from . import test_remision
