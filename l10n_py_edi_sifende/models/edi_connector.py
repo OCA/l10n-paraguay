@@ -34,6 +34,9 @@ SETUP_SLUGS = (
 
 APPROVED_STATES = ("APROBADO", "APROBADO_OBSERVACION")
 PENDING_STATES = ("PENDIENTE", "EN_LOTE")
+# estados de un evento (cancelación, inutilización): sólo APROBADO lo confirma
+EVENT_APPROVED_STATES = ("APROBADO",)
+EVENT_REJECTED_STATE = "RECHAZADO"
 
 WEBHOOK_PATH = "/l10n_py_edi_sifende/webhook"
 
@@ -506,19 +509,32 @@ class EDIConnector(models.Model):
         except SifendeTransportError as e:
             return {"success": False, "error": str(e)}
         body = response.body if isinstance(response.body, dict) else {}
-        if response.ok and body.get("estadoEvento") != "RECHAZADO":
+        if not response.ok:
+            if self._sifende_is_definitive(response):
+                event_key.forget(record, committed=True)
+            return {"success": False, "error": response.failure_message(self.env)}
+        state = body.get("estadoEvento")
+        if state in EVENT_APPROVED_STATES:
             event_key.forget(record, committed=False)
             return {"success": True, "result": body}
-        if self._sifende_is_definitive(response):
+        if state == EVENT_REJECTED_STATE:
             event_key.forget(record, committed=True)
-        if response.ok:
             return {
                 "success": False,
                 "result": body,
                 "error": body.get("mensajeRespuesta")
                 or self.env._("SIFEN rechazó el evento."),
             }
-        return {"success": False, "error": response.failure_message(self.env)}
+        # sin estado, pendiente o desconocido: no está aprobado; se conserva la clave
+        return {
+            "success": False,
+            "result": body,
+            "error": self.env._(
+                "SIFEN no confirmó la aprobación del evento (estado: %(state)s). "
+                "Vuelva a intentarlo en unos minutos.",
+                state=state or self.env._("sin estado"),
+            ),
+        }
 
     @staticmethod
     def _sifende_is_definitive(response):

@@ -198,6 +198,81 @@ class TestProcedures(SifendeCommon):
         first, second = self.event_keys("/cancelar$")
         self.assertNotEqual(first, second)
 
+    def test_una_cancelacion_rechazada_con_200_falla_y_olvida_la_clave(self):
+        move = self.accepted_move()
+        self.fake.add(
+            "POST",
+            "/cancelar$",
+            FakeResponse(
+                200,
+                {"estadoEvento": "RECHAZADO", "mensajeRespuesta": "[4003] Plazo"},
+            ),
+        )
+        with self.assertRaisesRegex(UserError, r"\[4003\] Plazo"):
+            move.action_cancel_edi()
+        self.assertEqual(move.l10n_py_edi_status, "accepted")
+        self.assertFalse(move.l10n_py_sifende_event_key)
+
+    def test_una_cancelacion_sin_estado_aprobado_no_se_da_por_cancelada(self):
+        move = self.accepted_move()
+        for body in (
+            {},
+            {"estadoEvento": "PENDIENTE"},
+            {"estadoEvento": "INDETERMINADA"},
+            {"estadoEvento": "OTRO"},
+        ):
+            with self.subTest(body):
+                self.fake.add("POST", "/cancelar$", FakeResponse(200, body))
+                self.fails(move.action_cancel_edi)
+                self.assertEqual(move.l10n_py_edi_status, "accepted")
+                self.assertTrue(move.l10n_py_sifende_event_key)
+        keys = self.event_keys("/cancelar$")
+        self.assertEqual(len(keys), 4)
+        self.assertEqual(len(set(keys)), 1)
+        self.assertEqual(move.l10n_py_sifende_event_key, keys[0])
+        self.fake.add("POST", "/cancelar$", EVENT_OK)
+        move.action_cancel_edi()
+        self.assertEqual(self.event_keys("/cancelar$")[-1], keys[0])
+        self.assertEqual(move.l10n_py_edi_status, "cancelled")
+        self.assertFalse(move.l10n_py_sifende_event_key)
+
+    def test_una_inutilizacion_sin_estado_aprobado_se_reintenta_con_la_misma_clave(
+        self,
+    ):
+        inutilization = self.inutilization(
+            self.make_move("fe").l10n_py_invoice_number + 5
+        )
+        with self.assertLogs(OCA_INUTILIZATION_LOGGER, "WARNING"):
+            for body in ({}, {"estadoEvento": "PENDIENTE"}):
+                self.fake.add("POST", "/inutilizar$", FakeResponse(200, body))
+                self.fails(inutilization.action_send)
+                inutilization.state = "draft"
+        keys = self.event_keys("/inutilizar$")
+        self.assertEqual(len(keys), 2)
+        self.assertEqual(len(set(keys)), 1)
+        self.assertEqual(inutilization.l10n_py_sifende_event_key, keys[0])
+        self.fake.add("POST", "/inutilizar$", EVENT_OK)
+        inutilization.action_send()
+        self.assertEqual(inutilization.state, "accepted")
+        self.assertFalse(inutilization.l10n_py_sifende_event_key)
+
+    def test_una_inutilizacion_rechazada_con_200_falla_y_olvida_la_clave(self):
+        inutilization = self.inutilization(5)
+        self.fake.add(
+            "POST",
+            "/inutilizar$",
+            FakeResponse(
+                200,
+                {"estadoEvento": "RECHAZADO", "mensajeRespuesta": "[4068] Rango"},
+            ),
+        )
+        with (
+            self.assertLogs(OCA_INUTILIZATION_LOGGER, "WARNING"),
+            self.assertRaisesRegex(UserError, r"\[4068\] Rango"),
+        ):
+            inutilization.action_send()
+        self.assertFalse(inutilization.l10n_py_sifende_event_key)
+
     def test_reintentar_la_inutilizacion_tras_un_503_usa_la_misma_clave(self):
         inutilization = self.inutilization(
             self.make_move("fe").l10n_py_invoice_number + 5
