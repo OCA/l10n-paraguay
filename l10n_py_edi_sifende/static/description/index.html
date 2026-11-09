@@ -1,0 +1,654 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils: https://docutils.sourceforge.io/" />
+<title>Paraguay - Sifende EDI Connector</title>
+<style type="text/css">
+
+/*
+:Author: David Goodger (goodger@python.org)
+:Id: $Id: html4css1.css 9511 2024-01-13 09:50:07Z milde $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+Despite the name, some widely supported CSS2 features are used.
+
+See https://docutils.sourceforge.io/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+.subscript {
+  vertical-align: sub;
+  font-size: smaller }
+
+.superscript {
+  vertical-align: super;
+  font-size: smaller }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+object[type="image/svg+xml"], object[type="application/x-shockwave-flash"] {
+  overflow: hidden;
+}
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title, .code .error {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin: 0 0 0.5em 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left, .figure.align-left, object.align-left, table.align-left {
+  clear: left ;
+  float: left ;
+  margin-right: 1em }
+
+img.align-right, .figure.align-right, object.align-right, table.align-right {
+  clear: right ;
+  float: right ;
+  margin-left: 1em }
+
+img.align-center, .figure.align-center, object.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+table.align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.align-left {
+  text-align: left }
+
+.align-center {
+  clear: both ;
+  text-align: center }
+
+.align-right {
+  text-align: right }
+
+/* reset inner alignment in figures */
+div.align-right {
+  text-align: inherit }
+
+/* div.align-center * { */
+/*   text-align: left } */
+
+.align-top    {
+  vertical-align: top }
+
+.align-middle {
+  vertical-align: middle }
+
+.align-bottom {
+  vertical-align: bottom }
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font: inherit }
+
+pre.literal-block, pre.doctest-block, pre.math, pre.code {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+pre.code .ln { color: gray; } /* line numbers */
+pre.code, code { background-color: #eeeeee }
+pre.code .comment, code .comment { color: #5C6576 }
+pre.code .keyword, code .keyword { color: #3B0D06; font-weight: bold }
+pre.code .literal.string, code .literal.string { color: #0C5404 }
+pre.code .name.builtin, code .name.builtin { color: #352B84 }
+pre.code .deleted, code .deleted { background-color: #DEB0A1}
+pre.code .inserted, code .inserted { background-color: #A3D289}
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic, pre.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+/* "booktabs" style (no vertical lines) */
+table.docutils.booktabs {
+  border: 0px;
+  border-top: 2px solid;
+  border-bottom: 2px solid;
+  border-collapse: collapse;
+}
+table.docutils.booktabs * {
+  border: 0px;
+}
+table.docutils.booktabs th {
+  border-bottom: thin solid;
+  text-align: left;
+}
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document" id="paraguay-sifende-edi-connector">
+<h1 class="title">Paraguay - Sifende EDI Connector</h1>
+
+<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! This file is generated by oca-gen-addon-readme !!
+!! changes will be overwritten.                   !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! source digest: sha256:aee317aced75387b3f0a7715c0445443408a2d538de1c0dccd2222f5e9295949
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/lgpl-3.0-standalone.html"><img alt="License: LGPL-3" src="https://img.shields.io/badge/licence-LGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/OCA/l10n-paraguay/tree/18.0/l10n_py_edi_sifende"><img alt="OCA/l10n-paraguay" src="https://img.shields.io/badge/github-OCA%2Fl10n--paraguay-lightgray.png?logo=github" /></a> <a class="reference external image-reference" href="https://translation.odoo-community.org/projects/l10n-paraguay-18-0/l10n-paraguay-18-0-l10n_py_edi_sifende"><img alt="Translate me on Weblate" src="https://img.shields.io/badge/weblate-Translate%20me-F47D42.png" /></a> <a class="reference external image-reference" href="https://runboat.odoo-community.org/builds?repo=OCA/l10n-paraguay&amp;target_branch=18.0"><img alt="Try me on Runboat" src="https://img.shields.io/badge/runboat-Try%20me-875A7B.png" /></a></p>
+<p><a class="reference external" href="https://sifende.com.py">Sifende</a> connector for Paraguay electronic
+invoicing.</p>
+<p>It registers Sifende as a provider in <tt class="docutils literal">l10n_py_edi_base</tt>. Odoo still
+numbers the invoices and builds the document data; Sifende signs the
+XML, sends it to SIFEN and returns the result and the KuDE. Odoo needs
+no certificate, CSC or <tt class="docutils literal">sifen</tt> library.</p>
+<p>Supported documents: invoice (FE), credit note (NCE), debit note (NDE),
+delivery note (NRE) and self-invoice (AFE).</p>
+<p>Sending is asynchronous. After sending, the document is <em>Processing</em>
+with its CDC and QR. Sifende notifies Odoo through a webhook when SIFEN
+answers, and a cron that polls every 5 minutes acts as a fallback. When
+SIFEN approves, the document becomes <em>Accepted</em> with the signed XML and
+the KuDE attached.</p>
+<p>Every hour the cron also polls the accepted documents that are still
+within their cancellation window, in case they were cancelled in Sifende
+and the notification was lost. Each run polls up to 200 documents per
+connector, starting with the ones polled longest ago across all
+companies, so no company is left without its turn.</p>
+<p><strong>Table of contents</strong></p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#configuration" id="toc-entry-1">Configuration</a></li>
+<li><a class="reference internal" href="#usage" id="toc-entry-2">Usage</a></li>
+<li><a class="reference internal" href="#known-issues-roadmap" id="toc-entry-3">Known issues / Roadmap</a></li>
+<li><a class="reference internal" href="#bug-tracker" id="toc-entry-4">Bug Tracker</a></li>
+<li><a class="reference internal" href="#credits" id="toc-entry-5">Credits</a><ul>
+<li><a class="reference internal" href="#authors" id="toc-entry-6">Authors</a></li>
+<li><a class="reference internal" href="#contributors" id="toc-entry-7">Contributors</a></li>
+<li><a class="reference internal" href="#maintainers" id="toc-entry-8">Maintainers</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="configuration">
+<h1><a class="toc-backref" href="#toc-entry-1">Configuration</a></h1>
+<ol class="arabic simple">
+<li>In Sifende, create an API key for the right environment (Sandbox,
+Test or Production).</li>
+<li>In <em>Facturación electrónica &gt; Conectores</em>, create a connector with
+provider <strong>Sifende</strong>. Only one connector per company is allowed.</li>
+<li>Choose the connector environment (<em>Pruebas</em> or <em>Producción</em>), paste
+the API key and, if you use your own Sifende deployment, change the
+base URL (HTTPS; HTTP is only accepted for <tt class="docutils literal">localhost</tt>). Only
+administrators (<em>Ajustes</em>) can see and edit the API key and the base
+URL, because the URL decides where the key is sent.</li>
+<li>Click <strong>Probar Conexión</strong>. It fails if the connector environment does
+not match the API key (<tt class="docutils literal">sk_live_</tt> is <em>Producción</em>; <tt class="docutils literal">sk_sandbox_</tt>
+and <tt class="docutils literal">sk_test_</tt> are <em>Pruebas</em>; the match is also checked when saving
+the connector and before sending, cancelling or voiding), and it
+warns when the timbrado, establishment or expedition point used in
+Odoo do not exist in Sifende.</li>
+<li>Load the same timbrado in Sifende. An expedition point used only by
+Odoo is recommended: Sifende accepts the document number Odoo sends
+and rejects numbers already in use.</li>
+<li>Optional: in <em>Inventario &gt; Configuración &gt; Unidades de medida</em>, set
+the <em>Código de unidad de medida SIFEN</em> of each unit (77, unit, by
+default).</li>
+<li>Optional but recommended: click <strong>Registrar webhook</strong> so that Sifende
+notifies Odoo as soon as SIFEN answers, without waiting for the cron.
+Odoo must be reachable from the Internet over HTTPS, and its base URL
+(<tt class="docutils literal">web.base.url</tt>, in <em>Ajustes &gt; Técnico &gt; Parámetros del sistema</em>)
+must be the public one: Sifende rejects <tt class="docutils literal">http</tt> and local addresses.
+The button registers
+<tt class="docutils literal"><span class="pre">&lt;web.base.url&gt;/l10n_py_edi_sifende/webhook/&lt;connector</span> id&gt;</tt> for the
+<tt class="docutils literal">documento.aprobado</tt>, <tt class="docutils literal">documento.rechazado</tt> and
+<tt class="docutils literal">documento.cancelado</tt> events and stores the signing secret, visible
+only to administrators. If the URL was already registered in Sifende,
+the button says so and <strong>Rotar secreto</strong> gets a new secret. If the
+webhook no longer exists in Sifende, <strong>Rotar secreto</strong> forgets it and
+warns you: click <strong>Registrar webhook</strong> again. <strong>Quitar webhook</strong>
+deletes it in Sifende. Each notification only triggers a poll of the
+current state in Sifende, so a late notification never overwrites the
+real state. The cron stays active as a fallback.</li>
+<li>With several databases on the same server, the public URL must
+resolve to the right database (<tt class="docutils literal">dbfilter</tt> or the subdomain),
+because Sifende does not send the database name.</li>
+<li>Access rights. Each connector is only used from its own company.
+Sending, retrying and cancelling a document require <em>Contabilidad &gt;
+Facturación</em> and write access to the document; checking its status
+also works for read-only users. <em>Inutilizar números</em> and <strong>Test
+Connection</strong> require <em>Contabilidad &gt; Administrador</em>. The API key, the
+base URL and the webhook require <em>Ajustes</em>. Delivery note transports,
+with their vehicles and deliveries, belong to the company of their
+document: other companies can neither see nor edit them, and a
+transport without a document yet can only be edited by its creator.</li>
+</ol>
+</div>
+<div class="section" id="usage">
+<h1><a class="toc-backref" href="#toc-entry-2">Usage</a></h1>
+<p>Labels are quoted as they appear on screen, in Spanish like the rest of
+the localization.</p>
+<ol class="arabic simple">
+<li>Post the invoice and click <strong>Enviar a EDI</strong> (only posted documents
+are sent). The document becomes <em>Procesando</em>. Once sent, the payment
+data (payment type, cheque, card, payment condition and due dates)
+and the fiscal data of the <em>Facturación Electrónica</em> tab (issuance,
+transaction, presence, receipt ID, contingency, delivery note,
+self-invoice, transport with its vehicles and deliveries, and
+associated documents) can no longer be changed. The same applies
+while a send is waiting for confirmation (see item 3).</li>
+<li>The state updates by itself: <em>Aceptado</em> with the XML and the KuDE
+attached, or <em>Rechazado</em> with the SIFEN messages in <em>Mensaje EDI</em>.
+With the webhook registered, Sifende notifies Odoo as soon as SIFEN
+answers; otherwise, or if a notification is lost, the cron «Sifende:
+verificar estado de documentos» does it every 5 minutes.</li>
+<li>If the document is <em>Rechazado</em> before reaching SIFEN (for example, a
+missing required field), fix the data and click <strong>Reintentar</strong>: it
+uses a new idempotency key. If it ends in <em>Error</em> because of a
+connection or Sifende failure before the document was registered
+(the message says so), <strong>Reintentar</strong> reuses the same key and
+nothing is duplicated; meanwhile the document cannot go back to
+draft and its data cannot change, so the retry sends exactly the
+same request. If the <em>Error</em> is a final failure sending to SIFEN,
+the document already has its CDC and number: <strong>Reintentar</strong> does not
+reissue it and shows the procedure instead. Retry the batch from the
+Sifende panel or ask support; Odoo polls the document every hour and
+updates it (<em>Procesando</em>, then <em>Aceptado</em>) when it is processed
+again with the same CDC.</li>
+<li>In a credit or debit note, choose the <em>Motivo de emisión</em> in the
+<em>Facturación Electrónica</em> tab. The associated document is filled
+with the CDC of the original invoice when it has one. In a delivery
+note, also set who is responsible for the issuance and the route
+kilometres.</li>
+<li>When a cash invoice or self-invoice is paid by <em>Cheque</em> (<em>Tipo de
+Pago</em> in the <em>Facturación Electrónica</em> tab), fill in the cheque
+number (digits only, up to 8) and the bank (4 to 20 characters):
+Sifende requires them. With a card, the <em>Marca de la tarjeta</em> is
+required (<em>Otra</em> if it is not listed).</li>
+<li>If SIFEN rejects a document that was already sent (<em>Rechazado</em> with
+a CDC), Sifende does not accept that number again, not even with the
+same data, and <strong>Reintentar</strong> shows the procedure instead of
+sending. With <em>Contabilidad &gt; Administrador</em>, open <em>Facturación
+Electrónica &gt; Inutilización de números</em>, create a voiding with the
+timbrado and the number of the rejected document and click <strong>Enviar
+al SIFEN</strong>. Then click <strong>Restablecer a borrador</strong> and <strong>Cancelar</strong>
+on the rejected document and issue a new one, which takes the next
+number. Odoo only allows voiding numbers without a document or of
+rejected documents. If Sifende did not answer, <strong>Enviar al SIFEN</strong>
+reuses the same request: meanwhile the timbrado, the range and the
+reason cannot change. To void a different range, delete the voiding
+and create a new one.</li>
+<li>To cancel an accepted document, click <strong>Cancelar EDI</strong>. The
+«Cancelar documento electrónico» wizard asks for the reason (sent to
+SIFEN) and confirms with <strong>Cancelar Documento</strong>. It requires
+<em>Contabilidad &gt; Facturación</em> and the window Odoo checks (48 hours
+for invoices and self-invoices, 7 days for notes). Sifende does not
+accept cancellations in SANDBOX: the button is hidden and Odoo warns
+if it is attempted another way.</li>
+<li>Once the document is <em>Aceptado</em>, <strong>Imprimir</strong> (the button and the
+reports menu) delivers the KuDE generated by Sifende, with the CDC
+and the QR, instead of the standard Odoo PDF. <strong>Enviar</strong> emails the
+KuDE as Sifende delivered it, plus the signed XML (Odoo downloads
+them from Sifende if needed; if Sifende does not have them yet, it
+warns and you can retry). While the document is not <em>Aceptado</em>
+(draft, processing, rejected or error), <strong>Enviar</strong> warns that there
+is no fiscal document yet, and <strong>Imprimir</strong> still prints the Odoo
+PDF with a «Sin validez fiscal» notice. If the document was
+<em>Cancelado</em>, <strong>Enviar</strong> does not send the KuDE and <strong>Imprimir</strong>
+shows the cancelled notice; the customer portal and the <em>Imprimir &gt;
+PDF</em> menu deliver the same, and the original KuDE and XML stay
+stored for archiving. Automatic or batch sending does not email a
+pro-forma of a document that is not <em>Aceptado</em> either: it is left
+unsent with the reason in the chatter. Vendor bills and documents of
+other EDI providers keep the standard Odoo behaviour.</li>
+<li>In guaraníes, Sifende rounds the total down to a multiple of 50 and
+requires payments and instalments to cover it (the self-invoice
+payment too): the connector spreads the Odoo amounts proportionally
+and the last instalment absorbs the difference.</li>
+<li>If Sifende answers that the number is already in use, the document
+ends in <em>Error</em>. Raise the timbrado <em>Número Desde</em> to the next free
+number of the expedition point (see <em>Numeración</em> in the Sifende
+panel) and click <strong>Renumerar</strong>: the document takes the next free
+number, never one Sifende already reported, and is sent again with
+<strong>Enviar a EDI</strong>.</li>
+<li>In a self-invoice, the type and number of the certificate in the
+<em>Autofactura</em> section are added as an associated document when
+posting or sending; there is no need to enter them again in
+<em>Documentos asociados</em>. Sifende receives only the type; the number
+and the control code stay in Odoo.</li>
+<li>Every line needs a product: Sifende takes the code and the NCM from
+it. In a delivery note, <em>Datos de transporte</em> only offers transports
+without a document or of the same document.</li>
+<li>The document title, the email subject and the PDF name show the
+fiscal type and number (for example, <em>Nota de Débito
+001-001-0000101</em>). Odoo’s internal number (<em>FE 00000027</em>) is the
+journal’s accounting sequence and is not changed.</li>
+<li>If Sifende answers that some configuration is missing (taxpayer
+data, timbrado or an expired certificate), the document ends in
+<em>Error</em>, not <em>Rechazado</em>: the message says what to fix in the
+Sifende panel; then click <strong>Reintentar</strong>.</li>
+<li>If Sifende does not answer when cancelling a document or sending a
+voiding, try again: Odoo reuses the same request and the event is
+not duplicated. <em>Probar Conexión</em> warns about inactive expedition
+points, and <em>Registrar webhook</em> about a webhook disabled in Sifende.</li>
+<li>If the partner has no department or no city Sifende recognises,
+invoices and notes are issued without the receiver address, because
+SIFEN rejects an address without a city. The delivery note requires
+it: choose the <em>Ciudad SIFEN</em> on the partner.</li>
+<li>For air transport, each vehicle needs its <em>Número de vuelo</em> (6
+characters), shown in the vehicle list when the <em>Aéreo</em> mode is
+chosen.</li>
+</ol>
+<p>The XML and QR preview is not available: Sifende does not generate
+documents without issuing them.</p>
+</div>
+<div class="section" id="known-issues-roadmap">
+<h1><a class="toc-backref" href="#toc-entry-3">Known issues / Roadmap</a></h1>
+<p>This module works around some issues of the localization. Each
+workaround can be removed once the issue is fixed upstream:</p>
+<ul class="simple">
+<li>The asynchronous provider contract: this module overrides
+<tt class="docutils literal">_process_edi_response</tt> and runs its own status cron
+(<a class="reference external" href="https://github.com/OCA/l10n-paraguay/issues/97">#97</a>, see also
+<a class="reference external" href="https://github.com/OCA/l10n-paraguay/pull/33">#33</a>).</li>
+<li>Receiver ID type and delivery note motive are translated to the SIFEN
+codes here (<a class="reference external" href="https://github.com/OCA/l10n-paraguay/issues/89">#89</a>,
+<a class="reference external" href="https://github.com/OCA/l10n-paraguay/issues/92">#92</a>). When those
+are fixed upstream, the translation tables must go in the same
+release.</li>
+<li>Department and city are resolved by name against the SIFEN catalog
+shipped with this module
+(<a class="reference external" href="https://github.com/OCA/l10n-paraguay/issues/85">#85</a>,
+<a class="reference external" href="https://github.com/OCA/l10n-paraguay/issues/86">#86</a>).</li>
+<li>The partner form shows the identity document fields
+(<a class="reference external" href="https://github.com/OCA/l10n-paraguay/issues/87">#87</a>).</li>
+<li>Transport: carrier fields, freight responsibility 5 and creation from
+the invoice (<a class="reference external" href="https://github.com/OCA/l10n-paraguay/issues/93">#93</a>,
+<a class="reference external" href="https://github.com/OCA/l10n-paraguay/issues/94">#94</a>).</li>
+<li>Payment terms, item prices with VAT and discount, unit of measure
+code, and number voiding
+(<a class="reference external" href="https://github.com/OCA/l10n-paraguay/issues/95">#95</a>,
+<a class="reference external" href="https://github.com/OCA/l10n-paraguay/issues/96">#96</a>,
+<a class="reference external" href="https://github.com/OCA/l10n-paraguay/issues/98">#98</a>).</li>
+<li>The extra keys this module adds to the document dict under <tt class="docutils literal">sifende</tt>
+(issuance motive, unit of measure, discounts, email and customer code)
+should become part of the <tt class="docutils literal">l10n_py_edi_base</tt> contract, so every
+provider shares them.</li>
+</ul>
+</div>
+<div class="section" id="bug-tracker">
+<h1><a class="toc-backref" href="#toc-entry-4">Bug Tracker</a></h1>
+<p>Bugs are tracked on <a class="reference external" href="https://github.com/OCA/l10n-paraguay/issues">GitHub Issues</a>.
+In case of trouble, please check there if your issue has already been reported.
+If you spotted it first, help us to smash it by providing a detailed and welcomed
+<a class="reference external" href="https://github.com/OCA/l10n-paraguay/issues/new?body=module:%20l10n_py_edi_sifende%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
+<p>Do not contact contributors directly about support or help with technical issues.</p>
+</div>
+<div class="section" id="credits">
+<h1><a class="toc-backref" href="#toc-entry-5">Credits</a></h1>
+<div class="section" id="authors">
+<h2><a class="toc-backref" href="#toc-entry-6">Authors</a></h2>
+<ul class="simple">
+<li>ITH</li>
+</ul>
+</div>
+<div class="section" id="contributors">
+<h2><a class="toc-backref" href="#toc-entry-7">Contributors</a></h2>
+<ul class="simple">
+<li><a class="reference external" href="https://sifende.com.py">ITH</a>:<ul>
+<li>Mijhael Samaniego</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="maintainers">
+<h2><a class="toc-backref" href="#toc-entry-8">Maintainers</a></h2>
+<p>This module is maintained by the OCA.</p>
+<a class="reference external image-reference" href="https://odoo-community.org">
+<img alt="Odoo Community Association" src="https://odoo-community.org/logo.png" />
+</a>
+<p>OCA, or the Odoo Community Association, is a nonprofit organization whose
+mission is to support the collaborative development of Odoo features and
+promote its widespread use.</p>
+<p>Current <a class="reference external" href="https://odoo-community.org/page/maintainer-role">maintainer</a>:</p>
+<p><a class="reference external image-reference" href="https://github.com/mijhaels"><img alt="mijhaels" src="https://github.com/mijhaels.png?size=40px" /></a></p>
+<p>This module is part of the <a class="reference external" href="https://github.com/OCA/l10n-paraguay/tree/18.0/l10n_py_edi_sifende">OCA/l10n-paraguay</a> project on GitHub.</p>
+<p>You are welcome to contribute. To learn how please visit <a class="reference external" href="https://odoo-community.org/page/Contribute">https://odoo-community.org/page/Contribute</a>.</p>
+</div>
+</div>
+</div>
+</body>
+</html>
