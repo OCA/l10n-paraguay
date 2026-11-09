@@ -5,6 +5,7 @@
     "summary": "Electronic invoicing for Paraguay through Sifende",
     "author": "ITH, Odoo Community Association (OCA)",
     "maintainers": ["mijhaels"],
+    "development_status": "Beta",
     "website": "https://github.com/OCA/l10n-paraguay",
     "license": "LGPL-3",
     "depends": ["l10n_py_edi_base"],
