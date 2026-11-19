@@ -421,7 +421,7 @@ class EDIConnector(models.Model):
             )
         )
 
-    def _sifende_check_status(self, cdc):
+    def _sifende_check_status(self, cdc, log=True):
         self.ensure_one()
         try:
             response = self._sifende_client().request(
@@ -429,6 +429,7 @@ class EDIConnector(models.Model):
                 f"/documento-electronico/status/{cdc}",
                 operation="status",
                 cdc=cdc,
+                log=log,
             )
         except SifendeTransportError as e:
             return {"success": False, "error": str(e)}

@@ -14,5 +14,8 @@ signed XML and the KuDE attached.
 
 Every hour the cron also polls the accepted documents that are still within their
 cancellation window, in case they were cancelled in Sifende and the notification was lost.
-Each run polls up to 200 documents per connector, starting with the ones polled longest ago
-across all companies, so no company is left without its turn.
+Each run polls up to 200 documents per connector. Documents still waiting for SIFEN or for
+their files go first; the accepted documents under watch take the room that is left. Within
+each group the ones polled longest ago go first across all companies, so no company is left
+without its turn. A poll that does not change the document's state is not written to the EDI
+log; failed polls and state changes are.

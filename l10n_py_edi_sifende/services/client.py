@@ -165,6 +165,10 @@ class SifendeClient:
             time.sleep(self._backoff(attempt, response))
             attempt += 1
 
+        # log puede ser una función que decide a partir de la respuesta; una
+        # llamada fallida se registra siempre
+        if callable(log):
+            log = transport_error is not None or not response.ok or log(response)
         if log:
             self._log(
                 operation,

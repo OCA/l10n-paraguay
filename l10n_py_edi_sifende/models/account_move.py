@@ -915,20 +915,23 @@ class AccountMove(models.Model):
             .sudo()
             .search([("provider_type", "=", "sifende")])
         )
-        # una sola cola ordenada por antigüedad: un conector con mucho trabajo no
-        # agota el presupuesto antes de que los demás tengan su turno
+        # una sola cola: primero los documentos en curso de todos los conectores y
+        # después los aceptados que se vigilan; dentro de cada grupo, por antigüedad,
+        # así un conector con mucho trabajo no agota el presupuesto de los demás
         pending = [
-            (move, connector)
+            (group, move, connector)
             for connector in connectors
-            for move in self._l10n_py_sifende_to_sync(connector)
+            for group, moves in enumerate(self._l10n_py_sifende_to_sync(connector))
+            for move in moves
         ]
         pending.sort(
             key=lambda item: (
-                item[0].l10n_py_sifende_ultima_consulta or datetime.min,
-                item[0].id,
+                item[0],
+                item[1].l10n_py_sifende_ultima_consulta or datetime.min,
+                item[1].id,
             )
         )
-        for move, connector in pending:
+        for _group, move, connector in pending:
             if time.monotonic() > deadline:
                 return
             try:
@@ -943,28 +946,32 @@ class AccountMove(models.Model):
 
     @api.model
     def _l10n_py_sifende_to_sync(self, connector):
+        """Devuelve dos grupos: los documentos que esperan la respuesta de SIFEN
+        o sus archivos, y los aceptados que se vigilan por si se cancelan. Los
+        aceptados solo ocupan el lugar que los primeros dejan libre en el lote."""
         now = fields.Datetime.now()
         recheck = now - timedelta(hours=CANCEL_RECHECK_HOURS)
         failed_recheck = now - timedelta(hours=FAILED_RECHECK_HOURS)
         watch_from = fields.Date.context_today(self) - timedelta(days=CANCEL_WATCH_DAYS)
+        moves = self.sudo()
+        base = [
+            ("company_id", "=", connector.company_id.id),
+            ("l10n_py_cdc", "!=", False),
+        ]
         # primero los que nunca se consultaron o hace más que se consultaron: así el
         # límite del lote rota por todos en lugar de repetir siempre los mismos
-        return self.sudo().search(
-            [
-                ("company_id", "=", connector.company_id.id),
-                ("l10n_py_cdc", "!=", False),
-                "|",
+        order = "l10n_py_sifende_ultima_consulta asc nulls first, id"
+        in_flight = moves.search(
+            base
+            + [
                 "|",
                 "|",
                 ("l10n_py_edi_status", "=", "processing"),
-                ("l10n_py_sifende_archivos_pendientes", "=", True),
-                "&",
+                # el aviso de archivos pendientes puede quedar puesto en un
+                # documento que se canceló antes de recibirlos
                 "&",
                 ("l10n_py_edi_status", "=", "accepted"),
-                ("invoice_date", ">=", watch_from),
-                "|",
-                ("l10n_py_sifende_ultima_consulta", "=", False),
-                ("l10n_py_sifende_ultima_consulta", "<", recheck),
+                ("l10n_py_sifende_archivos_pendientes", "=", True),
                 "&",
                 "&",
                 ("l10n_py_edi_status", "=", "error"),
@@ -974,8 +981,25 @@ class AccountMove(models.Model):
                 ("l10n_py_sifende_ultima_consulta", "<", failed_recheck),
             ],
             limit=CRON_BATCH_SIZE,
-            order="l10n_py_sifende_ultima_consulta asc nulls first, id",
+            order=order,
         )
+        room = CRON_BATCH_SIZE - len(in_flight)
+        if room <= 0:
+            return in_flight, moves.browse()
+        watched = moves.search(
+            base
+            + [
+                ("l10n_py_edi_status", "=", "accepted"),
+                ("l10n_py_sifende_archivos_pendientes", "=", False),
+                ("invoice_date", ">=", watch_from),
+                "|",
+                ("l10n_py_sifende_ultima_consulta", "=", False),
+                ("l10n_py_sifende_ultima_consulta", "<", recheck),
+            ],
+            limit=room,
+            order=order,
+        )
+        return in_flight, watched
 
     def _l10n_py_sifende_sync(self, connector, kude_wait=KUDE_MAX_WAIT):
         self.ensure_one()
@@ -989,7 +1013,14 @@ class AccountMove(models.Model):
 
     def _l10n_py_sifende_refresh_state(self, connector, announced=None, message=None):
         self.ensure_one()
-        result = connector._sifende_check_status(self.l10n_py_cdc).get("result") or {}
+        # una consulta que no cambia el estado no se registra en el log EDI: el
+        # cron vigila cada hora los documentos aceptados de los últimos días
+        result = (
+            connector._sifende_check_status(
+                self.l10n_py_cdc, log=self._l10n_py_sifende_status_changes
+            ).get("result")
+            or {}
+        )
         state = result.get("estado")
         if not (announced and message and self._sifende_same_outcome(announced, state)):
             message = result.get("mensajeRechazo")
@@ -1001,57 +1032,63 @@ class AccountMove(models.Model):
             return state in APPROVED_STATES
         return state == announced
 
+    def _l10n_py_sifende_status_changes(self, response):
+        body = response.body
+        # una respuesta sin estado no es una consulta normal: se registra
+        if not isinstance(body, dict) or not body.get("estado"):
+            return True
+        return bool(self._l10n_py_sifende_state_values(body["estado"]))
+
     def _l10n_py_sifende_apply_state(self, state, message=None):
+        self.ensure_one()
+        values = self._l10n_py_sifende_state_values(state, message)
+        if values:
+            self.write(values)
+
+    def _l10n_py_sifende_state_values(self, state, message=None):
         self.ensure_one()
         status = self.l10n_py_edi_status
         failed = self._l10n_py_sifende_is_failed()
         in_flight = status == "processing" or failed
         if state in APPROVED_STATES and in_flight:
-            self.write(
-                {
-                    "l10n_py_edi_status": "accepted",
-                    "l10n_py_sifende_envio_fallido": False,
-                    "l10n_py_edi_message": message
-                    or self.env._("Documento aprobado por SIFEN."),
-                }
-            )
-        elif state == "RECHAZADO" and in_flight:
-            self.write(
-                {
-                    "l10n_py_edi_status": "rejected",
-                    "l10n_py_edi_message": "\n\n".join(
-                        (
-                            message or self.env._("SIFEN rechazó el documento."),
-                            self._l10n_py_sifende_rejection_steps(),
-                        )
-                    ),
-                    "l10n_py_sifende_reintento_misma_clave": False,
-                    "l10n_py_sifende_envio_fallido": False,
-                }
-            )
-        elif state == "ERROR" and status == "processing":
-            self.write(
-                {
-                    "l10n_py_edi_status": "error",
-                    "l10n_py_sifende_envio_fallido": True,
-                    "l10n_py_sifende_reintento_misma_clave": False,
-                    "l10n_py_edi_message": "\n\n".join(
-                        filter(None, (message, self._l10n_py_sifende_failed_steps()))
-                    ),
-                }
-            )
-        elif state in RESUBMITTED_STATES and failed:
-            self.write(
-                {
-                    "l10n_py_edi_status": "processing",
-                    "l10n_py_sifende_envio_fallido": False,
-                    "l10n_py_edi_message": self.env._(
-                        "Sifende reintentó el envío; esperando la respuesta de SIFEN."
-                    ),
-                }
-            )
-        elif state == "CANCELADO" and status in ("processing", "accepted"):
-            self.write({"l10n_py_edi_status": "cancelled"})
+            return {
+                "l10n_py_edi_status": "accepted",
+                "l10n_py_sifende_envio_fallido": False,
+                "l10n_py_edi_message": message
+                or self.env._("Documento aprobado por SIFEN."),
+            }
+        if state == "RECHAZADO" and in_flight:
+            return {
+                "l10n_py_edi_status": "rejected",
+                "l10n_py_edi_message": "\n\n".join(
+                    (
+                        message or self.env._("SIFEN rechazó el documento."),
+                        self._l10n_py_sifende_rejection_steps(),
+                    )
+                ),
+                "l10n_py_sifende_reintento_misma_clave": False,
+                "l10n_py_sifende_envio_fallido": False,
+            }
+        if state == "ERROR" and status == "processing":
+            return {
+                "l10n_py_edi_status": "error",
+                "l10n_py_sifende_envio_fallido": True,
+                "l10n_py_sifende_reintento_misma_clave": False,
+                "l10n_py_edi_message": "\n\n".join(
+                    filter(None, (message, self._l10n_py_sifende_failed_steps()))
+                ),
+            }
+        if state in RESUBMITTED_STATES and failed:
+            return {
+                "l10n_py_edi_status": "processing",
+                "l10n_py_sifende_envio_fallido": False,
+                "l10n_py_edi_message": self.env._(
+                    "Sifende reintentó el envío; esperando la respuesta de SIFEN."
+                ),
+            }
+        if state == "CANCELADO" and status in ("processing", "accepted"):
+            return {"l10n_py_edi_status": "cancelled"}
+        return {}
 
     def _l10n_py_sifende_apply_webhook(self, connector, event_type, data):
         self.ensure_one()

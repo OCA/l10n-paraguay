@@ -174,6 +174,70 @@ class TestCron(SifendeCommon):
         self.assertEqual(len(synced), 3)
         self.assertIn(other, synced)
 
+    # === Prioridad ===
+
+    def record_syncs(self, moves):
+        synced = []
+
+        def sync(record, connector, *args, **kwargs):
+            synced.append(record)
+
+        return synced, patch.object(type(moves), "_l10n_py_sifende_sync", sync)
+
+    def test_los_documentos_en_curso_van_antes_que_los_aceptados_vigilados(self):
+        # los aceptados nunca se consultaron, así que antes iban primero
+        watched = self.make_tracked(2, status="accepted")
+        in_flight = self.make_tracked(
+            2,
+            l10n_py_sifende_ultima_consulta=fields.Datetime.now()
+            - timedelta(minutes=5),
+        )
+        synced, sync = self.record_syncs(watched)
+        with patch.object(account_move, "CRON_BATCH_SIZE", 2), sync:
+            self.run_cron()
+        self.assertEqual(synced, list(in_flight))
+
+    def test_los_aceptados_vigilados_ocupan_el_lugar_libre_del_lote(self):
+        watched = self.make_tracked(2, status="accepted")
+        (in_flight,) = self.make_tracked(1)
+        synced, sync = self.record_syncs(watched)
+        with patch.object(account_move, "CRON_BATCH_SIZE", 2), sync:
+            self.run_cron()
+        self.assertEqual(synced, [in_flight, watched[0]])
+
+    def test_un_aceptado_sin_archivos_va_antes_que_los_vigilados(self):
+        watched = self.make_tracked(1, status="accepted")
+        # consultado hace un momento: solo entra por los archivos pendientes
+        files = self.make_tracked(
+            1,
+            status="accepted",
+            l10n_py_sifende_archivos_pendientes=True,
+            l10n_py_sifende_ultima_consulta=fields.Datetime.now(),
+        )
+        synced, sync = self.record_syncs(watched)
+        with patch.object(account_move, "CRON_BATCH_SIZE", 1), sync:
+            self.run_cron()
+        self.assertEqual(synced, list(files))
+
+    def test_un_cancelado_con_archivos_pendientes_no_ocupa_el_lote(self):
+        cancelled = self.make_tracked(
+            1, status="cancelled", l10n_py_sifende_archivos_pendientes=True
+        )
+        synced, sync = self.record_syncs(cancelled)
+        with sync:
+            self.run_cron()
+        self.assertFalse(synced)
+
+    def test_un_error_de_sifende_va_antes_que_los_aceptados_vigilados(self):
+        watched = self.make_tracked(1, status="accepted")
+        failed = self.make_tracked(
+            1, status="error", l10n_py_sifende_envio_fallido=True
+        )
+        synced, sync = self.record_syncs(watched)
+        with patch.object(account_move, "CRON_BATCH_SIZE", 1), sync:
+            self.run_cron()
+        self.assertEqual(synced, list(failed))
+
     # === Cancelaciones ===
 
     def accepted_with_files(self, **vals):
@@ -257,3 +321,53 @@ class TestCron(SifendeCommon):
         self.assertEqual(move.l10n_py_edi_status, "accepted")
         self.assertTrue(move.l10n_py_kude_pdf)
         self.assertFalse(move.l10n_py_sifende_archivos_pendientes)
+
+    # === Registro EDI ===
+
+    def status_logs(self, move):
+        return self.env["l10n_py.edi.log"].search(
+            [("operation_type", "=", "status"), ("cdc", "=", move.l10n_py_cdc)]
+        )
+
+    def test_una_consulta_que_no_cambia_el_estado_no_se_registra(self):
+        move = self.accepted_with_files()
+        self.route_status(move, "APROBADO")
+        self.run_cron()
+        self.assertEqual(len(self.queried()), 1)
+        self.assertFalse(self.status_logs(move))
+
+    def test_un_documento_que_sigue_en_proceso_no_llena_el_registro(self):
+        (move,) = self.make_tracked(1)
+        self.route_status(move, "EN_LOTE")
+        self.run_cron()
+        self.run_cron()
+        self.assertEqual(len(self.queried()), 2)
+        self.assertEqual(move.l10n_py_edi_status, "processing")
+        self.assertFalse(self.status_logs(move))
+
+    def test_una_consulta_que_cambia_el_estado_se_registra(self):
+        move = self.accepted_with_files()
+        self.route_status(move, "CANCELADO")
+        self.run_cron()
+        self.assertEqual(move.l10n_py_edi_status, "cancelled")
+        self.assertEqual(len(self.status_logs(move)), 1)
+
+    def test_una_respuesta_sin_estado_se_registra(self):
+        move = self.accepted_with_files()
+        self.fake.add("GET", rf"/status/{move.l10n_py_cdc}$", FakeResponse(200, {}))
+        self.run_cron()
+        self.assertEqual(len(self.status_logs(move)), 1)
+        self.assertEqual(move.l10n_py_edi_status, "accepted")
+
+    def test_una_consulta_fallida_se_registra(self):
+        move = self.accepted_with_files()
+        self.fake.add(
+            "GET",
+            rf"/status/{move.l10n_py_cdc}$",
+            FakeResponse(500, {"detail": "Servicio no disponible"}),
+        )
+        self.run_cron()
+        log = self.status_logs(move)
+        self.assertEqual(len(log), 1)
+        self.assertFalse(log.success)
+        self.assertEqual(move.l10n_py_edi_status, "accepted")
