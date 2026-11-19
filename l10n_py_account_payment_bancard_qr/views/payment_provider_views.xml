@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Adds a dedicated notebook page with the Bancard QR SPI configuration
+         fields to the standard payment.provider form, visible only when
+         code == 'bancard_qr'. Xpath targets the generic <notebook/> element
+         (present on every payment.provider form) instead of a specific
+         page, to stay resilient to changes in the native page layout. -->
+    <record id="payment_provider_form_bancard_qr" model="ir.ui.view">
+        <field name="name">payment.provider.form.bancard.qr</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page
+                    string="Bancard QR SPI"
+                    name="bancard_qr_configuration"
+                    invisible="code != 'bancard_qr'"
+                >
+                    <group>
+                        <field name="bancard_qr_environment" />
+                        <field name="bancard_qr_base_url" />
+                        <field name="bancard_qr_api_key" password="True" />
+                    </group>
+                    <div class="alert alert-warning" role="alert">
+                        This provider is an honest skeleton: no real
+                        Bancard QR/Infonet HTTP integration is implemented.
+                        Generating a QR payload always raises
+                        NotImplementedError, and the webhook endpoint
+                        always rejects incoming calls (fail-closed). See
+                        the module README for details.
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
