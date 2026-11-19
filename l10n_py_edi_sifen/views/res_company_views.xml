@@ -15,6 +15,13 @@
                     <field name="l10n_py_certificate_filename" invisible="1" />
                     <field name="l10n_py_certificate_password" password="True" />
                     <field name="l10n_py_certificate_expiry" />
+                    <field
+                        name="l10n_py_certificate_state"
+                        widget="badge"
+                        decoration-danger="l10n_py_certificate_state == 'expired'"
+                        decoration-warning="l10n_py_certificate_state == 'to_expire'"
+                        decoration-success="l10n_py_certificate_state == 'valid'"
+                    />
                 </group>
             </xpath>
         </field>
