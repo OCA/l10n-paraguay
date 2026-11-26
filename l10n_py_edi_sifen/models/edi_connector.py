@@ -39,14 +39,6 @@ _logger = logging.getLogger(__name__)
 # de lo contrario el SET rechaza con "[0100] XML con Prefijo no reconocido".
 _SIFEN_NS = "http://ekuatia.set.gov.py/sifen/xsd"
 
-# Map document type code → TiTiDeev enum for inutilization events
-_DOC_TYPE_TO_EVENTO = {
-    1: TiTiDeev.VALUE_1,
-    4: TiTiDeev.VALUE_4,
-    5: TiTiDeev.VALUE_5,
-    6: TiTiDeev.VALUE_6,
-}
-
 
 class EDIConnector(models.Model):
     _inherit = "l10n_py.edi.connector"
@@ -422,19 +414,36 @@ class EDIConnector(models.Model):
         finally:
             evento.cleanup()
 
+    def _sifen_inutilization_doc_type(self, doc_type):
+        """Map a DE type code (iTiDE) to the inutilization event enum.
+
+        Any DE type can be inutilized (MT v150, 11.1.1). Never fall back to
+        another type: SIFEN would inutilize the numbering of the wrong
+        document type.
+        """
+        try:
+            return TiTiDeev(int(doc_type))
+        except (TypeError, ValueError) as e:
+            raise UserError(
+                self.env._(
+                    "Tipo de documento electrónico inválido para inutilizar: %s",
+                    doc_type,
+                )
+            ) from e
+
     def _sifen_inutilize_range(self, data):
         """Inutilize document number range via SIFEN event (TrGeVeInu)."""
         self.ensure_one()
+        doc_type = self._sifen_inutilization_doc_type(data.get("tipoDocumento"))
         evento = self._sifen_get_evento()
         try:
-            doc_type = data.get("tipoDocumento", 1)
             inu_event = TrGeVeInu(
                 dNumTim=data.get("timbrado", ""),
                 dEst=data.get("establecimiento", "001"),
                 dPunExp=data.get("punto", "001"),
                 dNumIn=data.get("numeroDesde", "0000001"),
                 dNumFin=data.get("numeroHasta", "0000001"),
-                iTiDE=_DOC_TYPE_TO_EVENTO.get(doc_type, TiTiDeev.VALUE_1),
+                iTiDE=doc_type,
                 mOtEve=data.get("motivo", "Inutilización de números"),
             )
             now_str = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")  # noqa: DTZ005
