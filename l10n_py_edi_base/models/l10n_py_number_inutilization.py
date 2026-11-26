@@ -157,13 +157,22 @@ class NumberInutilization(models.Model):
             )
 
         auth = self.authorization_id
+        doc_type_code = auth.l10n_latam_document_type_id.code
+        if not (doc_type_code and doc_type_code.isdigit()):
+            raise UserError(
+                self.env._(
+                    "El timbrado %s no tiene un tipo de documento electrónico.",
+                    auth.display_name,
+                )
+            )
         data = {
             "timbrado": auth.name or "",
-            "establecimiento": auth.l10n_py_establishment or "001",
-            "punto": auth.l10n_py_point or "001",
+            "establecimiento": auth.establishment or "001",
+            "punto": auth.expedition_point or "001",
             "numeroDesde": str(self.number_from).zfill(7),
             "numeroHasta": str(self.number_to).zfill(7),
-            "tipoDocumento": 1,  # FE por defecto
+            # The numbering belongs to the authorization's document type.
+            "tipoDocumento": int(doc_type_code),
             "motivo": self.motive or "",
         }
 
