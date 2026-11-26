@@ -1231,6 +1231,18 @@ class AccountMove(models.Model):
 
     def _validate_edi_data(self):
         """Validar datos antes de enviar a EDI"""
+        # Only the issuer transmits a DE. Every type this module issues
+        # (FE, AFE, NDE, NRE, NCE) is a customer move; a vendor bill is
+        # transmitted by the supplier and SIFEN would reject it.
+        if self.move_type not in ("out_invoice", "out_refund"):
+            raise UserError(
+                self.env._(
+                    "Solo se transmiten a SIFEN los documentos que emite la "
+                    "empresa (facturas y notas de cliente, autofacturas y "
+                    "notas de remisión). Las facturas de proveedor las "
+                    "transmite el proveedor."
+                )
+            )
         errors = []
 
         # Validar datos de la empresa
